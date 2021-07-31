@@ -1,0 +1,21 @@
+" General Settings
+set update.lastchecktime 1609606444427
+set update.nag true
+set update.nagwait 7
+set update.lastnaggedversion 1.14.0
+set update.checkintervalsecs 86400
+set configversion 2.0
+set theme dark
+
+" For syntax highlighting see https://github.com/tridactyl/vim-tridactyl
+" vim: set filetype=tridactyl
+
+" https://github.com/tridactyl/tridactyl/issues/64
+bind / fillcmdline find
+bind ? fillcmdline find -?
+bind n findnext 1
+bind N findnext -1
+bind ,<Space> nohlsearch
+
+" https://quinoa42.github.io/en/oceanus/tridactyl-editorcmd-with-tmux/
+set editorcmd tmux new-window -n firefox 'nvim -f %f; tmux wait-for -S firefox-neww-done' \; wait-for firefox-neww-done
