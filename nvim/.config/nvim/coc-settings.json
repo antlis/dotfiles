@@ -1,0 +1,33 @@
+{
+  "prettier.eslintIntegration": true,
+  "coc.source.emoji.filetypes": [
+    "markdown",
+    "javascript"
+  ],
+  "cSpell.ignoreWords": [
+    "rgba",
+    "rgb",
+    "nowrap",
+    "mixins"
+  ],
+  "cSpellExt.enableDictionaries": [
+    "russian"
+  ],
+  "cSpell.language": "en,ru",
+  "cSpell.enabledLanguageIds": [
+    "notes",
+    "csharp",
+    "go",
+    "javascript",
+    "javascriptreact",
+    "markdown",
+    "php",
+    "plaintext",
+    "typescript",
+    "typescriptreact",
+    "yml",
+    "ts",
+    "tsx",
+    "vue"
+  ]
+}
