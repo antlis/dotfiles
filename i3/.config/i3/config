@@ -351,8 +351,7 @@ exec --no-startup-id dunst -config ~/.config/dunst/dunstrc
 # exec --no-startup-id dunst
 
 # Set bg color
-# Not working for some reason, on ubuntu
-# exec --no-startup-id xsetroot -solid "#000"
+exec --no-startup-id xsetroot -solid "#000"
 
 # touchapd
 # https://old.reddit.com/r/i3wm/comments/15rgwk/disable_tap_to_click_with_a_touchpad/
