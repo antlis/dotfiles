@@ -122,7 +122,8 @@ set path+=$PWD/node_modules
 " column boundry
 set colorcolumn=+1        " highlight column after 'textwidth'
 set colorcolumn=+1,+2,+3  " highlight three columns after 'textwidth'
-set colorcolumn=80
+" set colorcolumn=80
+set colorcolumn=120
 " column boundry
 
 " Persistent undo https://stackoverflow.com/questions/5700389/using-vims-persistent-undo
