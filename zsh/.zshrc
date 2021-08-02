@@ -181,10 +181,10 @@ export PATH="$VOLTA_HOME/bin:$PATH"
 
 # custom node scripts path
 path+=~/.js
-path+=('$HOME/.local/bin/')
+path+=('${HOME}/.local/bin/')
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '$HOME/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc' ]; then .'${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '$HOME/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
