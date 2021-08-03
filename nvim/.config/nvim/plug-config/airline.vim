@@ -60,6 +60,10 @@ let g:airline#extensions#hunks#enabled=0
 " let g:airline_symbols.whitespace = 'Ξ'
 let g:airline_symbols.branch = ''
 
+if exists('$TMUX')
+  let g:airline_section_b = ''
+endif 
+
 catch
   echo 'Airline not installed. It should work after running :PlugInstall'
 endtry
