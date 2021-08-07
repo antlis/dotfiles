@@ -188,3 +188,8 @@ if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh
 
 # The next line enables shell command completion for gcloud.
 if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc' ]; then . '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc'; fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi

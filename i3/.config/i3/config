@@ -42,8 +42,13 @@ bindsym $mod+Shift+q kill
 # start dmenu (a program launcher)
 # bindsym $mod+d exec dmenu_run
 # bindsym $mod+d exec rofi -show run
+
 bindsym $mod+d exec zsh -c "rofi -show drun -show-icons"
 bindsym $mod+Shift+d exec zsh -c "rofi -show window"
+
+# bindsym $mod+d exec "alacritty -t fzf-nova --dimensions 90 20 --position 350 200 -e $HOME/bin/fzf/fzf-nova"
+# bindsym $mod+d exec "alacritty -t fzf-nova -e $HOME/bin/fzf/fzf-nova"
+# bindsym $mod+d exec "alacritty -t fzf-nova -e $HOME/bin/fzf/fzf-speed"
 
 # rofi like luncher, but FZF
 # https://github.com/junegunn/fzf/wiki/Examples#i3
@@ -60,16 +65,16 @@ for_window [title="fzf-menu"] floating enable
 # https://www.youtube.com/watch?v=zB_3FIGRWRU
 # https://github.com/CalinLeafshade/dots/blob/master/bin/bin/notetaker
 # for_window [ title="notetaker_window" ] floating enable
-# bindsym $mod+n exec 'alacritty --config-file $HOME/.config/alacritty/alacritty.yml -e $HOME/.local/bin/notetaker -t notetaker_window'
-bindsym $mod+n exec 'alacritty -e $HOME/.local/bin/notetaker -t notetaker_window'
+# bindsym $mod+n exec 'alacritty --config-file $HOME/.config/alacritty/alacritty.yml -e $HOME/bin/notetaker -t notetaker_window'
+bindsym $mod+n exec 'alacritty -e $HOME/bin/notetaker -t notetaker_window'
 bindsym $mod+Shift+n exec mostRecentNote
 
 
 # bindsym $mod+b exec ~/.config/rofi/bookmarks/rofi-bookmarks ~
-bindsym $mod+b exec ~/.local/bin/rofi-bookmarks
-bindsym $mod+Shift+b exec ~/.local/bin/rofi-bookmarks-brave
-bindsym $mod+Shift+s exec ~/.local/bin/rofi-websearch
-bindsym $mod+Shift+p exec ~/.local/bin/rofi-websearch-private
+bindsym $mod+b exec ~/bin/rofi/rofi-bookmarks
+bindsym $mod+Shift+b exec ~/bin/rofi/rofi-bookmarks-brave
+bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
+bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
