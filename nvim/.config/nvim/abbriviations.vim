@@ -30,3 +30,4 @@ ab :sushi: 🍣
 ab :fish: 🐟
 ab :cupcake: 🧁
 ab :pepper: 🌶️
+ab :boom: 💥
