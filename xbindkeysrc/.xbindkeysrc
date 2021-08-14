@@ -77,3 +77,6 @@
 
 "peek"
   control+shift + Print
+
+"~/bin/rofi/rofi-bookmarks"
+  Mod2+Mod4 + b
