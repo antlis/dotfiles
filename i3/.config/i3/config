@@ -226,6 +226,10 @@ bindsym $mod+Ctrl+h move workspace to output left
 bindsym $mod+Tab workspace back_and_forth
 bindsym Print exec gnome-screenshot && notify-send "Screenshot saved"
 bindsym Shift+Print exec gnome-screenshot -a && notify-send "Screenshot saved"
+bindsym Ctrl+Shift+Print exec peek # record gif
+# start kazam recording, don't forget to turn it off $mod+Ctrl+f
+bindsym $mod+Shift+Print exec kazam-start-recording && notify-send "Recording"
+bindsym $mod+Shift+Ctrl+Print exec cheese
 
 # bindsym $mod+Shift+f exec $HOME/Applications/firefox-dev/firefox
 
