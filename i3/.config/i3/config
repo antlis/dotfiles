@@ -270,6 +270,7 @@ assign [class="Nautilus"] workspace 3
 assign [class="qBittorrent"] workspace 3
 assign [class="Dragon"] workspace 3
 assign [class="Transmission"] workspace 3
+assign [class="krita"] workspace 4
 assign [class="Code"] workspace 5
 assign [class="VSCodium"] workspace 5
 assign [class="Sublime_text"] workspace 5
