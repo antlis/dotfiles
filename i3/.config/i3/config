@@ -237,7 +237,7 @@ bindsym $mod+Shift+Ctrl+Print exec cheese
 new_window 1pixel
 # for_window [class="^.*"] border pixel 1
 
-exec keynav </dev/null &>/dev/null &
+# exec keynav </dev/null &>/dev/null & # Moved keynav start to .profile
 # exec gnome-terminal
 # exec slack
 exec pidgin
