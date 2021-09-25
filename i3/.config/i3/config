@@ -305,6 +305,7 @@ assign [class="Pavucontrol"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
 assign [class="org.remmina.Remmina"] workspace 9
+assign [class="Mullvad VPN"] workspace 9
 
 for_window [class="Pavucontrol"] focus
 for_window [class="Insomnia"] focus
