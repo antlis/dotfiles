@@ -118,6 +118,8 @@ Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-sleuth'
 Plug 'rhysd/git-messenger.vim'
 Plug 'xolox/vim-misc'
+Plug 'ruanyl/vim-gh-line'
+Plug 'lambdalisue/vim-gista'
 " Plug 'xolox/vim-notes', { 'on': 'Note' }
 Plug 'xolox/vim-notes'
 Plug 'dhruvasagar/vim-table-mode'

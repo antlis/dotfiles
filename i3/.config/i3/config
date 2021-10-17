@@ -218,6 +218,9 @@ bar {
   }
 }
 
+bindsym $mod+x exec i3-msg bar mode toggle
+
+
 # New stuff
 # move focused workspace between monitors
 bindsym $mod+Ctrl+l move workspace to output right
@@ -302,6 +305,7 @@ assign [class="Kazam"] workspace 8
 assign [class="Cudo Miner"] workspace 8
 assign [class="pritunl"] workspace 8
 assign [class="Pavucontrol"] workspace 8
+assign [class="Steam"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
 assign [class="org.remmina.Remmina"] workspace 9
@@ -372,3 +376,4 @@ exec synclient MaxTapTime=0
 # looks like lines below do not work
 # exec synclient VertScrollDelta=0
 # exec synclient HorizScrollDelta=0
+

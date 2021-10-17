@@ -193,3 +193,7 @@ if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completi
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
+
+# GH
+# https://cli.github.com/manual/gh_help_environment
+export GH_EDITOR="nvim"
