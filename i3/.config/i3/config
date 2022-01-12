@@ -323,8 +323,12 @@ exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift
 
 # FN keys
 # use xev to get keycode
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
+# bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
+# bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
+
+bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+ && mpv ~/Music/sounds/zerg_nuclear_launch.mp3
+bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && mpv ~/Music/sounds/zerg_nuclear_launch.mp3
+
 # TODO: bind num plus minus
 # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
