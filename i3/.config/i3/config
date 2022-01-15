@@ -66,8 +66,8 @@ for_window [title="fzf-menu"] floating enable
 # https://github.com/CalinLeafshade/dots/blob/master/bin/bin/notetaker
 # for_window [ title="notetaker_window" ] floating enable
 # bindsym $mod+n exec 'alacritty --config-file $HOME/.config/alacritty/alacritty.yml -e $HOME/bin/notetaker -t notetaker_window'
-bindsym $mod+n exec 'alacritty -e $HOME/bin/notetaker -t notetaker_window'
-bindsym $mod+Shift+n exec mostRecentNote
+# bindsym $mod+n exec 'alacritty -e $HOME/bin/notetaker -t notetaker_window'
+# bindsym $mod+Shift+n exec mostRecentNote
 
 
 # bindsym $mod+b exec ~/.config/rofi/bookmarks/rofi-bookmarks ~
@@ -75,6 +75,10 @@ bindsym $mod+b exec ~/bin/rofi/rofi-bookmarks
 bindsym $mod+Shift+b exec ~/bin/rofi/rofi-bookmarks-brave
 bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
 bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
+# Not working ???
+# https://github.com/mattydebie/bitwarden-rofi/issues/34
+bindsym $mod+p exec bwmenu
+# bindsym $mod+p exec "alacritty -e bwmenu"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
@@ -230,9 +234,11 @@ bindsym $mod+Tab workspace back_and_forth
 bindsym Print exec gnome-screenshot && notify-send "Screenshot saved"
 bindsym Shift+Print exec gnome-screenshot -a && notify-send "Screenshot saved"
 bindsym Ctrl+Shift+Print exec peek # record gif
+# bindsym $mod+Shift+Print exec flameshot gui ~/Pictures/Screenshot
 # start kazam recording, don't forget to turn it off $mod+Ctrl+f
 bindsym $mod+Shift+Print exec kazam-start-recording && notify-send "Recording"
 bindsym $mod+Shift+Ctrl+Print exec cheese
+
 
 # bindsym $mod+Shift+f exec $HOME/Applications/firefox-dev/firefox
 
@@ -326,9 +332,10 @@ exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift
 # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
 
-bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+ && mpv ~/Music/sounds/zerg_nuclear_launch.mp3
-bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && mpv ~/Music/sounds/zerg_nuclear_launch.mp3
+bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+ && mpv ~/Music/sounds/zerg_nuclear_launch.mp3 # && notify-send -t 1000 "Volume +5% 🔊"
+bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && mpv ~/Music/sounds/zerg_nuclear_launch.mp3 # && notify-send -t 1000 "Volume -5% 🔉"
 bindsym XF86AudioMute exec amixer -D pulse set Master 1+ toggle
+# amixer -c 1 sset Mic toggle
 
 # TODO: bind num plus minus
 # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
