@@ -337,6 +337,13 @@ bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && mpv ~/Music
 bindsym XF86AudioMute exec amixer -D pulse set Master 1+ toggle
 # amixer -c 1 sset Mic toggle
 
+# https://unix.stackexchange.com/questions/526653/control-screen-brightness-in-i3
+bindsym XF86MonBrightnessUp exec light -A 1 # increase screen brightness
+bindsym XF86MonBrightnessDown exec light -U 1 # decrease screen brightness
+
+# bindsym XF86Explorer exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
+bindsym XF86LaunchA exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
+
 # TODO: bind num plus minus
 # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
