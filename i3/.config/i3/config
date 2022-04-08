@@ -285,6 +285,7 @@ assign [class="VSCodium"] workspace 5
 assign [class="Sublime_text"] workspace 5
 assign [class="Pidgin"] workspace 6
 assign [class="Slack"] workspace 6
+assign [class="Signal"] workspace 6
 assign [class="telegram-desktop"] workspace 6
 assign [class="Bettergram"] workspace 6
 assign [class="TelegramDesktop"] workspace 6
