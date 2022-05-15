@@ -43,8 +43,8 @@ bindsym $mod+Shift+q kill
 # bindsym $mod+d exec dmenu_run
 # bindsym $mod+d exec rofi -show run
 
-bindsym $mod+d exec zsh -c "rofi -show drun -show-icons"
-bindsym $mod+Shift+d exec zsh -c "rofi -show window"
+bindsym $mod+d exec --no-startup-id zsh -c "rofi -show drun -show-icons"
+bindsym $mod+Shift+d exec --no-startup-id zsh -c "rofi -show window"
 
 # bindsym $mod+d exec "alacritty -t fzf-nova --dimensions 90 20 --position 350 200 -e $HOME/bin/fzf/fzf-nova"
 # bindsym $mod+d exec "alacritty -t fzf-nova -e $HOME/bin/fzf/fzf-nova"
@@ -55,6 +55,7 @@ bindsym $mod+Shift+d exec zsh -c "rofi -show window"
 # bindsym $mod+d exec --no-startup-id termite -t 'fzf-menu' -e 'i3-dmenu-desktop --dmenu=$HOME/.fzf/bin/fzf'
 # bindsym $mod+d exec --no-startup-id alacritty -t 'fzf-menu' -e 'i3-dmenu-desktop --dmenu=$HOME/.fzf/bin/fzf'
 for_window [title="fzf-menu"] floating enable
+# for_window [title="floating-journal"] floating enable
 
 # bindsym $mod+t exec --no-startup-id termite -t 'floating-termite'
 # for_window [title="floating-termite"] floating enable
@@ -265,11 +266,13 @@ for_window [class="zoom"] floating disabled
 for_window [class="Kazam"] floating disabled
 # assign [class="Firefox Developer Edition"] fullscreen enable
 
-assign [class="Gnome-terminal"] workspace 1
+# assign [class="Gnome-terminal"] workspace 1
 # assign [class="X-terminal-emulator"] workspace 1
 # assign [class="Termite"] workspace 1
 assign [class="Firefox Developer Edition"] workspace 2
 assign [class="Firefox"] workspace 2
+assign [class="firefox"] workspace 2
+assign [class="Navigator"] workspace 2
 assign [class="Chromium browser"] workspace 2
 assign [class="Google-chrome"] workspace 2
 assign [class="chromium-browser"] workspace 2
@@ -381,7 +384,7 @@ hide_edge_borders both
 exec_always --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings
 
 
-exec --no-startup-id i3-msg 'workspace 1; exec alacritty --config-file $HOME/.config/alacritty/alacritty.yml'
+exec --no-startup-id i3-msg 'workspace 1; exec alacritty --config-file $HOME/.config/alacritty/alacritty.yml -t default'
 # exec firefox
 # exec $HOME/Applications/firefox-dev/firefox
 
