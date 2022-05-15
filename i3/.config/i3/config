@@ -127,6 +127,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
+bindsym $mod+Shift+w layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -246,7 +247,9 @@ bindsym $mod+Shift+Ctrl+Print exec cheese
 new_window 1pixel
 # for_window [class="^.*"] border pixel 1
 
-# exec keynav </dev/null &>/dev/null & # Moved keynav start to .profile
+# I need it here, because ~/.profile not sourced when I use Ly display manager
+# If I souce ~/.profile from i3 config it won't work for some reason
+exec keynav </dev/null &>/dev/null &
 # exec gnome-terminal
 # exec slack
 exec pidgin
@@ -312,6 +315,7 @@ assign [class="Kazam"] workspace 8
 assign [class="Cudo Miner"] workspace 8
 assign [class="pritunl"] workspace 8
 assign [class="Pavucontrol"] workspace 8
+assign [class="Local"] workspace 8
 assign [class="Steam"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
@@ -396,4 +400,3 @@ exec synclient MaxTapTime=0
 # looks like lines below do not work
 # exec synclient VertScrollDelta=0
 # exec synclient HorizScrollDelta=0
-

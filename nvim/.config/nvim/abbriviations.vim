@@ -31,3 +31,17 @@ ab :fish: 🐟
 ab :cupcake: 🧁
 ab :pepper: 🌶️
 ab :boom: 💥
+ab :arrow_up: ⬆️
+ab :brain: 🧠
+ab :moon: 🌙
+ab :cheese: 🧀
+ab :snail: 🐌
+ab :camel: 🐪
+ab :unicorn: 🦄
+ab :usa: 🇺🇸
+ab :rocket: 🚀
+
+ab ednl // eslint-disable-next-line
+
+" Aliases
+cnoreabbrev note Note
