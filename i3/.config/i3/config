@@ -384,7 +384,7 @@ hide_edge_borders both
 exec_always --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings
 
 
-exec --no-startup-id i3-msg 'workspace 1; exec alacritty --config-file $HOME/.config/alacritty/alacritty.yml -t default'
+exec --no-startup-id i3-msg 'workspace 1; exec alacritty --config-file $HOME/.config/alacritty/alacritty.yml -t initial-term'
 # exec firefox
 # exec $HOME/Applications/firefox-dev/firefox
 
