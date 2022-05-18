@@ -73,6 +73,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
   tmux
   ssh-agent
+  gh
   git
   zshmarks
   vi-mode
