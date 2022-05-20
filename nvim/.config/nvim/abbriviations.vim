@@ -45,3 +45,4 @@ ab ednl // eslint-disable-next-line
 
 " Aliases
 cnoreabbrev note Note
+cnoreabbrev rg Rg

@@ -208,3 +208,4 @@ fi
 # GH
 # https://cli.github.com/manual/gh_help_environment
 export GH_EDITOR="nvim"
+export ts_issue="ToolSense/frontend"
