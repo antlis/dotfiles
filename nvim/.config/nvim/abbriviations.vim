@@ -40,6 +40,7 @@ ab :camel: 🐪
 ab :unicorn: 🦄
 ab :usa: 🇺🇸
 ab :rocket: 🚀
+ab :facepalm: 🤦
 
 ab ednl // eslint-disable-next-line
 
