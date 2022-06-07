@@ -24,6 +24,8 @@
 # Use 'daemonize' to background ourselves.
 #daemonize
 
+Tab restart
+
 ctrl+semicolon start
 Escape end
 ctrl+bracketleft end
@@ -49,6 +51,10 @@ semicolon warp,end
 1 click 1
 2 click 2
 3 click 3
+4 click 4
+5 click 5
+u click 4
+d click 5
 
 # Zoom to the current window
 w windowzoom
@@ -89,6 +95,10 @@ q record
 shift+at playback
 
 ### Example using the 'sh' command.
+# Open rofi bookmarks
+b sh "$HOME/bin/rofi/rofi-bookmarks-brave", end
+w sh "rofi -show window", end
+s sh "$HOME/bin/rofi/rofi-websearch", end
 # Make firefox the active window
 f sh "xdotool windowactivate $(xdotool search -title -- '- Mozilla Firefox')", end
 # Make a new tab in google chrome:
@@ -98,12 +108,12 @@ v sh "xdotool key shift+Insert"
 
 ### Drag examples
 # Start drag holding the left mouse button
-#q drag 1
+# q drag 1
 # Start drag holding middle mouse + control and shift
 #w drag 2 ctrl+shift
 # Dragging with modifiers
-#q drag 1
-#ctrl+q drag 1 ctrl
+# q drag 1
+ctrl+q drag 1 ctrl
 #shift+q drag 1 shift
 #shift+ctrl+q drag 1 shift+ctrl
 
