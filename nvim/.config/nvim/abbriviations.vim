@@ -41,6 +41,10 @@ ab :unicorn: 🦄
 ab :usa: 🇺🇸
 ab :rocket: 🚀
 ab :facepalm: 🤦
+ab :scull: 💀
+ab :vomit: 🤮
+ab :puke: 🤮
+ab :mobile: 📱
 
 ab ednl // eslint-disable-next-line
 
