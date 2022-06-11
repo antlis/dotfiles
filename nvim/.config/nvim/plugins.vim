@@ -141,6 +141,8 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'moll/vim-node', { 'for': ['js', 'ts'] }
 Plug 'dense-analysis/ale'
 Plug 'jparise/vim-graphql'
+" Plug 'eliba2/vim-node-inspect'
+Plug 'mfussenegger/nvim-dap'
 
 " Use gcc to comment out a line (takes a count), gc to comment out the target of a motion (for example, gcap to comment out a paragraph), and gc in visual mode to comment out the selection.  That's it.
 Plug 'tpope/vim-commentary'
