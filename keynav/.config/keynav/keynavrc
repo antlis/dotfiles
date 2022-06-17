@@ -100,11 +100,11 @@ b sh "$HOME/bin/rofi/rofi-bookmarks-brave", end
 w sh "rofi -show window", end
 s sh "$HOME/bin/rofi/rofi-websearch", end
 # Make firefox the active window
-f sh "xdotool windowactivate $(xdotool search -title -- '- Mozilla Firefox')", end
+# f sh "xdotool windowactivate $(xdotool search -title -- '- Mozilla Firefox')", end
 # Make a new tab in google chrome:
-t sh "xdotool windowactivate $(xdotool search --title -- '- Google Chrome' | head -1); xdotool key ctrl+t",end
+# t sh "xdotool windowactivate $(xdotool search --title -- '- Google Chrome' | head -1); xdotool key ctrl+t",end
 # Paste
-v sh "xdotool key shift+Insert"
+# v sh "xdotool key shift+Insert"
 
 ### Drag examples
 # Start drag holding the left mouse button
