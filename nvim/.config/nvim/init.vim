@@ -24,6 +24,9 @@ endif
 source $HOME/.config/nvim/plug-config/airline.vim
 source $HOME/.config/nvim/plug-config/ale.vim
 " source $HOME/.config/nvim/plug-config/animate.vim
+" coc json setting
+" $HOME/.config/nvim/coc-settings.json
+" coc json setting
 source $HOME/.config/nvim/plug-config/coc.vim
 source $HOME/.config/nvim/plug-config/ctrlp.vim
 " source $HOME/.config/nvim/plug-config/denite.vim
