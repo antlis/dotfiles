@@ -26,6 +26,7 @@ ab :purpleheart: 💜
 ab :carrot: 🥕
 ab :waffle: 🧇
 ab :fox: 🦊
+ab :brokenheart: 💔
 ab :sushi: 🍣
 ab :fish: 🐟
 ab :cupcake: 🧁

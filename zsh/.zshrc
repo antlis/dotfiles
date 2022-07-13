@@ -209,3 +209,10 @@ fi
 # https://cli.github.com/manual/gh_help_environment
 export GH_EDITOR="nvim"
 export ts_issue="ToolSense/frontend"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
