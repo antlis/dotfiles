@@ -162,6 +162,13 @@ au FileType * set fo-=c fo-=r fo-=o
 command! FileHistory execute ":BCommits!"
 
 lua <<EOF
+-- local dap = require('dap')
+-- dap.adapters.node2 = {
+--   type = 'executable',
+--   command = 'node',
+--   args = {os.getenv('HOME') .. '/dev/microsoft/vscode-node-debug2/out/src/nodeDebug.js'},
+-- }
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   -- ignore_install = { "javascript" }, -- List of parsers to ignore installing
@@ -200,3 +207,29 @@ require'nvim-treesitter.configs'.setup {
   }
 }
 EOF
+
+" https://www.youtube.com/watch?v=ga3Cas7vNCk&list=PLu-ydI-PCl0OEG0ZEqLRRuCrMJGAAI0tW&index=5
+" nnoremap <leader>dh :lua require'dap'.toggle_breakpoint()<CR>
+" nnoremap <leader>dn :lua require'dap'.continue()<CR>
+" nnoremap <leader>da :lua require'debugHelper'.attach()<CR>
+
+" vimspector
+" https://youtu.be/-AZUIL1rY3U?list=PLu-ydI-PCl0OEG0ZEqLRRuCrMJGAAI0tW
+nnoremap <leader>da :call vimspector#Launch()<CR>
+nnoremap <leader>dx :call vimspector#Reset()<CR>
+nnoremap <S-k> :call vimspector#StepOut()<CR>
+nnoremap <S-l> :call vimspector#StepInto()<CR>
+nnoremap <S-j> :call vimspector#StepOver()<CR>
+nnoremap <leader>d_ :call vimspector#Restart()<CR>
+nnoremap <leader>dn :call vimspector#Continue()<CR>
+nnoremap <leader>drc :call vimspector#RunToCursor()<CR>
+nnoremap <leader>dh :call vimspector#ToggleBreakpoint()<CR>
+nnoremap <leader>de :call vimspector#ToggleConditionalBreakpoint()<CR>
+nnoremap <leader>dX :call vimspector#ClearBreakpoints()<CR>
+nnoremap <leader>dX :call vimspector#ClearBreakpoints()<CR>
+nnoremap <leader>d? :call AddToWatch()<CR>
+func! AddToWatch()
+  let word = expand("<cexpr>")
+  call vimspector#AddToWatch(word)
+endfunction
+let g:vimspector_base_dir = expand('$HOME/.config/vimspector-config')
