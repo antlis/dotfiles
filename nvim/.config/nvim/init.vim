@@ -119,9 +119,6 @@ set path+=$PWD/node_modules
 " syntax enable
 " https://github.com/Shougo/dein.vim
 
-" TODO: Intredesting
-" https://github.com/rhysd/NyaoVim
-
 " column boundry
 set colorcolumn=+1        " highlight column after 'textwidth'
 set colorcolumn=+1,+2,+3  " highlight three columns after 'textwidth'
