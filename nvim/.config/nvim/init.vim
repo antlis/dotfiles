@@ -230,6 +230,10 @@ nnoremap <leader>dX :call vimspector#ClearBreakpoints()<CR>
 nnoremap <leader>d? :call AddToWatch()<CR>
 func! AddToWatch()
   let word = expand("<cexpr>")
-  call vimspector#AddToWatch(word)
+  call vimspector#AddWatch(word)
 endfunction
 let g:vimspector_base_dir = expand('$HOME/.config/vimspector-config')
+
+" Return back default Shift+j behaviour, instead of vimspector Shift+j
+" For some reason causes error if I place i inside mappings file
+unmap <S-J>
