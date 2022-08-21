@@ -169,6 +169,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'rhysd/vim-fixjson'
 
 Plug 'dracula/vim'
+
 " Plug 'whatyouhide/vim-gotham'
 " Plug 'kyazdani42/blue-moon'
 

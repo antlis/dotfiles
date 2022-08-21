@@ -75,6 +75,7 @@ plugins=(
   ssh-agent
   gh
   git
+  gitfast
   zshmarks
   vi-mode
   fzf
@@ -178,8 +179,6 @@ eval $(thefuck --alias)
 # autojump
 # . /usr/share/autojump/autojump.sh
 source "/etc/profile.d/rvm.sh"
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
 
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
