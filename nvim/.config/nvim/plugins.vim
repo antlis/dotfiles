@@ -121,7 +121,8 @@ Plug 'xolox/vim-misc'
 Plug 'ruanyl/vim-gh-line'
 Plug 'lambdalisue/vim-gista'
 " Plug 'xolox/vim-notes', { 'on': 'Note' }
-Plug 'xolox/vim-notes'
+" Plug 'xolox/vim-notes'
+Plug 'vimwiki/vimwiki'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 Plug 'francoiscabrol/ranger.vim'
@@ -180,3 +181,6 @@ Plug 'dracula/vim'
 
 " Initialize plugin system
 call plug#end()
+
+let g:vimwiki_list = [{'path': '~/Documents/vimwiki/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
