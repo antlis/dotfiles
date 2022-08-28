@@ -182,5 +182,5 @@ Plug 'dracula/vim'
 " Initialize plugin system
 call plug#end()
 
-let g:vimwiki_list = [{'path': '~/Documents/vimwiki/',
+let g:vimwiki_list = [{'path': '~/Documents/wiki/',
                       \ 'syntax': 'markdown', 'ext': '.md'}]
