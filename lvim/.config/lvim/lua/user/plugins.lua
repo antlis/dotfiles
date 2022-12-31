@@ -6,5 +6,6 @@ lvim.plugins = {
   },
   "rhysd/git-messenger.vim",
   "dracula/vim",
+  "whatyouhide/vim-gotham",
   "vimwiki/vimwiki",
 }
