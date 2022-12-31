@@ -1,4 +1,6 @@
-9  end
-46 cut-right, cut-right, cut-up, cut-down, move-down, move-down, move-down, cut-left, cut-left, move-down, move-left, move-left, move-left, move-left, move-left, cut-down, move-left
-37 start, end
-43 cut-left, cut-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, cut-up, cut-down, cut-down, cut-down
+47  warp, end
+46    cut-right, cut-right, cut-up, cut-down, move-down, move-down, move-down, cut-left, cut-left, move-down, move-left, move-left, move-left, move-left, move-left, cut-down, move-left
+37    start, end
+43    cut-left, cut-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, move-left, cut-up, cut-down, cut-down, cut-down
+30   click 4, click 4, click 4, click 4, click 4, click 5, click 5, click 5, end
+9 end

@@ -122,7 +122,10 @@ Plug 'ruanyl/vim-gh-line'
 Plug 'lambdalisue/vim-gista'
 " Plug 'xolox/vim-notes', { 'on': 'Note' }
 " Plug 'xolox/vim-notes'
+
 Plug 'vimwiki/vimwiki'
+let g:vimwiki_global_ext = 0
+
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 Plug 'francoiscabrol/ranger.vim'
