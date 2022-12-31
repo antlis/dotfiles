@@ -181,5 +181,5 @@ lvim.builtin.treesitter.highlight.enable = true
 --
 vim.opt.relativenumber = true
 
-reload "user/plugins"
+reload "user.plugins"
 reload "user.vimwiki"
