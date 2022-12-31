@@ -1,4 +1,5 @@
 -- === credit goes here: https://github.com/dgiacomo/Neovim-from-scratch/blob/master/lua/user/vimwiki.lua 
+-- https://github.com/gnmearacaun/lvim/tree/my-lvim/lua/user
 
 vim.g.vimwiki_list = {
   {
