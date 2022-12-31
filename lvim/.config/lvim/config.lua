@@ -163,21 +163,6 @@ lvim.builtin.treesitter.highlight.enable = true
 --   },
 -- }
 
--- Additional Plugins
-lvim.plugins = {
-    {
-      "folke/trouble.nvim",
-      cmd = "TroubleToggle",
-    },
-    {
-      "vimwiki/vimwiki",
-    },
-    {
-      "rhysd/git-messenger.vim",
-    },
-    { "dracula/vim" },
-}
-
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 -- vim.api.nvim_create_autocmd("BufEnter", {
 --   pattern = { "*.json", "*.jsonc" },
@@ -195,3 +180,6 @@ lvim.plugins = {
 --
 --
 vim.opt.relativenumber = true
+
+reload "user/plugins"
+reload "user.vimwiki"
