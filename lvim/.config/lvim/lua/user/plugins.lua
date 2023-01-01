@@ -2,7 +2,12 @@
 lvim.plugins = {
   {
     "folke/trouble.nvim",
-    cmd = "TroubleToggle",
+    cmd = {
+      "Trouble",
+      "TroubleToggle",
+      "TroubleRefresh",
+      "TroubleClose",
+    },
   },
   "rhysd/git-messenger.vim",
   "dracula/vim",
