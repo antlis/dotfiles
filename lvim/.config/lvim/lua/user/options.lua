@@ -111,6 +111,8 @@ local buttons = {
     { "r", lvim.icons.ui.History .. "  Recent files", ":Telescope oldfiles <CR>" },
     { "t", lvim.icons.ui.FindText .. "  Find Text", "<CMD>Telescope live_grep<CR>" },
     { "w", lvim.icons.ui.Note .. "  Wiki", "<CMD>VimwikiIndex<CR>" },
+    -- TODO: fix journal
+    -- { "j", lvim.icons.ui.Note .. "  Journal", "<CMD>!$HOME/bin/journal<CR>" },
     {
       "c",
       lvim.icons.ui.Gear .. "  Configuration",
