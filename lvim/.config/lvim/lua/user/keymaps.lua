@@ -1,5 +1,6 @@
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
+lvim.keys.insert_mode["jj"] = "<ESC>"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 -- lvim.keys.normal_mode["<leader>-"] = ":NvimTreeToggle<cr>"

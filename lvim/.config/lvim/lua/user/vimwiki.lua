@@ -1,6 +1,7 @@
 -- === credit goes here: https://github.com/dgiacomo/Neovim-from-scratch/blob/master/lua/user/vimwiki.lua 
 -- https://github.com/gnmearacaun/lvim/tree/my-lvim/lua/user
 
+vim.g.vimwiki_global_ext = 0
 vim.g.vimwiki_list = {
   {
     path = '~/Documents/wiki/',
@@ -8,6 +9,7 @@ vim.g.vimwiki_list = {
     ext = '.md',
   },
 }
+
 -- vim.g.vimwiki_ext2syntax = {
 --   ['.md'] = 'markdown',
 --   ['.markdown'] = 'markdown',
