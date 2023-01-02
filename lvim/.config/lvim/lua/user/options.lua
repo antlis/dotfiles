@@ -121,3 +121,6 @@ local buttons = {
 lvim.builtin.alpha.dashboard.section.buttons = buttons
 lvim.builtin.alpha.dashboard.section.footer.val = ""
 lvim.builtin.alpha.dashboard.section.header.val = ""
+
+vim.opt.relativenumber = true
+-- vim.opt.colorcolumn="80,120"
