@@ -5,6 +5,7 @@
 -- https://github.com/dracula/vim
 -- https://github.com/whatyouhide/vim-gotham
 -- https://github.com/vimwiki/vimwiki
+-- https://github.com/jparise/vim-graphql
 --
 lvim.plugins = {
   {
@@ -20,4 +21,5 @@ lvim.plugins = {
   "dracula/vim",
   "whatyouhide/vim-gotham",
   "vimwiki/vimwiki",
+  "jparise/vim-graphql",
 }
