@@ -155,3 +155,5 @@ reload "user.plugins"
 reload "user.options"
 reload "user.keymaps"
 reload "user.vimwiki"
+
+require("lvim.lsp.manager").setup("emmet_ls")
