@@ -6,6 +6,7 @@
 -- https://github.com/whatyouhide/vim-gotham
 -- https://github.com/vimwiki/vimwiki
 -- https://github.com/jparise/vim-graphql
+-- https://github.com/mattn/emmet-vim
 --
 lvim.plugins = {
   {
@@ -22,4 +23,5 @@ lvim.plugins = {
   "whatyouhide/vim-gotham",
   "vimwiki/vimwiki",
   "jparise/vim-graphql",
+  "mattn/emmet-vim", -- use <C+y+,> to expand
 }
