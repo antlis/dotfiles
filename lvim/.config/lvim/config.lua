@@ -1,3 +1,8 @@
+-- TODO: set up Telescope fuzzy search
+-- https://github.com/nvim-telescope/telescope.nvim/issues/564#issuecomment-1173167550
+--
+--
+--
 --[[
 lvim is the global options object
 
