@@ -7,6 +7,7 @@
 -- https://github.com/vimwiki/vimwiki
 -- https://github.com/jparise/vim-graphql
 -- https://github.com/gpanders/editorconfig.nvim
+-- https://github.com/xiyaowong/telescope-emoji.nvim
 -- https://github.com/mattn/emmet-vim
 --
 lvim.plugins = {
@@ -25,6 +26,7 @@ lvim.plugins = {
   "vimwiki/vimwiki",
   "jparise/vim-graphql",
   "gpanders/editorconfig.nvim",
+  "xiyaowong/telescope-emoji.nvim",
   --
   --
   -- Going to use this plugin plus LSP
@@ -32,3 +34,5 @@ lvim.plugins = {
   -- use <C+y+,> to expand
   "mattn/emmet-vim",
 }
+
+require("telescope").load_extension("emoji")
