@@ -8,6 +8,7 @@
 -- https://github.com/jparise/vim-graphql
 -- https://github.com/gpanders/editorconfig.nvim
 -- https://github.com/xiyaowong/telescope-emoji.nvim
+-- https://github.com/francoiscabrol/ranger.vim
 -- https://github.com/mattn/emmet-vim
 --
 lvim.plugins = {
@@ -27,6 +28,7 @@ lvim.plugins = {
   "jparise/vim-graphql",
   "gpanders/editorconfig.nvim",
   "xiyaowong/telescope-emoji.nvim",
+  "francoiscabrol/ranger.vim",
   --
   --
   -- Going to use this plugin plus LSP

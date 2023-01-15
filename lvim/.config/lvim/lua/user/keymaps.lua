@@ -6,6 +6,7 @@ lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 -- lvim.keys.normal_mode["<leader>-"] = ":NvimTreeToggle<cr>"
 lvim.keys.normal_mode["-"] = ":NvimTreeToggle<cr>"
 lvim.keys.normal_mode["<C-p>"] = ":Telescope find_files<CR>"
+lvim.builtin.which_key.mappings["R"] = { "<cmd>Ranger<CR>", "Ranger" }
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 -- lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 -- unmap a default keymapping

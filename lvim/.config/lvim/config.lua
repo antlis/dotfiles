@@ -124,14 +124,5 @@ an executable
 reload "user.plugins"
 reload "user.options"
 reload "user.keymaps"
+reload "user.lsp"
 reload "user.vimwiki"
-
-require("lvim.lsp.manager").setup("emmet_ls")
-
-local formatters = require "lvim.lsp.null-ls.formatters"
-formatters.setup {
-  {
-    exe = "prettier",
-    filetypes = { "typescript", "typescriptreact", "javascript", "vue", "html" },
-  },
-}
