@@ -9,6 +9,7 @@
 -- https://github.com/gpanders/editorconfig.nvim
 -- https://github.com/xiyaowong/telescope-emoji.nvim
 -- https://github.com/francoiscabrol/ranger.vim
+-- https://github.com/ruanyl/vim-gh-line
 -- https://github.com/mattn/emmet-vim
 --
 lvim.plugins = {
@@ -29,6 +30,7 @@ lvim.plugins = {
   "gpanders/editorconfig.nvim",
   "xiyaowong/telescope-emoji.nvim",
   "francoiscabrol/ranger.vim",
+  "ruanyl/vim-gh-line",
   --
   --
   -- Going to use this plugin plus LSP
