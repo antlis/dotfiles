@@ -37,6 +37,8 @@ lvim.plugins = {
   -- https://github.com/LunarVim/LunarVim/issues/1386
   -- use <C+y+,> to expand
   "mattn/emmet-vim",
+
+  "mfussenegger/nvim-dap",
 }
 
 require("telescope").load_extension("emoji")

@@ -13,8 +13,8 @@ lvim.colorscheme = "lunar"
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
-lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+lvim.builtin.nvimtree.setup.view.side = "right"
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -54,41 +54,41 @@ lvim.builtin.treesitter.highlight.enable = true
 -- local function list_files(path, extension)
 --     local files = {}
 --     local pfile = io.popen("ls " .. path .. "/*" .. extension)
--- 
+--
 --     for filename in pfile:lines() do
 --         table.insert(files, filename)
 --     end
--- 
+--
 --     return files
 -- end
--- 
+--
 -- local function get_random_ascii_image(path)
--- 
+--
 --     math.randomseed(os.clock())
--- 
+--
 --     -- For some reason ls *.(cat|ccat) will not work under vim,
 --     -- so gotta ls twice and merge
--- 
+--
 --     local images = list_files(path, ".cat")
 --     local colored_images = list_files(path, ".ccat")
--- 
+--
 --     for _, v in pairs(colored_images) do
 --         table.insert(images, v)
 --     end
--- 
+--
 --     return images[math.random(1, #images)]
 -- end
--- 
+--
 -- local function remove_escaped_colors(str)
 --     return str:gsub("\27%[[0-9;]*m", "")
 -- end
--- 
+--
 -- local function get_ascii_image_dim(path)
 --     local width = 0
 --     local height = 0
--- 
+--
 --     local pfile = io.open(path, "r")
--- 
+--
 --     for line in pfile:lines() do
 --         -- Take into account colored output
 --         line = remove_escaped_colors(line)
@@ -100,16 +100,16 @@ lvim.builtin.treesitter.highlight.enable = true
 --     end
 --     return { width, height }
 -- end
--- 
+--
 -- local function is_colored_image(path)
 --     return path:sub(-4) == 'ccat'
 -- end
--- 
+--
 -- local random_image = get_random_ascii_image(ASCII_IMAGES_FOLDER)
 -- local image_width, image_height = unpack(get_ascii_image_dim(random_image))
--- 
+--
 -- image_height = 32
--- 
+--
 -- -- This avoids "process exited message"
 -- local command = "cat | "
 -- if is_colored_image(random_image) then
@@ -117,9 +117,9 @@ lvim.builtin.treesitter.highlight.enable = true
 -- else
 --     command = os.getenv("HOME") .. "/.config/lvim/static/animated_lolcat.sh "
 -- end
--- 
--- 
--- 
+--
+--
+--
 -- local banner = {
 --   "                ⢀⣀⣤⣤⣤⣶⣶⣶⣶⣶⣶⣤⣤⣤⣀⡀                ",
 --   "             ⣀⣤⣶⣿⠿⠟⠛⠉⠉⠉⠁⠈⠉⠉⠉⠛⠛⠿⣿⣷⣦⣀             ",
@@ -149,12 +149,12 @@ local buttons = {
     spacing = 1,
   },
   entries = {
-    { "f", lvim.icons.ui.FindFile .. "  Find File", "<CMD>Telescope find_files<CR>" },
-    { "n", lvim.icons.ui.NewFile .. "  New File", "<CMD>ene!<CR>" },
-    { "p", lvim.icons.ui.Project .. "  Projects ", "<CMD>Telescope projects<CR>" },
+    { "f", lvim.icons.ui.FindFile .. "  Find File",   "<CMD>Telescope find_files<CR>" },
+    { "n", lvim.icons.ui.NewFile .. "  New File",     "<CMD>ene!<CR>" },
+    { "p", lvim.icons.ui.Project .. "  Projects ",    "<CMD>Telescope projects<CR>" },
     { "r", lvim.icons.ui.History .. "  Recent files", ":Telescope oldfiles <CR>" },
-    { "t", lvim.icons.ui.FindText .. "  Find Text", "<CMD>Telescope live_grep<CR>" },
-    { "w", lvim.icons.ui.Note .. "  Wiki", "<CMD>VimwikiIndex<CR>" },
+    { "t", lvim.icons.ui.FindText .. "  Find Text",   "<CMD>Telescope live_grep<CR>" },
+    { "w", lvim.icons.ui.Note .. "  Wiki",            "<CMD>VimwikiIndex<CR>" },
     -- TODO: fix journal
     -- { "j", lvim.icons.ui.Note .. "  Journal", "<CMD>!$HOME/bin/journal<CR>" },
     {

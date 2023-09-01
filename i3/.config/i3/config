@@ -331,8 +331,14 @@ for_window [class="Chromium"] focus
 for_window [class="Dragon"] focus
 for_window [class="Cudo Miner"] focus
 
+# setxkbmap not working here for some reason :( - Ubuntu 22.04
+# TODO: find out why
+# exec_always --no-startup-id "setxkbmap us,ru -option grp:alt_shift_toggle -model pc105"
 exec xrandr --auto
-exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle"
+# exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle"
+# exec --no-startup-id "setxkbmap -model pc104 -layout us,ru -option grp:alt_shift_toggle"
+# exec --no-startup-id "setxkbmap -layout us,ru"
+# exec --no-startup-id "setxkbmap -option 'grp:alt_shift_toggle'"
 # exec --no-startup-id i3-msg 'workspace 1; exec /usr/local/bin/termite'
 
 # FN keys

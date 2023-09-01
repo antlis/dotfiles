@@ -126,3 +126,5 @@ reload "user.options"
 reload "user.keymaps"
 reload "user.lsp"
 reload "user.vimwiki"
+
+lvim.builtin.nvimtree.setup.view.side = "right"

@@ -31,3 +31,7 @@ lvim.builtin.which_key.mappings["R"] = { "<cmd>Ranger<CR>", "Ranger" }
 --     ["<C-k>"] = actions.move_selection_previous,
 --   },
 -- }
+
+-- TODO: configure DAP
+-- DAP
+lvim.keys.normal_mode["<leader>db"] = ":lua require'dap'.toggle_breakpoint()<cr>"
