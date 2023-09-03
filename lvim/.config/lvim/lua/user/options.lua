@@ -1,7 +1,6 @@
 --
 -- general
 lvim.log.level = "warn"
-lvim.format_on_save.enabled = false
 lvim.colorscheme = "lunar"
 -- lvim.colorscheme = "gotham"
 -- lvim.colorscheme = "dracula"
