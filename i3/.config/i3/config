@@ -320,6 +320,9 @@ assign [class="pritunl"] workspace 8
 assign [class="Pavucontrol"] workspace 8
 assign [class="Local"] workspace 8
 assign [class="Steam"] workspace 8
+assign [class="Cisco AnyConnect Secure Mobility Client"] workspace 8
+assign [class="com.cisco.anyconnect.gui"] workspace 8
+assign [class="Com.cisco.anyconnect.gui"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
 assign [class="org.remmina.Remmina"] workspace 9
@@ -409,3 +412,16 @@ exec synclient MaxTapTime=0
 # looks like lines below do not work
 # exec synclient VertScrollDelta=0
 # exec synclient HorizScrollDelta=0
+
+set $sysmenu (l)ock, (L)ogout, (P)oweroff, (R)eboot
+mode "$sysmenu" {
+    bindsym l exec "i3lock -c 111111", mode "default"
+    bindsym Shift+l exec "i3-msg exit", mode "default"
+    bindsym Shift+p exec "shutdown now", mode "default"
+    bindsym Shift+r exec reboot, mode "default"
+
+    # exit system mode: "Enter" or "Escape"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Shift+x mode "$sysmenu"

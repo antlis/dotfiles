@@ -11,6 +11,8 @@
 -- https://github.com/francoiscabrol/ranger.vim
 -- https://github.com/ruanyl/vim-gh-line
 -- https://github.com/mattn/emmet-vim
+-- https://github.com/mfussenegger/nvim-dap
+-- https://github.com/tzachar/cmp-tabnine
 --
 lvim.plugins = {
   {
@@ -39,6 +41,13 @@ lvim.plugins = {
   "mattn/emmet-vim",
 
   "mfussenegger/nvim-dap",
+
+  {
+    "tzachar/cmp-tabnine",
+    event = "BufRead",
+    build = "./install.sh",
+    dependencies = 'hrsh7th/nvim-cmp',
+  },
 }
 
 require("telescope").load_extension("emoji")
