@@ -51,7 +51,7 @@ lvim.plugins = {
 }
 
 require("telescope").load_extension("emoji")
--- lvim.builtin.telescope.defaults.layout_config.width = 0.95
+lvim.builtin.telescope.defaults.layout_config.width = 0.95
 -- lvim.builtin.telescope.defaults.layout_config.height = 0.75
 -- lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 75
 lvim.builtin.telescope.defaults.file_ignore_patterns = {
