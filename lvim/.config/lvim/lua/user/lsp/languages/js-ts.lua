@@ -75,5 +75,15 @@ end
 -- Set a linter.
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { command = "eslint_d", filetypes = { "typescript", "typescriptreact", "vue" } }
+  -- { command = "eslint_d", filetypes = { "typescript", "typescriptreact", "vue" } }
+  {
+    command = "eslint",
+    filetypes = {
+      "javascript",
+      "typescript",
+      "typescriptreact",
+      "vue",
+    },
+    -- extra_args = { "--severity", "warning" },
+  }
 }
