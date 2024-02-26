@@ -15,6 +15,8 @@ lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 lvim.builtin.nvimtree.setup.view.side = "right"
 
+lvim.textwidth=80
+
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
   "bash",
@@ -168,4 +170,5 @@ lvim.builtin.alpha.dashboard.section.footer.val = ""
 lvim.builtin.alpha.dashboard.section.header.val = ""
 
 vim.opt.relativenumber = true
+vim.opt.shellcmdflag = "-ic"
 -- vim.opt.colorcolumn="80,120"
