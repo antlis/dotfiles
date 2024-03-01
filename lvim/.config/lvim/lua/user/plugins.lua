@@ -13,6 +13,7 @@
 -- https://github.com/mattn/emmet-vim
 -- https://github.com/mfussenegger/nvim-dap
 -- https://github.com/tzachar/cmp-tabnine
+-- https://github.com/stevearc/oil.nvim
 --
 lvim.plugins = {
   {
@@ -47,6 +48,12 @@ lvim.plugins = {
     event = "BufRead",
     build = "./install.sh",
     dependencies = 'hrsh7th/nvim-cmp',
+  },
+  {
+    'stevearc/oil.nvim',
+    opts = {},
+    -- Optional dependencies
+    -- dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 }
 
