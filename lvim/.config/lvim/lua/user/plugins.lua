@@ -55,6 +55,26 @@ lvim.plugins = {
     -- Optional dependencies
     -- dependencies = { "nvim-tree/nvim-web-devicons" },
   },
+  {
+    "tpope/vim-fugitive",
+    cmd = {
+      "G",
+      "Git",
+      "Gdiffsplit",
+      "Gread",
+      "Gwrite",
+      "Ggrep",
+      "GMove",
+      "GDelete",
+      "GBrowse",
+      "GRemove",
+      "GRename",
+      "Glgrep",
+      "Gedit",
+      -- "Glog", -- Not working for some reason
+    },
+    ft = {"fugitive"}
+  },
 }
 
 require("telescope").load_extension("emoji")
