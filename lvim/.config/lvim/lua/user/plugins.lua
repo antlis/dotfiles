@@ -75,6 +75,11 @@ lvim.plugins = {
     },
     ft = {"fugitive"}
   },
+  {
+    "sindrets/diffview.nvim",
+    event = "BufRead",
+  },
+  -- "neoclide/coc.nvim",
 }
 
 require("telescope").load_extension("emoji")
