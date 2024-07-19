@@ -22,7 +22,7 @@
 #clear
 
 # Use 'daemonize' to background ourselves.
-#daemonize
+daemonize
 
 Tab restart
 
@@ -103,8 +103,6 @@ s sh "$HOME/bin/rofi/rofi-websearch", end
 # f sh "xdotool windowactivate $(xdotool search -title -- '- Mozilla Firefox')", end
 # Make a new tab in google chrome:
 # t sh "xdotool windowactivate $(xdotool search --title -- '- Google Chrome' | head -1); xdotool key ctrl+t",end
-# Paste
-# v sh "xdotool key shift+Insert"
 
 ### Drag examples
 # Start drag holding the left mouse button
@@ -151,3 +149,18 @@ a history-back
 #b cell-select 1x3      # down-left
 #n cell-select 3x3      # down-right
 #period cell-select 2x2 # center
+#
+
+# Scroll
+# i click 4,end
+# e click 5,end
+
+# or to keep scrolling without having to re-invoke keynav, remove the end command from the bindings, like this:
+i click 4
+e click 5
+
+i click 4
+
+# Paste!
+v sh "xdotool key shift+Insert",end
+ctrl+v sh "xdotool key shift+Insert",end
