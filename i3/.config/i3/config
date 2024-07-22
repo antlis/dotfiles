@@ -10,6 +10,8 @@
 
 set $mod Mod4
 
+workspace_layout tabbed
+
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 font pango:monospace 8
@@ -73,6 +75,7 @@ for_window [title="fzf-menu"] floating enable
 
 # bindsym $mod+b exec ~/.config/rofi/bookmarks/rofi-bookmarks ~
 bindsym $mod+b exec ~/bin/rofi/rofi-bookmarks-brave
+bindsym $mod+c exec ~/bin/rofi/rofi-kamoji-picker
 bindsym $mod+Shift+b exec ~/bin/rofi/rofi-bookmarks
 bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
 bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
