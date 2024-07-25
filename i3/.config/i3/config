@@ -259,6 +259,8 @@ exec keynav </dev/null &>/dev/null &
 exec pidgin
 # exec code
 
+# use xprop to find app class name
+
 # for_window [class="Gnome-terminal"] fullscreen enable
 # for_window [class="X-terminal-emulator"] fullscreen enable
 # for_window [class="Termite"] fullscreen enable
@@ -289,6 +291,7 @@ assign [class="qBittorrent"] workspace 3
 assign [class="Dragon"] workspace 3
 assign [class="Transmission"] workspace 3
 assign [class="krita"] workspace 4
+assign [class="FreeTube"] workspace 4
 assign [class="Code"] workspace 5
 assign [class="VSCodium"] workspace 5
 assign [class="Sublime_text"] workspace 5
