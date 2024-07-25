@@ -14,6 +14,8 @@
 -- https://github.com/mfussenegger/nvim-dap
 -- https://github.com/tzachar/cmp-tabnine
 -- https://github.com/stevearc/oil.nvim
+-- https://github.com/Exafunction/codeium.vim
+-- https://github.com/kylechui/nvim-surround
 --
 lvim.plugins = {
   {
@@ -80,6 +82,8 @@ lvim.plugins = {
     event = "BufRead",
   },
   -- "neoclide/coc.nvim",
+  -- "Exafunction/codeium.vim",
+  "kylechui/nvim-surround",
 }
 
 require("telescope").load_extension("emoji")
