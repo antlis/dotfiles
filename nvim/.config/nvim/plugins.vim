@@ -174,6 +174,8 @@ Plug 'rhysd/vim-fixjson'
 
 Plug 'dracula/vim'
 
+Plug 'Exafunction/codeium.vim'
+
 " Plug 'whatyouhide/vim-gotham'
 " Plug 'kyazdani42/blue-moon'
 
