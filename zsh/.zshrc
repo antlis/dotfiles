@@ -1,5 +1,3 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -178,7 +176,7 @@ eval $(thefuck --alias)
 
 # autojump
 # . /usr/share/autojump/autojump.sh
-source "/etc/profile.d/rvm.sh"
+# source "/etc/profile.d/rvm.sh"
 
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
@@ -190,8 +188,8 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 # custom node scripts path
-path+=~/.js
-path+=('${HOME}/.local/bin/')
+# path+=~/.js
+# path+=('${HOME}/.local/bin/')
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc' ]; then .'${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc'; fi
@@ -215,6 +213,7 @@ export EDITOR="nvim"
 # Bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin

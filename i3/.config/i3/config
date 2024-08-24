@@ -342,7 +342,7 @@ for_window [class="Cudo Miner"] focus
 
 # setxkbmap not working here for some reason :( - Ubuntu 22.04
 # TODO: find out why
-# exec_always --no-startup-id "setxkbmap us,ru -option grp:alt_shift_toggle -model pc105"
+exec_always --no-startup-id "setxkbmap us,ru -option grp:alt_shift_toggle -model pc105"
 exec xrandr --auto
 # exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle"
 # exec --no-startup-id "setxkbmap -model pc104 -layout us,ru -option grp:alt_shift_toggle"

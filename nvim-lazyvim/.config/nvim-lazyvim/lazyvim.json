@@ -1,6 +1,7 @@
 {
   "extras": [
     "lazyvim.plugins.extras.coding.codeium",
+    "lazyvim.plugins.extras.coding.tabnine",
     "lazyvim.plugins.extras.lang.vue",
     "lazyvim.plugins.extras.linting.eslint"
   ],
