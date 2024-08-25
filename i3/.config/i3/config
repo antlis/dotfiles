@@ -237,7 +237,9 @@ bindsym $mod+Ctrl+h move workspace to output left
 
 bindsym $mod+Tab workspace back_and_forth
 bindsym Print exec gnome-screenshot && notify-send "Screenshot saved"
+bindsym $mod+F11 exec gnome-screenshot && notify-sednd "Screenshot saved"
 bindsym Shift+Print exec gnome-screenshot -a && notify-send "Screenshot saved"
+bindsym $mod+Shift+F11 exec gnome-screenshot -a && notify-send "Screenshot saved"
 bindsym Ctrl+Shift+Print exec peek # record gif
 # bindsym $mod+Shift+Print exec flameshot gui ~/Pictures/Screenshot
 # start kazam recording, don't forget to turn it off $mod+Ctrl+f
