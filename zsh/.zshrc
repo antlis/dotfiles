@@ -85,6 +85,8 @@ plugins=(
 )
 # https://github.com/MichaelAquilina/zsh-you-should-use
 
+zstyle :omz:plugins:ssh-agent identities id_rsa id_lsgitlab_rsa
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
