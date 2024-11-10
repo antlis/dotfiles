@@ -77,7 +77,7 @@ for_window [title="fzf-menu"] floating enable
 # bindsym $mod+b exec ~/.config/rofi/bookmarks/rofi-bookmarks ~
 bindsym $mod+b exec ~/bin/rofi/rofi-bookmarks-brave
 bindsym $mod+c exec ~/bin/rofi/rofi-kamoji-picker
-bindsym $mod+Shift+b exec ~/bin/rofi/rofi-bookmarks
+bindsym $mod+Shift+b exec ~/bin/rofi/rofi-links-brave
 bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
 bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
 # Not working ???
@@ -218,7 +218,8 @@ bar {
     active_workspace   #282A36 #44475A #F8F8F2
     inactive_workspace #282A36 #282A36 #BFBFBF
     urgent_workspace   #FF5555 #FF5555 #F8F8F2
-    binding_mode       #FF5555 #FF5555 #F8F8F2# separator #666666
+    binding_mode       #FF5555 #FF5555 #F8F8F2
+    # separator #666666
     # background #222222
     # statusline #dddddd
     # focused_workspace #0088CC #0088CC #ffffff
@@ -237,21 +238,30 @@ bindsym $mod+Ctrl+l move workspace to output right
 bindsym $mod+Ctrl+h move workspace to output left
 
 bindsym $mod+Tab workspace back_and_forth
-bindsym Print exec gnome-screenshot && notify-send "Screenshot saved"
+bindsym $mod+Print exec gnome-screenshot && notify-send "Screenshot saved"
 bindsym $mod+F11 exec gnome-screenshot && notify-sednd "Screenshot saved"
-bindsym Shift+Print exec gnome-screenshot -a && notify-send "Screenshot saved"
+bindsym $mod+Shift+Print exec gnome-screenshot -a && notify-send "Screenshot saved"
 bindsym $mod+Shift+F11 exec gnome-screenshot -a && notify-send "Screenshot saved"
 bindsym Ctrl+Shift+Print exec peek # record gif
 # bindsym $mod+Shift+Print exec flameshot gui ~/Pictures/Screenshot
 # start kazam recording, don't forget to turn it off $mod+Ctrl+f
-bindsym $mod+Shift+Print exec kazam-start-recording && notify-send "Recording"
-bindsym $mod+Shift+Ctrl+Print exec cheese
+# bindsym $mod+Shift+Print exec kazam-start-recording && notify-send "Recording"
+# bindsym $mod+Shift+Ctrl+Print exec cheese
 
 
 # bindsym $mod+Shift+f exec $HOME/Applications/firefox-dev/firefox
 
 # Hide title bar
-new_window 1pixel
+#
+# new_window 1pixel
+#
+# For sway
+default_border none
+# default_floating_border none
+# font pango:monospace 0
+# titlebar_padding 1
+# titlebar_border_thickness 0
+
 # for_window [class="^.*"] border pixel 1
 
 # I need it here, because ~/.profile not sourced when I use Ly display manager
@@ -268,7 +278,7 @@ exec pidgin
 # for_window [class="X-terminal-emulator"] fullscreen enable
 # for_window [class="Termite"] fullscreen enable
 for_window [class="Code"] fullscreen enable
-for_window [class="Dragon"] fullscreen enable
+# for_window [class="Dragon"] fullscreen enable
 for_window [class="Skype"] floating disabled
 for_window [class="zoom"] floating disabled
 for_window [class="Kazam"] floating disabled
@@ -291,17 +301,20 @@ assign [class="Brave-browser"] workspace 2
 assign [class="qutebrowser"] workspace 2
 assign [class="Nautilus"] workspace 3
 assign [class="qBittorrent"] workspace 3
-assign [class="Dragon"] workspace 3
+# assign [class="Dragon"] workspace 3
 assign [class="Transmission"] workspace 3
 assign [class="krita"] workspace 4
 assign [class="FreeTube"] workspace 4
 assign [class="Code"] workspace 5
 assign [class="VSCodium"] workspace 5
+assign [class="Cursor"] workspace 5
+assign [class="cursor"] workspace 5
 assign [class="Sublime_text"] workspace 5
 assign [class="Pidgin"] workspace 6
 assign [class="Slack"] workspace 6
 assign [class="Signal"] workspace 6
 assign [class="telegram-desktop"] workspace 6
+assign [class="materialgram"] workspace 6
 assign [class="Bettergram"] workspace 6
 assign [class="TelegramDesktop"] workspace 6
 assign [class="zoom"] workspace 6
@@ -324,6 +337,7 @@ assign [class="Postman"] workspace 7
 assign [class="Filezilla"] workspace 8
 assign [class="vokoscreen"] workspace 8
 assign [class="Kazam"] workspace 8
+assign [class="SimpleScreenRecorder"] workspace 8
 assign [class="Cudo Miner"] workspace 8
 assign [class="pritunl"] workspace 8
 assign [class="Pavucontrol"] workspace 8
