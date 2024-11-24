@@ -356,6 +356,7 @@ assign [class="Pavucontrol"] workspace 8
 assign [class="Local"] workspace 8
 assign [class="Steam"] workspace 8
 assign [class="Cisco AnyConnect Secure Mobility Client"] workspace 8
+assign [class="AmneziaVPN"] workspace 8
 assign [class="com.cisco.anyconnect.gui"] workspace 8
 assign [class="Com.cisco.anyconnect.gui"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
