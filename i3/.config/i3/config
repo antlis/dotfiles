@@ -342,6 +342,8 @@ assign [class="bitwarden"] workspace 7
 assign [class="Bitwarden"] workspace 7
 assign [class="insomnia"] workspace 7
 assign [class="Insomnia"] workspace 7
+assign [class="httpie"] workspace 7
+assign [class="HTTPie"] workspace 7
 assign [class="beekeeper-studio"] workspace 7
 assign [class="DBeaver"] workspace 7
 assign [class="postman"] workspace 7
@@ -363,6 +365,8 @@ assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
 assign [class="org.remmina.Remmina"] workspace 9
 assign [class="Mullvad VPN"] workspace 9
+assign [class="xpra-linux-archcraft"] workspace 10
+assign [class="Xpra Linux archcraft"] workspace 10
 
 for_window [class="Pavucontrol"] focus
 for_window [class="Insomnia"] focus
