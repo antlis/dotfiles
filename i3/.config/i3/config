@@ -352,7 +352,6 @@ assign [class="Filezilla"] workspace 8
 assign [class="vokoscreen"] workspace 8
 assign [class="Kazam"] workspace 8
 assign [class="SimpleScreenRecorder"] workspace 8
-assign [class="Cudo Miner"] workspace 8
 assign [class="pritunl"] workspace 8
 assign [class="Pavucontrol"] workspace 8
 assign [class="Local"] workspace 8
@@ -372,7 +371,6 @@ for_window [class="Pavucontrol"] focus
 for_window [class="Insomnia"] focus
 for_window [class="Chromium"] focus
 for_window [class="Dragon"] focus
-for_window [class="Cudo Miner"] focus
 
 # setxkbmap not working here for some reason :( - Ubuntu 22.04
 # TODO: find out why
