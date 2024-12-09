@@ -78,10 +78,11 @@ plugins=(
   vi-mode
   fzf
   you-should-use
-  # zsh-syntax-highlighting
+  zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
   docker
   # zsh-docker-aliases
   docker-compose
+  rsync
 )
 # https://github.com/MichaelAquilina/zsh-you-should-use
 
