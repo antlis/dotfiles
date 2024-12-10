@@ -49,6 +49,8 @@ bindsym $mod+Shift+q kill
 bindsym $mod+d exec --no-startup-id zsh -c "rofi -show drun -show-icons"
 bindsym $mod+Shift+d exec --no-startup-id zsh -c "rofi -show window"
 
+for_window [class="popup_kitty"] floating enable, border pixel 2, resize set 800 600, move position center
+
 # bindsym $mod+d exec "alacritty -t fzf-nova --dimensions 90 20 --position 350 200 -e $HOME/bin/fzf/fzf-nova"
 # bindsym $mod+d exec "alacritty -t fzf-nova -e $HOME/bin/fzf/fzf-nova"
 # bindsym $mod+d exec "alacritty -t fzf-nova -e $HOME/bin/fzf/fzf-speed"
@@ -288,6 +290,7 @@ exec pidgin
 # for_window [class="X-terminal-emulator"] fullscreen enable
 # for_window [class="Termite"] fullscreen enable
 for_window [class="Code"] fullscreen enable
+for_window [class="mpv"] fullscreen enable
 # for_window [class="Dragon"] fullscreen enable
 for_window [class="Skype"] floating disabled
 for_window [class="zoom"] floating disabled
