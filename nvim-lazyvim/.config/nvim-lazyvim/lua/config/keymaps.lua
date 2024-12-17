@@ -3,4 +3,5 @@
 -- Add any additional keymaps here
 
 vim.keymap.set("n", "-", ":Neotree toggle <cr>", { desc = "Open File Tree" })
-vim.keymap.set("n", "<C-p>", ":Telescope find_files<CR>", { desc = "Find files" })
+-- vim.keymap.set("n", "<C-p>", ":Telescope find_files<CR>", { desc = "Find files" })
+vim.keymap.set("n", "<C-p>", ":FzfLua files<CR>", { desc = "Find files" })
