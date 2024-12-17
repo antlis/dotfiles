@@ -8,6 +8,10 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 
+# Alt
+# set $mod Mod1
+
+# Win
 set $mod Mod4
 
 workspace_layout tabbed
@@ -300,6 +304,7 @@ for_window [class="Kazam"] floating disabled
 # assign [class="Gnome-terminal"] workspace 1
 # assign [class="X-terminal-emulator"] workspace 1
 # assign [class="Termite"] workspace 1
+assign [class="mpv"] workspace 1
 assign [class="Firefox Developer Edition"] workspace 2
 assign [class="Firefox"] workspace 2
 assign [class="firefox"] workspace 2
