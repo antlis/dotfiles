@@ -66,6 +66,9 @@ for_window [class="popup_kitty"] floating enable, border pixel 2, resize set 800
 for_window [title="fzf-menu"] floating enable
 # for_window [title="floating-journal"] floating enable
 
+bindsym $mod+o exec xset dpms force off
+bindsym $mod+t exec node ~/Projects/test/puppetier-brave-tabs/index.js
+
 # bindsym $mod+t exec --no-startup-id termite -t 'floating-termite'
 # for_window [title="floating-termite"] floating enable
 
