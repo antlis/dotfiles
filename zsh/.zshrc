@@ -77,6 +77,7 @@ plugins=(
   zshmarks
   vi-mode
   fzf
+  fzf-tab # git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
   you-should-use
   zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
   docker
