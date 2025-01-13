@@ -11,6 +11,11 @@ keymap = [
 
   { on = "m", run = "plugin bookmarks --args=save", desc="Save current position as a bookmark" },
   { on = "'", run = "plugin bookmarks --args=jump", desc="Jump to a bookmark" },
+  # TODO: Figure out why copy image to clipboard doesn't work
+	# { on = "<C-y>", run = "~/my-scripts/copy-img.sh \"$@\"", desc = "Copy image to clipboard" },
+	# { on = "<C-y>", run = "notify-send 'yay'", desc = "Copy image to clipboard" },
+	# { on = "z", run = "shell --interactive ~/my-scripts/copy-img.sh \"$@\"", desc = "Copy image to clipboard" },
+	{ on = "g", run = "shell --interactive jump", desc = "Jump to dir" },
 
 	{ on = "<Esc>", run = "escape",             desc = "Exit visual mode, clear selected, or cancel search" },
 	{ on = "<C-[>", run = "escape",             desc = "Exit visual mode, clear selected, or cancel search" },
