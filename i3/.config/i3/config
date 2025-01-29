@@ -67,7 +67,7 @@ for_window [title="fzf-menu"] floating enable
 # for_window [title="floating-journal"] floating enable
 
 bindsym $mod+o exec xset dpms force off
-bindsym $mod+t exec node ~/Projects/test/puppetier-brave-tabs/index.js
+bindsym $mod+t exec node ~/Projects/pet/brave-rofi-menu/src/index.js
 
 # bindsym $mod+t exec --no-startup-id termite -t 'floating-termite'
 # for_window [title="floating-termite"] floating enable
@@ -91,7 +91,7 @@ bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
 bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
 # Not working ???
 # https://github.com/mattydebie/bitwarden-rofi/issues/34
-bindsym $mod+p exec bwmenu
+bindsym $mod+p exec rofi-rbw
 # bindsym $mod+p exec "alacritty -e bwmenu"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -166,16 +166,16 @@ bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
-bindsym $mod+Ctrl+1 workspace 11
-bindsym $mod+Ctrl+2 workspace 12
-bindsym $mod+Ctrl+3 workspace 13
-bindsym $mod+Ctrl+4 workspace 14
-bindsym $mod+Ctrl+5 workspace 15
-bindsym $mod+Ctrl+6 workspace 16
-bindsym $mod+Ctrl+7 workspace 17
-bindsym $mod+Ctrl+8 workspace 18
-bindsym $mod+Ctrl+9 workspace 19
-bindsym $mod+Ctrl+0 workspace 20
+bindsym $mod+Ctrl+Shift+1 workspace 11
+bindsym $mod+Ctrl+Shift+2 workspace 12
+bindsym $mod+Ctrl+Shift+3 workspace 13
+bindsym $mod+Ctrl+Shift+4 workspace 14
+bindsym $mod+Ctrl+Shift+5 workspace 15
+bindsym $mod+Ctrl+Shift+6 workspace 16
+bindsym $mod+Ctrl+Shift+7 workspace 17
+bindsym $mod+Ctrl+Shift+8 workspace 18
+bindsym $mod+Ctrl+Shift+9 workspace 19
+bindsym $mod+Ctrl+Shift+0 workspace 20
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -188,6 +188,12 @@ bindsym $mod+Shift+7 move container to workspace 7
 bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
+
+# bindsym Mod4+Mod1+2 exec brave-browser-beta
+# bindsym Mod4+Mod1+8 exec AmneziaVPN
+bindsym $mod+Ctrl+2 exec brave-browser-beta
+bindsym $mod+Ctrl+8 exec AmneziaVPN
+
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
