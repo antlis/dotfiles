@@ -1,0 +1,7 @@
+[alias]
+  fzf-add = "!git status -s | awk '{print $2}' | fzf -m | xargs git add"
+  # fzf-diff = "!git status -s | awk '{print $2}' | fzf -m | xargs git diff"
+  ; fzf-diff = "!git status -s | awk '{print $2}' | fzf -m | xargs -I {} git diff -- {} | delta"
+  fzf-diff = "!git status -s | awk '{print $2}' | fzf -m --preview 'git diff -- {} | delta --syntax-theme=Dracula' | xargs -I {} git diff -- {} | delta"
+  fzf-reset = "!git status -s | awk '{print $2}' | fzf -m | xargs git reset"
+  fzf-checkout = "!git status -s | awk '{print $2}' | fzf -m | xargs git checkout --"
