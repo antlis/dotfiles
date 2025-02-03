@@ -117,10 +117,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-
 # Startup lunch
 # exec cd $HOME/Projects/prismhr/delta-tax/ && npm run dev
-
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -142,7 +140,8 @@ if [[ $TMUX ]]; then source ~/.tmux-git/tmux-git.sh; fi
 # https://dev.to/matrixersp/how-to-use-fzf-with-ripgrep-to-selectively-ignore-vcs-files-4e27
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --no-ignore-vcs'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_DEFAULT_OPTS='--height 96% --reverse --preview "highlight -O ansi --force {}"'
+# export FZF_DEFAULT_OPTS='--height 96% --reverse --preview "highlight -O ansi --force {}"'
+export FZF_DEFAULT_OPTS='--height 96% --reverse --preview "bat --color=always --style=numbers --line-range=:500 {}"'
 
 # https://www.erickpatrick.net/blog/adding-syntax-highlighting-to-fzf.vim-preview-window
 # export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
@@ -234,3 +233,4 @@ PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
 export PATH="$PATH:$HOME/.rvm/bin"
 
 export PATH=$PATH:/opt/warpdotdev/warp-terminal
+export PATH=$PATH:/sbin
