@@ -234,3 +234,5 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 export PATH=$PATH:/opt/warpdotdev/warp-terminal
 export PATH=$PATH:/sbin
+
+export PATH="$HOME/my-scripts:$PATH"
