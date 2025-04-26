@@ -86,7 +86,7 @@ bindsym $mod+t exec node ~/Projects/pet/brave-rofi-menu/src/index.js
 # bindsym $mod+b exec ~/.config/rofi/bookmarks/rofi-bookmarks ~
 bindsym $mod+b exec ~/bin/rofi/rofi-bookmarks-brave
 bindsym $mod+c exec ~/bin/rofi/rofi-kamoji-picker
-bindsym $mod+Shift+b exec ~/bin/rofi/rofi-links-brave
+bindsym $mod+Shift+b exec ~/bin/rofi/rofi-saved-links
 bindsym $mod+Shift+s exec ~/bin/rofi/rofi-websearch
 bindsym $mod+Shift+p exec ~/bin/rofi/rofi-websearch-private
 # Not working ???
@@ -334,6 +334,9 @@ assign [class="thunar"] workspace 3
 assign [class="Transmission"] workspace 3
 assign [class="krita"] workspace 4
 assign [class="FreeTube"] workspace 4
+assign [class="chat-gpt"] workspace 4
+assign [class="Chat-gpt"] workspace 4
+assign [class="electron-deepseek"] workspace 4
 assign [class="Code"] workspace 5
 assign [class="VSCodium"] workspace 5
 assign [class="Cursor"] workspace 5
