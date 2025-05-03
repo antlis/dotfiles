@@ -341,6 +341,7 @@ assign [class="Perplexity AI"] workspace 4
 assign [class="claude"] workspace 4
 assign [class="Claude"] workspace 4
 assign [class="electron-deepseek"] workspace 4
+assign [class="copilot-desktop"] workspace 4
 assign [class="Code"] workspace 5
 assign [class="VSCodium"] workspace 5
 assign [class="Cursor"] workspace 5
