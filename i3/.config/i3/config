@@ -385,6 +385,7 @@ assign [class="kdeconnect-app"] workspace 8
 assign [class="kdeconnect.app"] workspace 8
 assign [class="Cisco AnyConnect Secure Mobility Client"] workspace 8
 assign [class="AmneziaVPN"] workspace 8
+assign [class="v2rayN"] workspace 8
 assign [class="com.cisco.anyconnect.gui"] workspace 8
 assign [class="Com.cisco.anyconnect.gui"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
@@ -414,6 +415,7 @@ exec xrandr --auto
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 # bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+ && mpv ~/Music/sounds/zerg_nuclear_launch.mp3 # && notify-send -t 1000 "Volume +5% 🔊"
 # bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%- && mpv ~/Music/sounds/zerg_nuclear_launch.mp3 # && notify-send -t 1000 "Volume -5% 🔉"
@@ -431,7 +433,7 @@ bindsym XF86LaunchA exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
 # bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 # bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
 # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 1 toggle
+# bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 1 toggle
 
 # Hide split indicator
 #colors:                border  backgr. text    ind.
