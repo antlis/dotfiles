@@ -393,7 +393,9 @@ assign [class="Com.cisco.anyconnect.gui"] workspace 8
 assign [class="VirtualBox Manager"] workspace 9
 assign [class="VirtualBox Machine"] workspace 9
 assign [class="org.remmina.Remmina"] workspace 9
-assign [class="Mullvad VPN"] workspace 9
+assign [class="Mullvad VPN"] workspace 8
+assign [class="netsoft-com.netsoft.hubstaff"] workspace 9
+assign [class="Netsoft-com.netsoft.hubstaff"] workspace 9
 assign [class="xpra-linux-archcraft"] workspace 10
 assign [class="Xpra Linux archcraft"] workspace 10
 
