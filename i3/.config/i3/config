@@ -73,6 +73,7 @@ bindsym $mod+t exec node ~/Projects/pet/brave-rofi-menu/src/index.js
 # for_window [title="floating-termite"] floating enable
 
 # bindsym $mod+Shift+h --no-startup-id termite -t 'fzf-browser-history' -e 'c'
+bindsym $mod+Shift+h exec ~/bin/rofi/rofi-brave-beta-history
 # for_window [title="fzf-browser-history"] floating enable
 
 # https://www.youtube.com/watch?v=zB_3FIGRWRU
