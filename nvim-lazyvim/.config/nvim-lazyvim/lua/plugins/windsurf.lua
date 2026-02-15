@@ -1,6 +1,6 @@
 return {
   {
-    "Exafunction/codeium.nvim",
+    "Exafunction/windsurf.nvim",
     cmd = "Codeium",
     build = ":Codeium Auth",
     opts = {
