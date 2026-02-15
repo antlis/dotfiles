@@ -10,6 +10,7 @@
 -- https://github.com/xiyaowong/telescope-emoji.nvim
 -- https://github.com/francoiscabrol/ranger.vim
 -- https://github.com/ruanyl/vim-gh-line
+-- https://github.com/vuciv/golf
 -- https://github.com/mattn/emmet-vim
 -- https://github.com/mfussenegger/nvim-dap
 -- https://github.com/tzachar/cmp-tabnine
@@ -36,6 +37,7 @@ lvim.plugins = {
   "xiyaowong/telescope-emoji.nvim",
   "francoiscabrol/ranger.vim",
   "ruanyl/vim-gh-line",
+  "vuciv/golf",
   --
   --
   -- Going to use this plugin plus LSP
