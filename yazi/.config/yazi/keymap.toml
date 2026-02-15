@@ -5,12 +5,12 @@
 [manager]
 
 keymap = [
-  { on = "<C-n>", run = '''
-    shell 'dragon-drop -x -i -T "$1"' --confirm
-  ''' },
-
   { on = "m", run = "plugin bookmarks --args=save", desc="Save current position as a bookmark" },
   { on = "'", run = "plugin bookmarks --args=jump", desc="Jump to a bookmark" },
+  # TODO:Figure out why <C-t> etc keybidings not working
+  # { on = "<C-n>", run = "shell '~/.config/yazi/scripts/dragon.sh \"$@\"' --block", desc = "Drag file(s) with dragon" },
+  # { on = "<C-t>", run = "shell --interactive", desc = "Test shell" },
+  { on = "<C-g>", run = "shell --interactive", desc = "Test shell" },
   # TODO: Figure out why copy image to clipboard doesn't work
 	# { on = "<C-y>", run = "~/my-scripts/copy-img.sh \"$@\"", desc = "Copy image to clipboard" },
 	# { on = "<C-y>", run = "notify-send 'yay'", desc = "Copy image to clipboard" },
@@ -161,6 +161,7 @@ keymap = [
 	# Help
 	{ on = "~",    run = "help", desc = "Open help" },
 	{ on = "<F1>", run = "help", desc = "Open help" },
+  { on = "T", run = "shell --interactive", desc = "Test shell" },
 ]
 
 [tasks]
