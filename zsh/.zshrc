@@ -231,8 +231,14 @@ PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
-
 export PATH=$PATH:/opt/warpdotdev/warp-terminal
 export PATH=$PATH:/sbin
-
 export PATH="$HOME/my-scripts:$PATH"
+if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi # added by Nix installer
+export PATH="$HOME/.opencode/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="/usr/sbin:$PATH"
+
+if [[ -f ~/.zsh_private ]]; then
+  source .zsh_private
+fi
