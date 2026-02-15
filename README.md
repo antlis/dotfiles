@@ -45,7 +45,7 @@ stow */
 
 | Tool | Description | Config |
 |------|-------------|--------|
-| ![Neovim](https://img.shields.io/badge/-Neovim-57A143?style=flat&logo=neovim&logoColor=white) **nvim-lazyvim** | Neovim with LazyVim distribution | `nvim-lazyvim/` |
+| ![Neovim](https://img.shields.io/badge/-Neovim-57A143?style=flat&logo=neovim&logoColor=white) **lazyvim** | Neovim with LazyVim distribution | `nvim-lazyvim/` |
 
 ### 🚀 Application Launchers & Tools
 
