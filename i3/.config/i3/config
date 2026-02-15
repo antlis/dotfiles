@@ -67,7 +67,7 @@ for_window [title="fzf-menu"] floating enable
 # for_window [title="floating-journal"] floating enable
 
 bindsym $mod+o exec xset dpms force off
-bindsym $mod+t exec node ~/Projects/pet/brave-rofi-menu/src/index.js
+bindsym $mod+t exec --no-startup-id env PATH="$HOME/.cargo/bin:$PATH" bbr
 
 # bindsym $mod+t exec --no-startup-id termite -t 'floating-termite'
 # for_window [title="floating-termite"] floating enable
@@ -305,6 +305,7 @@ exec pidgin
 # for_window [class="Termite"] fullscreen enable
 for_window [class="Code"] fullscreen enable
 for_window [class="mpv"] fullscreen enable
+for_window [class="pia-client"] fullscreen enable
 # for_window [class="Dragon"] fullscreen enable
 for_window [class="Skype"] floating disabled
 for_window [class="zoom"] floating disabled
@@ -314,7 +315,6 @@ for_window [class="Kazam"] floating disabled
 # assign [class="Gnome-terminal"] workspace 1
 # assign [class="X-terminal-emulator"] workspace 1
 # assign [class="Termite"] workspace 1
-assign [class="mpv"] workspace 1
 assign [class="Firefox Developer Edition"] workspace 2
 assign [class="Firefox"] workspace 2
 assign [class="firefox"] workspace 2
@@ -325,6 +325,7 @@ assign [class="chromium-browser"] workspace 2
 assign [class="Chromium-browser"] workspace 2
 assign [class="Chromium"] workspace 2
 assign [class="chromium"] workspace 2
+assign [class="zen"] workspace 2
 assign [class="Brave-browser"] workspace 2
 assign [class="qutebrowser"] workspace 2
 assign [class="Nautilus"] workspace 3
@@ -386,6 +387,8 @@ assign [class="kdeconnect-app"] workspace 8
 assign [class="kdeconnect.app"] workspace 8
 assign [class="Cisco AnyConnect Secure Mobility Client"] workspace 8
 assign [class="AmneziaVPN"] workspace 8
+assign [class="pia-client"] workspace 8
+assign [class="privateinternetaccess"] workspace 8
 assign [class="nekobox"] workspace 8
 assign [class="nekoray"] workspace 8
 assign [class="v2rayN"] workspace 8
@@ -399,6 +402,7 @@ assign [class="netsoft-com.netsoft.hubstaff"] workspace 9
 assign [class="Netsoft-com.netsoft.hubstaff"] workspace 9
 assign [class="xpra-linux-archcraft"] workspace 10
 assign [class="Xpra Linux archcraft"] workspace 10
+assign [class="mpv"] workspace 10
 
 for_window [class="Pavucontrol"] focus
 for_window [class="Insomnia"] focus
