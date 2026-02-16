@@ -432,8 +432,10 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 # amixer -c 1 sset Mic toggle
 
 # https://unix.stackexchange.com/questions/526653/control-screen-brightness-in-i3
-bindsym XF86MonBrightnessUp exec light -A 1 # increase screen brightness
-bindsym XF86MonBrightnessDown exec light -U 1 # decrease screen brightness
+# bindsym XF86MonBrightnessUp exec light -A 1 # increase screen brightness
+# bindsym XF86MonBrightnessDown exec light -U 1 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec --no-startup-id sh -c 'brightnessctl set +5% | grep -o "[0-9]*%" | xargs notify-send "Brightness"'
+bindsym XF86MonBrightnessDown exec --no-startup-id sh -c 'brightnessctl set 5%- | grep -o "[0-9]*%" | xargs notify-send "Brightness"'
 
 # bindsym XF86Explorer exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
 bindsym XF86LaunchA exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
