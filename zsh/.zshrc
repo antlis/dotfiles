@@ -238,7 +238,3 @@ if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/
 export PATH="$HOME/.opencode/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="/usr/sbin:$PATH"
-
-if [[ -f ~/.zsh_private ]]; then
-  source .zsh_private
-fi
