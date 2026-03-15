@@ -446,6 +446,9 @@ bindsym XF86LaunchA exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
 # bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
 # bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute 1 toggle
 
+# Show keybindings
+bindsym $mod+slash exec --no-startup-id grep "^bindsym" ~/.config/i3/config | sed 's/bindsym //' | rofi -dmenu -p "⌨ keybindings" -i
+
 # Hide split indicator
 #colors:                border  backgr. text    ind.
 # client.focused          #007030 #007030 #ffffff #222222

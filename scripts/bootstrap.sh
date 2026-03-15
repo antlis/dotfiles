@@ -87,4 +87,15 @@ fi
 
 clone_or_pull "$BIN_DIR/rofi" "git@github.com:antlis/rofi-scripts.git"
 
+# Fetch fzf-kill binary
+LOCAL_BIN="$HOME/.local/bin"
+mkdir -p "$LOCAL_BIN"
+if [ ! -f "$LOCAL_BIN/fzf-kill" ]; then
+  echo "Installing fzf-kill..."
+  curl -L "https://raw.githubusercontent.com/Zeioth/fzf-kill/main/fzf-kill" -o "$LOCAL_BIN/fzf-kill"
+  chmod +x "$LOCAL_BIN/fzf-kill"
+else
+  echo "fzf-kill already installed, skipping..."
+fi
+
 echo "Done!"
