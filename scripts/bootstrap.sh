@@ -46,7 +46,7 @@ clone_or_pull "$ZSH_CUSTOM_REPO" "git@github.com:antlis/zsh-custom.git"
 
 # Symlink aliases and functions to ZSH_CUSTOM
 for file in "$ZSH_CUSTOM_REPO"/*.zsh; do
-  [ -f "$file" ] || continue  # skip if glob didn't expand
+  [ -f "$file" ] || continue
   filename=$(basename "$file")
   target="$ZSH_CUSTOM/$filename"
   if [ ! -L "$target" ]; then
@@ -56,5 +56,35 @@ for file in "$ZSH_CUSTOM_REPO"/*.zsh; do
     echo "$filename already linked, skipping..."
   fi
 done
+
+# Clone links repo to ~/Documents/
+LINKS_REPO="$HOME/Documents/links"
+clone_or_pull "$LINKS_REPO" "git@github.com:antlis/links.git"
+
+# Symlink bookmarks to ~/.config/surfraw/bookmarks
+SURFRAW_DIR="$CONFIG_DIR/surfraw"
+if [ ! -d "$SURFRAW_DIR" ]; then
+  echo "Creating $SURFRAW_DIR..."
+  mkdir -p "$SURFRAW_DIR"
+fi
+
+BOOKMARKS_TARGET="$SURFRAW_DIR/bookmarks"
+BOOKMARKS_SOURCE="$LINKS_REPO/bookmarks.link"
+
+if [ ! -L "$BOOKMARKS_TARGET" ]; then
+  echo "Linking bookmarks..."
+  ln -sf "$BOOKMARKS_SOURCE" "$BOOKMARKS_TARGET"
+else
+  echo "bookmarks already linked, skipping..."
+fi
+
+# Clone rofi-scripts to ~/bin/rofi
+BIN_DIR="$HOME/bin"
+if [ ! -d "$BIN_DIR" ]; then
+  echo "Creating $BIN_DIR..."
+  mkdir -p "$BIN_DIR"
+fi
+
+clone_or_pull "$BIN_DIR/rofi" "git@github.com:antlis/rofi-scripts.git"
 
 echo "Done!"

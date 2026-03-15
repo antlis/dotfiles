@@ -8,8 +8,8 @@
     rofi
     opencode
     telegram-desktop
-    # slack
-    # discord
+    slack
+    discord
     amnezia-vpn
     keynav
     neofetch
@@ -17,7 +17,11 @@
     lazygit
     lazydocker
     brave
+    surfraw
     # brave-beta
+ 
+    peek
+    simplescreenrecorder
 
     tmux
     tmuxinator
@@ -49,5 +53,7 @@
     btop
 
     x2x
+
+    hubstaff
   ];
 }
