@@ -1,6 +1,6 @@
 -- bootstrap lazy.nvim, LazyVim and your plugins
 require("config.lazy")
-require("tgpt").setup()
+-- require("tgpt").setup()
 
 -- Custom gf handling for file: URLs with spaces
 vim.api.nvim_set_keymap("n", "gf", ":lua CustomGF()<CR>", { noremap = true, silent = true })

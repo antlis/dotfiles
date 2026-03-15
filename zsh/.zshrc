@@ -1,6 +1,11 @@
 
 # Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+export ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+if [ -f ~/.oh-my-zsh/oh-my-zsh.sh ]; then
+  export ZSH="$HOME/.oh-my-zsh"
+elif [ -f /run/current-system/sw/share/oh-my-zsh/oh-my-zsh.sh ]; then
+  export ZSH="/run/current-system/sw/share/oh-my-zsh"
+fi
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -173,7 +178,7 @@ fi
 # Edit command line in vim
 bindkey '^x^x' edit-command-line
 
-eval $(thefuck --alias)
+eval "$(pay-respects zsh)"
 
 [[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
 
@@ -207,6 +212,7 @@ fi
 
 # GH
 # https://cli.github.com/manual/gh_help_environment
+export NVIM_APPNAME=nvim-lazyvim
 export GH_EDITOR="nvim"
 export EDITOR="nvim"
 export PATH=$PATH:~/.spoofdpi/bin

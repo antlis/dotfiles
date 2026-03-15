@@ -2,6 +2,6 @@
 return {
   {
     'RayenMnif/tgpt.nvim',
-    enabled = true,
+    enabled = false,
   }
 }
