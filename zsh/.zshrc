@@ -245,3 +245,11 @@ export PATH="$HOME/.opencode/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="/usr/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/home/lad/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
