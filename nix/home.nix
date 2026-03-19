@@ -5,6 +5,10 @@
     home.username = "lad";
     home.homeDirectory = "/home/lad";
 
+    imports = [
+      ./home/git.nix
+    ];
+
     services.dunst.enable = true;
 
     home.activation.createScreenshotDir = lib.mkAfter ''
