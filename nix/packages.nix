@@ -26,15 +26,18 @@ in
     keynav                 # Keyboard-driven mouse control
     x2x                    # Share keyboard/mouse across X displays
     adwaita-icon-theme     # GNOME icon theme
+    dunst                  # Lightweight notification daemon
+    libnotify              # Provides notify-send CLI for desktop notifications | https://man.archlinux.org/man/notify-send.1.en
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
-    kitty                  # GPU-accelerated terminal emulator
-    fzf                    # Fuzzy finder for terminal
-    bat                    # Cat clone with syntax highlighting
-    lsd                    # Modern ls replacement with icons
-    btop                   # Interactive process/resource monitor
+    kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty/
+    fzf                    # Fuzzy finder for terminal | https://junegunn.github.io/fzf/
+    bat                    # Cat clone with syntax highlighting | https://github.com/sharkdp/bat
+    lsd                    # Modern ls replacement with icons | https://github.com/lsd-rs/lsd
+    btop                   # Interactive process/resource monitor | https://github.com/aristocratos/btop
+    duf                    # Modern df replacement | https://github.com/muesli/duf
     pay-respects           # Suggests correct command when you mistype (thefuck alternative)
-    neofetch               # System info display
+    neofetch               # System info display | https://github.com/dylanaraps/neofetch
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh
@@ -65,22 +68,25 @@ in
     surfraw                # CLI browser bookmarks / web search
 
     # ── Communication ─────────────────────────────────────────────────────────
-    telegram-desktop       # Telegram messaging client
+    # telegram-desktop     # Telegram messaging client
+    ayugram-desktop        # Desktop Telegram client with good customization and Ghost mode
     slack                  # Team messaging
     discord                # Voice/text chat
 
     # ── Media ─────────────────────────────────────────────────────────────────
-    mpv                    # Minimal video player
-    yt-dlp                 # YouTube/media downloader
+    mpv                    # Minimal video player | https://mpv.io/
+    yt-dlp                 # YouTube/media downloader | https://github.com/yt-dlp/yt-dlp
     pulseaudio             # Contains pactl for volume control
 
     # ── Screen Recording ──────────────────────────────────────────────────────
     peek                   # Simple animated GIF screen recorder
-    simplescreenrecorder   # Feature-rich screen recorder
+    simplescreenrecorder   # Feature-rich screen recorder | https://simplescreenrecorder.com/
+    gnome-screenshot       # Screenshots
 
     # ── Networking & API ──────────────────────────────────────────────────────
-    httpie                 # User-friendly HTTP client
-    amnezia-vpn            # VPN client
+    httpie                 # User-friendly HTTP client | https://httpie.io/
+    postman                # Indian HTTP client | https://www.postman.com/
+    amnezia-vpn            # VPN client | https://amnezia.org/
 
     # ── Databases ─────────────────────────────────────────────────────────────
     dbeaver-bin            # Universal database GUI client
@@ -97,7 +103,7 @@ in
     cargo                  # Rust package manager and build tool
 
     # ── AI ────────────────────────────────────────────────────────────────────
-    opencode               # AI coding agent for the terminal
+    opencode               # AI coding agent for the terminal | https://opencode.ai/
 
   ];
 }
