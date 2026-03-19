@@ -335,6 +335,8 @@ assign [class="thunar"] workspace 3
 # assign [class="Dragon"] workspace 3
 assign [class="Transmission"] workspace 3
 assign [class="krita"] workspace 4
+assign [class="aseprite"] workspace 4
+assign [class="Aseprite"] workspace 4
 assign [class="FreeTube"] workspace 4
 assign [class="chat-gpt"] workspace 4
 assign [class="Chat-gpt"] workspace 4
@@ -356,6 +358,8 @@ assign [class="telegram-desktop"] workspace 6
 assign [class="materialgram"] workspace 6
 assign [class="Bettergram"] workspace 6
 assign [class="TelegramDesktop"] workspace 6
+assign [class="AyuGram"] workspace 6
+assign [class="AyuGramDesktop"] workspace 6
 assign [class="zoom"] workspace 6
 assign [class="discord"] workspace 6
 assign [class="whatsdesk"] workspace 6
@@ -412,6 +416,7 @@ for_window [class="Dragon"] focus
 # setxkbmap not working here for some reason :( - Ubuntu 22.04
 # TODO: find out why
 exec_always --no-startup-id "setxkbmap us,ru -option grp:alt_shift_toggle -model pc105"
+exec_always --no-startup-id "gsettings set org.gnome.desktop.interface gtk-theme 'Arc-Dark' && gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'"
 exec xrandr --auto
 # exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle"
 # exec --no-startup-id "setxkbmap -model pc104 -layout us,ru -option grp:alt_shift_toggle"
@@ -436,6 +441,9 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 # bindsym XF86MonBrightnessDown exec light -U 1 # decrease screen brightness
 bindsym XF86MonBrightnessUp exec --no-startup-id sh -c 'brightnessctl set +5% | grep -o "[0-9]*%" | xargs notify-send "Brightness"'
 bindsym XF86MonBrightnessDown exec --no-startup-id sh -c 'brightnessctl set 5%- | grep -o "[0-9]*%" | xargs notify-send "Brightness"'
+
+# Display toggle (F7) - cycle through display outputs
+bindsym XF86Display exec --no-startup-id xrandr --auto
 
 # bindsym XF86Explorer exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
 bindsym XF86LaunchA exec i3lock --color=$(echo "#$(openssl rand -hex 3)")
