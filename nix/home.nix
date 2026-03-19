@@ -1,9 +1,21 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
-  home-manager.users.lad = { pkgs, ... }: {
+  home-manager.users.lad = { pkgs, lib, config, ... }: {
     home.stateVersion = "25.11";
     home.username = "lad";
     home.homeDirectory = "/home/lad";
+
+    services.dunst.enable = true;
+
+    home.activation.createScreenshotDir = lib.mkAfter ''
+      mkdir -p ${config.home.homeDirectory}/Pictures/Screenshot
+    '';
+
+    dconf.settings = {
+      "org/gnome/gnome-screenshot" = {
+        auto-save-directory = "file:///home/lad/Pictures/Screenshot";
+      };
+    };
 
     home.file = {
       ".git-aliases".source = /home/lad/dotfiles/git/.git-aliases;
