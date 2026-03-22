@@ -32,6 +32,7 @@ in
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty/
     fzf                    # Fuzzy finder for terminal | https://junegunn.github.io/fzf/
+    television             # Fuzzy finder | https://github.com/alexpasmantier/television
     bat                    # Cat clone with syntax highlighting | https://github.com/sharkdp/bat
     lsd                    # Modern ls replacement with icons | https://github.com/lsd-rs/lsd
     btop                   # Interactive process/resource monitor | https://github.com/aristocratos/btop
