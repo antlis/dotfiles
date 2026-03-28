@@ -7,6 +7,8 @@
 
     imports = [
       ./home/git.nix
+      ./home/kitty.nix
+      ./home/rofi.nix
     ];
 
     services.dunst.enable = true;
@@ -15,17 +17,18 @@
       mkdir -p ${config.home.homeDirectory}/Pictures/Screenshot
     '';
 
+    home.activation.setupScreenlayout = lib.mkAfter ''
+      mkdir -p ${config.home.homeDirectory}/.screenlayout
+    '';
+
     dconf.settings = {
       "org/gnome/gnome-screenshot" = {
-        auto-save-directory = "file:///home/lad/Pictures/Screenshot";
+        auto-save-directory = "file://${config.home.homeDirectory}/Pictures/Screenshot";
       };
     };
 
     home.file = {
-      ".git-aliases".source = /home/lad/dotfiles/git/.git-aliases;
-      ".config/kitty".source = /home/lad/dotfiles/kitty/.config/kitty;
       ".config/nvim-lazyvim".source = /home/lad/dotfiles/nvim-lazyvim/.config/nvim-lazyvim;
-      ".config/rofi".source = /home/lad/dotfiles/rofi/.config/rofi;
       ".tmux.conf".source = /home/lad/dotfiles/tmux/.tmux.conf;
       ".tmux-git.conf".source = /home/lad/dotfiles/tmux/.tmux-git.conf;
       ".config/yazi".source = /home/lad/dotfiles/yazi/.config/yazi;
@@ -34,6 +37,7 @@
       ".config/keynav".source = /home/lad/dotfiles/keynav/.config/keynav;
       ".config/i3".source = /home/lad/dotfiles/i3/.config/i3;
       ".config/i3status".source = /home/lad/dotfiles/i3/.config/i3status;
+      ".screenlayout/monitor.sh".source = /home/lad/dotfiles/scripts/monitor.sh;
       ".tmux-git".source = builtins.fetchGit {
         url = "https://github.com/drmad/tmux-git.git";
         ref = "master";
