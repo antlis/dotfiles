@@ -5,7 +5,7 @@ return {
     vim.g.vimwiki_filetypes = { "markdown" }
     vim.g.vimwiki_list = {
       {
-        path = '~/Documents/notes/',
+        path = '~/Documents/Notes/',
         syntax = 'markdown',
         ext = '.md',
       },
