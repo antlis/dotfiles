@@ -298,6 +298,9 @@ exec keynav </dev/null &>/dev/null &
 exec pidgin
 # exec code
 
+# compositor dimming etc
+# exec_always --no-startup-id picom -b
+
 # use xprop to find app class name
 
 # for_window [class="Gnome-terminal"] fullscreen enable
@@ -417,7 +420,7 @@ for_window [class="Dragon"] focus
 # TODO: find out why
 exec_always --no-startup-id "setxkbmap us,ru -option grp:alt_shift_toggle -model pc105"
 exec_always --no-startup-id "gsettings set org.gnome.desktop.interface gtk-theme 'Arc-Dark' && gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'"
-exec xrandr --auto
+exec --no-startup-id ~/.screenlayout/monitor.sh
 # exec --no-startup-id "setxkbmap -model pc105 -layout us,ru -option grp:alt_shift_toggle"
 # exec --no-startup-id "setxkbmap -model pc104 -layout us,ru -option grp:alt_shift_toggle"
 # exec --no-startup-id "setxkbmap -layout us,ru"
