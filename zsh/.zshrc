@@ -95,6 +95,7 @@ plugins=(
 zstyle :omz:plugins:ssh-agent identities id_rsa id_lsgitlab_rsa
 
 source $ZSH/oh-my-zsh.sh
+unalias z 2>/dev/null; eval "$(zoxide init zsh)"
 
 # User configuration
 
