@@ -5,3 +5,4 @@
 vim.g.autoformat = false
 vim.g.autoread = true
 vim.g.ignorecase = true
+vim.opt.clipboard = "unnamedplus"
