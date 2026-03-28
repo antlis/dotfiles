@@ -44,6 +44,8 @@ in
     duf                    # Modern df replacement | https://github.com/muesli/duf
     pay-respects           # Suggests correct command when you mistype (thefuck alternative)
     neofetch               # System info display | https://github.com/dylanaraps/neofetch
+    tldr                   # TODO
+    navi                   # Lets you execute one liner cheatsheet
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh
