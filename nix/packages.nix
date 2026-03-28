@@ -28,6 +28,11 @@ in
     adwaita-icon-theme     # GNOME icon theme
     dunst                  # Lightweight notification daemon
     libnotify              # Provides notify-send CLI for desktop notifications | https://man.archlinux.org/man/notify-send.1.en
+    xev                    # X11 event viewer — shows keycodes, mouse events, and window events; useful for debugging keybindings | https://www.x.org/archive/X11R7.7/doc/man/man1/xev.1.xhtml
+    gnupg                  # GNU Privacy Guard — encrypt, sign, and manage keys via OpenPGP | https://gnupg.org
+    openssl                # Cryptography toolkit — TLS/SSL, certificates, and general-purpose crypto primitives | https://openssl.org
+    nodePackages.pnpm      # Fast, disk-efficient Node.js package manager | https://pnpm.io
+    # picom                  # Compositor for X11 (shadows, transparency, dimming)
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty/
@@ -44,6 +49,7 @@ in
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh
     zsh-fzf-tab              # Replace zsh completion with fzf
     zsh-you-should-use       # Reminds you to use your aliases
+    zoxide                   # A smarter cd | https://github.com/ajeetdsouza/zoxide
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer
@@ -88,9 +94,8 @@ in
     httpie                 # User-friendly HTTP client | https://httpie.io/
     postman                # Indian HTTP client | https://www.postman.com/
     amnezia-vpn            # VPN client | https://amnezia.org/
-
-    # ── Databases ─────────────────────────────────────────────────────────────
-    dbeaver-bin            # Universal database GUI client
+    dig                    # DNS lookup utility — query nameservers and troubleshoot DNS resolution | https://man.archlinux.org/man/dig.1
+    kubectl                # Kubernetes CLI — deploy and manage containerized workloads on clusters | https://kubernetes.io/docs/reference/kubectl/
 
     # ── Docker ────────────────────────────────────────────────────────────────
     docker                 # Container runtime
@@ -105,6 +110,9 @@ in
 
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai/
+
+    # Node
+    nodePackages.pm2       # Production process manager for Node.js with built-in load balancer and zero-downtime reloads | https://github.com/Unitech/pm2
 
   ];
 }

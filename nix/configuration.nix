@@ -11,22 +11,49 @@ in
       ./packages.nix
       ./home.nix
       ./private.nix
+      ./bluetooth.nix
     ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.blacklistedKernelModules = [ "kvm_intel" "kvm_amd" ];
 
   services.openssh.enable = true;
   # Enable sshd, but don't start it on boot
   systemd.services.sshd.wantedBy = lib.mkForce [];
+
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "lad" ]; 
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    plugins = with pkgs; [
+      networkmanager-l2tp
+      networkmanager-strongswan
+    ];
+  };
+  services.strongswan = {
+    enable = true;
+    secrets = [ "ipsec.d/ipsec.nm-l2tp.secrets" ];
+  };
+  environment.etc."strongswan.conf".text = ''
+    charon {
+      integrity_test = no
+    }
+  '';
+  services.xl2tpd.enable = true;
+  environment.etc."NetworkManager/VPN/nm-l2tp-service.name".source = "${pkgs.networkmanager-l2tp}/lib/NetworkManager/VPN/nm-l2tp-service.name";
+  # TODO: remove hubstaff l2p etc when find better job that this shit
+  environment.systemPackages = with pkgs; [
+    ppp
+    hubstaff
+  ];
 
   virtualisation.docker.enable = true;
 
@@ -79,6 +106,11 @@ in
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
+
+  # TODO: Remove after ditching stopphish
+  # /etc/nixos/configuration.nix
+  security.pki.certificateFiles = [ /home/lad/Projects/wrk/stopphish/rootCA.crt ];
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -119,6 +151,12 @@ in
     BROWSER = "brave";
   };
 
+  # For gpg
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-curses;  # terminal-based, works everywhere
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -156,4 +194,15 @@ in
     };
   };
   programs.nix-ld.enable = true;
+
+  services.libinput = {
+     enable = true;
+     touchpad = {
+       accelSpeed = "1";
+       accelProfile = "flat"; 
+       disableWhileTyping = true;
+       tapping = true;
+       naturalScrolling = false;
+     };
+   };
 }
