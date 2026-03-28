@@ -1,7 +1,12 @@
 [[plugin.deps]]
 use = "dedukun/bookmarks"
 rev = "600f87c"
-hash = "2d286d11115903311b4a7d7ab11ae4dd"
+hash = "1cf920cf8b2ef1e8f066c325f1d0d926"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:zoxide"
+rev = "1962818"
+hash = "99aa06d3014798d86001c324468d497f"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"

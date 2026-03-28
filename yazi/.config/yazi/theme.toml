@@ -7,7 +7,7 @@
 # : Flavor {{{
 
 [flavor]
-use = "onedark"
+use = "catppuccin-mocha"
 
 # : }}}
 
