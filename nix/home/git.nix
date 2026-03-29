@@ -15,7 +15,7 @@
     enable = true;
     hooks = {
       post-commit = pkgs.writeShellScript "post-commit" ''
-        echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f ascii12 --gay | ${pkgs.pv}/bin/pv -qL 500
+        echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f smmono9 --gay
       '';
     };
     settings = {
