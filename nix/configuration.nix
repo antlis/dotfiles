@@ -109,7 +109,10 @@ in
 
   # TODO: Remove after ditching vmhost
   # /etc/nixos/configuration.nix
-  security.pki.certificateFiles = [ /home/lad/Projects/wrk/vmhost/rootCA.crt ];
+  security.pki.certificateFiles = [
+    /home/lad/Projects/wrk/vmhost/rootCA.crt
+    /etc/ssl/certs/custom/rootCA.crt
+  ];
 
   services.pipewire = {
     enable = true;
