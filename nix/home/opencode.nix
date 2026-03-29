@@ -1,9 +1,8 @@
-{ ... }:
+{ config, pkgs, lib, ... }:
 {
   home.file = {
     ".config/opencode" = {
-      source = /home/lad/dotfiles/opencode;
-      force = true;
+      source = config.lib.file.mkOutOfStoreSymlink /home/lad/dotfiles/opencode;
     };
   };
 }
