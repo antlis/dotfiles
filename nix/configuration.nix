@@ -106,6 +106,9 @@ in
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
+  security.sudo.extraConfig = ''
+    Defaults pwfeedback
+  '';
 
   # TODO: Remove after ditching stopphish
   # /etc/nixos/configuration.nix
