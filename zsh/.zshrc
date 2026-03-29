@@ -101,6 +101,8 @@ unalias z 2>/dev/null; eval "$(zoxide init zsh)"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
+export PAGER=more
+
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 

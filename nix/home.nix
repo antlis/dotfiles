@@ -9,6 +9,7 @@
       ./home/git.nix
       ./home/kitty.nix
       ./home/rofi.nix
+      ./home/opencode.nix
     ];
 
     services.dunst.enable = true;
