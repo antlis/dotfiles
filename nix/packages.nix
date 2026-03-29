@@ -47,6 +47,8 @@ in
     navi                   # Interactive cheatsheet tool — browse and execute one-liners | https://github.com/denisidoro/navi
     lolcat                 # Rainbows and unicorns | https://github.com/busyloop/lolcat
     cowsay                 # Cowsay messages
+    pv                     # Typewriter effect
+    toilet                 # ASCII art for text | https://linuxcommandlibrary.com/man/toilet
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting

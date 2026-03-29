@@ -13,6 +13,11 @@
   };
   programs.git = {
     enable = true;
+    hooks = {
+      post-commit = pkgs.writeShellScript "post-commit" ''
+        echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f ascii12 --gay | ${pkgs.pv}/bin/pv -qL 500
+      '';
+    };
     settings = {
       user.name  = "lad";
       user.email = "antlis@protonmail.com";
