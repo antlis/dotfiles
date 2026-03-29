@@ -1,0 +1,89 @@
+
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "agents": {
+    "sisyphus": {
+      "model": "zai-org/glm-5",
+      "variant": "high",
+      "_note": "GLM 5 — highest intelligence (49.6) + coding (44.2) in catalog. Replaces Opus for heavy orchestration."
+    },
+    "hephaestus": {
+      "model": "qwen/qwen3-coder-next",
+      "variant": "high",
+      "_note": "Qwen3 Coder 480B — top coding model, comparable to Claude Sonnet on coding benchmarks."
+    },
+    "oracle": {
+      "model": "zai-org/glm-5:thinking",
+      "variant": "high",
+      "_note": "GLM 5 Thinking — best reasoning with chain-of-thought for deep analysis tasks."
+    },
+    "librarian": {
+      "model": "zai-org/glm-4.7-flash-original",
+      "_note": "GLM 4.7 Flash — fast, cheap ($0.07/1M), strong enough for retrieval and knowledge lookup."
+    },
+    "explore": {
+      "model": "stepfun-ai/step-3.5-flash",
+      "_note": "Step 3.5 Flash — up to 350 t/s, $0.10/1M. Fastest capable model for quick exploration."
+    },
+    "multimodal-looker": {
+      "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+      "_note": "Qwen3 VL 235B — best vision-language model in catalog. OCR, charts, layout understanding."
+    },
+    "prometheus": {
+      "model": "zai-org/glm-5",
+      "variant": "high",
+      "_note": "GLM 5 — same as sisyphus. Top intelligence for planning and strategy agents."
+    },
+    "metis": {
+      "model": "deepseek/deepseek-v3.2:thinking",
+      "variant": "high",
+      "_note": "DeepSeek V3.2 Thinking — thinking-in-tool-use capability, great for meta reasoning."
+    },
+    "momus": {
+      "model": "deepseek/deepseek-v3.2",
+      "_note": "DeepSeek V3.2 — solid general reasoning at medium cost. Good balance for momus role."
+    },
+    "atlas": {
+      "model": "moonshotai/kimi-k2.5",
+      "_note": "Kimi K2.5 — native multimodal + strong agentic tool-calling. Best agent model in catalog."
+    }
+  },
+  "categories": {
+    "visual-engineering": {
+      "model": "qwen3-vl-235b-a22b-thinking",
+      "variant": "high",
+      "_note": "Qwen3 VL 235B Thinking — best vision model with reasoning. Figma/UI → code workflows."
+    },
+    "ultrabrain": {
+      "model": "zai-org/glm-5:thinking",
+      "variant": "high",
+      "_note": "GLM 5 Thinking — highest intelligence (49.6) with chain-of-thought. For hardest problems."
+    },
+    "deep": {
+      "model": "deepseek/deepseek-v3.2:thinking",
+      "variant": "high",
+      "_note": "DeepSeek V3.2 Thinking — strong deep reasoning (41.6 intelligence, 92.0 math)."
+    },
+    "artistry": {
+      "model": "anthracite-org/magnum-v4-72b",
+      "variant": "high",
+      "_note": "Magnum v4 72B — top-tier prose quality. Best creative writing model in catalog."
+    },
+    "quick": {
+      "model": "stepfun-ai/step-3.5-flash",
+      "_note": "Step 3.5 Flash — 350 t/s, $0.10/1M. Fastest model for quick tasks."
+    },
+    "unspecified-low": {
+      "model": "GLM-4.5-Air-Derestricted-Iceblink-ReExtract",
+      "_note": "GLM 4.5 Air — best value general model. Strong SWE-bench, $0.10/1M flat."
+    },
+    "unspecified-high": {
+      "model": "zai-org/glm-5",
+      "_note": "GLM 5 — best general model when quality matters. 49.6 intelligence, 200K context."
+    },
+    "writing": {
+      "model": "mistralai/mistral-large-3-675b-instruct-2512",
+      "_note": "Mistral Large 3 675B — excellent prose, multilingual, 256K max output. Great for writing."
+    }
+  }
+}
