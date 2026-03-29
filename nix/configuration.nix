@@ -152,6 +152,7 @@ in
   environment.shells = with pkgs; [ zsh ];
   environment.sessionVariables = {
     BROWSER = "brave";
+    PAGER = "more";
   };
 
   # For gpg

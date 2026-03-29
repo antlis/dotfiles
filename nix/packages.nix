@@ -45,6 +45,8 @@ in
     neofetch               # System info display in the terminal | https://github.com/dylanaraps/neofetch
     tldr                   # Simplified community-driven man pages with practical examples | https://tldr.sh
     navi                   # Interactive cheatsheet tool — browse and execute one-liners | https://github.com/denisidoro/navi
+    lolcat                 # Rainbows and unicorns | https://github.com/busyloop/lolcat
+    cowsay                 # Cowsay messages
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
