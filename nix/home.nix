@@ -28,7 +28,8 @@
     };
 
     home.file = {
-      ".config/nvim-lazyvim".source = /home/lad/dotfiles/nvim-lazyvim/.config/nvim-lazyvim;
+      ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
+      /home/lad/dotfiles/nvim-lazyvim/.config/nvim-lazyvim;
       ".tmux.conf".source = /home/lad/dotfiles/tmux/.tmux.conf;
       ".tmux-git.conf".source = /home/lad/dotfiles/tmux/.tmux-git.conf;
       ".config/yazi".source = /home/lad/dotfiles/yazi/.config/yazi;
