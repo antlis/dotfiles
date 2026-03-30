@@ -296,6 +296,7 @@ exec keynav </dev/null &>/dev/null &
 # exec gnome-terminal
 # exec slack
 exec pidgin
+exec AmneziaVPN
 # exec code
 
 # compositor dimming etc
