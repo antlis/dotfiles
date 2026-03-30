@@ -17,14 +17,14 @@
       # Shows startify quote https://github.com/antlis/vim-startify-quotes
       post-commit = pkgs.writeShellScript "post-commit" ''
         QUOTES_FILE="/home/lad/Projects/github/vim-startify-quotes/vim-startify-quotes.json"
-        if [ -f "$QUOTES_FILE" ]; then
-          NUM_QUOTES=$(jq 'length' "$QUOTES_FILE")
-          RANDOM_INDEX=$((RANDOM % NUM_QUOTES))
-          QUOTE=$(jq -r ".[$RANDOM_INDEX]" "$QUOTES_FILE")
-          echo "$QUOTE" | ${pkgs.toilet}/bin/toilet -f pagga --gay
-        else
-          echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f pagga --gay
-        fi
+        # if [ -f "$QUOTES_FILE" ]; then
+        #   NUM_QUOTES=$(jq 'length' "$QUOTES_FILE")
+        #   RANDOM_INDEX=$((RANDOM % NUM_QUOTES))
+        #   QUOTE=$(jq -r ".[$RANDOM_INDEX]" "$QUOTES_FILE")
+        #   echo "$QUOTE" | ${pkgs.toilet}/bin/toilet -f pagga --gay
+        # else
+          echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet --gay
+        # fi
       '';
     };
     settings = {
