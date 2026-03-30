@@ -2,16 +2,44 @@ return {
   {
     "folke/snacks.nvim",
     opts = {
+      image = {
+        enabled = true,
+        formats = {
+          "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif",
+          "mp4", "mov", "avi", "mkv", "webm", "pdf", "icns",
+        },
+        doc = {
+          enabled = true,
+          inline = true,
+          float = true,
+          max_width = 80,
+          max_height = 40,
+        },
+        img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "assets/images" },
+        resolve = function(file, src)
+          -- try relative to current file first
+          local rel = vim.fn.fnamemodify(file, ":h") .. "/" .. src
+          if vim.fn.filereadable(rel) == 1 then
+            return rel
+          end
+          -- fallback: resolve from vault root
+          local vault = vim.fn.expand("~/Documents/vault")
+          local from_vault = vault .. "/" .. src
+          if vim.fn.filereadable(from_vault) == 1 then
+            return from_vault
+          end
+        end,
+      },
       dashboard = {
         keys = {
-          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
-          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+          { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+          { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+          { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+          { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+          { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+          { icon = " ", key = "s", desc = "Restore Session", section = "session" },
           { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa" },
         },
         formats = {
           key = function(item)
@@ -19,35 +47,18 @@ return {
           end,
         },
         sections = {
-          -- { section = "header" },
-          -- {
-          --   pane = 2,
-          --   section = "terminal",
-          --   cmd = "colorscript -e square",
-          --   height = 5,
-          --   padding = 1,
-          -- },
-          -- { section = "terminal", cmd = "fortune -s | cowsay", hl = "header", padding = 1, indent = 8 },
           { section = "keys", gap = 1, padding = 1 },
-          -- { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-          -- { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-          -- {
-          --   pane = 2,
-          --   icon = " ",
-          --   title = "Git Status",
-          --   section = "terminal",
-          --   enabled = function()
-          --     return Snacks.git.get_root() ~= nil
-          --   end,
-          --   cmd = "hub status --short --branch --renames",
-          --   height = 5,
-          --   padding = 1,
-          --   ttl = 5 * 60,
-          --   indent = 3,
-          -- },
-          -- { section = "startup" },
         },
       },
     },
+    init = function()
+      -- treat telekasten buffers as markdown for image rendering
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "telekasten",
+        callback = function()
+          vim.bo.filetype = "markdown"
+        end,
+      })
+    end,
   },
 }
