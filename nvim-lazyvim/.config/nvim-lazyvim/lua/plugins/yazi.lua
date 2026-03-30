@@ -1,6 +1,6 @@
 return {
   "mikavilpas/yazi.nvim",
-  version = "*", -- use the latest stable version
+  version = "*",
   event = "VeryLazy",
   dependencies = {
     { "nvim-lua/plenary.nvim", lazy = true },
@@ -26,6 +26,8 @@ return {
   ---@type YaziConfig | {}
   opts = {
     open_for_directories = false,
+    floating_window_scaling_factor = 1.0,
+    yazi_floating_window_border = "none",
     keymaps = {
       show_help = "<f1>",
     },
