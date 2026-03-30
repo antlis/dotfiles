@@ -16,7 +16,7 @@
     hooks = {
       # Shows startify quote https://github.com/antlis/vim-startify-quotes
       post-commit = pkgs.writeShellScript "post-commit" ''
-        QUOTES_FILE="/home/lad/Projects/github/vim-startify-quotes/quotes.json"
+        QUOTES_FILE="/home/lad/Projects/github/vim-startify-quotes/vim-startify-quotes.json"
         if [ -f "$QUOTES_FILE" ]; then
           NUM_QUOTES=$(jq 'length' "$QUOTES_FILE")
           RANDOM_INDEX=$((RANDOM % NUM_QUOTES))
@@ -30,6 +30,9 @@
     settings = {
       user.name  = "lad";
       user.email = "antlis@protonmail.com";
+      # This setting enhances the safety of force pushes by ensuring that you have fetched and integrated the latest changes from the remote
+      # before allowing the push to proceed.
+      push.useForceIfIncludes = true;
       alias = {
         fzf-add      = "!git status -s | awk '{print $2}' | fzf -m | xargs git add";
         fzf-diff     = "!git status -s | awk '{print $2}' | fzf -m --preview 'git diff -- {} | delta --syntax-theme=Dracula' | xargs -I {} git diff -- {} | delta";
