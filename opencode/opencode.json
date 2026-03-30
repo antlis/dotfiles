@@ -15,6 +15,11 @@
       "type": "local",
       "command": ["npx", "-y", "@playwright/mcp@latest"],
       "enabled": true
+    },
+    "pdf-reader": {
+      "type": "local",
+      "command": ["npx", "--prefer-offline", "@sylphx/pdf-reader-mcp"],
+      "enabled": true
     }
   }
 }
