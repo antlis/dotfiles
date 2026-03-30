@@ -21,9 +21,9 @@
           NUM_QUOTES=$(jq 'length' "$QUOTES_FILE")
           RANDOM_INDEX=$((RANDOM % NUM_QUOTES))
           QUOTE=$(jq -r ".[$RANDOM_INDEX]" "$QUOTES_FILE")
-          echo "$QUOTE" | ${pkgs.toilet}/bin/toilet -f small --gay
+          echo "$QUOTE" | ${pkgs.toilet}/bin/toilet -f smisome1 --gay
         else
-          echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f small --gay
+          echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f smisome1 --gay
         fi
       '';
     };
