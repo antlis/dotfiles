@@ -1,45 +1,43 @@
 { config, pkgs, lib, ... }:
+let
+  c = import ./constants.nix;
+in
 {
-  home-manager.users.lad = { pkgs, lib, config, ... }: {
+  home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
     home.stateVersion = "25.11";
-    home.username = "lad";
-    home.homeDirectory = "/home/lad";
-
+    home.username = c.username;
+    home.homeDirectory = c.homeDir;
     imports = [
+      ./desktop-entries.nix
       ./home/git.nix
       ./home/kitty.nix
       ./home/rofi.nix
       ./home/opencode.nix
     ];
-
     services.dunst.enable = true;
-
     home.activation.createScreenshotDir = lib.mkAfter ''
-      mkdir -p ${config.home.homeDirectory}/Pictures/Screenshot
+      mkdir -p ${c.screenshotDir}
     '';
-
     home.activation.setupScreenlayout = lib.mkAfter ''
-      mkdir -p ${config.home.homeDirectory}/.screenlayout
+      mkdir -p ${c.homeDir}/.screenlayout
     '';
-
     dconf.settings = {
       "org/gnome/gnome-screenshot" = {
-        auto-save-directory = "file://${config.home.homeDirectory}/Pictures/Screenshot";
+        auto-save-directory = "file://${c.screenshotDir}";
       };
     };
-
     home.file = {
       ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
-      /home/lad/dotfiles/nvim-lazyvim/.config/nvim-lazyvim;
-      ".tmux.conf".source = /home/lad/dotfiles/tmux/.tmux.conf;
-      ".tmux-git.conf".source = /home/lad/dotfiles/tmux/.tmux-git.conf;
-      ".config/yazi".source = /home/lad/dotfiles/yazi/.config/yazi;
-      ".zshrc".source = /home/lad/dotfiles/zsh/.zshrc;
-      ".xbindkeysrc".source = /home/lad/dotfiles/xbindkeysrc/.xbindkeysrc;
-      ".config/keynav".source = /home/lad/dotfiles/keynav/.config/keynav;
-      ".config/i3".source = /home/lad/dotfiles/i3/.config/i3;
-      ".config/i3status".source = /home/lad/dotfiles/i3/.config/i3status;
-      ".screenlayout/monitor.sh".source = /home/lad/dotfiles/scripts/monitor.sh;
+        "${c.dotfilesDir}/nvim-lazyvim/.config/nvim-lazyvim";
+      ".tmux.conf".source               = "${c.dotfilesDir}/tmux/.tmux.conf";
+      ".tmux-git.conf".source           = "${c.dotfilesDir}/tmux/.tmux-git.conf";
+      ".config/yazi".source             = "${c.dotfilesDir}/yazi/.config/yazi";
+      ".zshrc".source                   = "${c.dotfilesDir}/zsh/.zshrc";
+      ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
+      ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
+      ".config/i3".source               = "${c.dotfilesDir}/i3/.config/i3";
+      ".config/i3status".source         = "${c.dotfilesDir}/i3/.config/i3status";
+      ".screenlayout/monitor.sh".source = "${c.dotfilesDir}/scripts/monitor.sh";
       ".tmux-git".source = builtins.fetchGit {
         url = "https://github.com/drmad/tmux-git.git";
         ref = "master";
