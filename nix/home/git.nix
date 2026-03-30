@@ -15,7 +15,15 @@
     enable = true;
     hooks = {
       post-commit = pkgs.writeShellScript "post-commit" ''
-        echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f smmono9 --gay
+        QUOTES_FILE="/home/lad/Projects/github/vim-startify-quotes/quotes.json"
+        if [ -f "$QUOTES_FILE" ]; then
+          NUM_QUOTES=$(jq 'length' "$QUOTES_FILE")
+          RANDOM_INDEX=$((RANDOM % NUM_QUOTES))
+          QUOTE=$(jq -r ".[$RANDOM_INDEX]" "$QUOTES_FILE")
+          echo "$QUOTE" | ${pkgs.toilet}/bin/toilet -f smmono9 --gay
+        else
+          echo "COMMITTED!" | ${pkgs.toilet}/bin/toilet -f smmono9 --gay
+        fi
       '';
     };
     settings = {
