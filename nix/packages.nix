@@ -36,9 +36,7 @@ in
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty
-    fzf                    # Fuzzy finder for terminal | https://junegunn.github.io/fzf
     television             # Fuzzy finder TUI with multiple data sources | https://github.com/alexpasmantier/television
-    bat                    # Cat clone with syntax highlighting and Git integration | https://github.com/sharkdp/bat
     lsd                    # Modern ls replacement with icons and colors | https://github.com/lsd-rs/lsd
     btop                   # Interactive process and resource monitor | https://github.com/aristocratos/btop
     duf                    # Modern df replacement with a better UI | https://github.com/muesli/duf
@@ -56,7 +54,6 @@ in
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
     zsh-fzf-tab              # Replace zsh tab completion with fzf | https://github.com/Aloxaf/fzf-tab
     zsh-you-should-use       # Reminds you to use existing aliases | https://github.com/MichaelAquilina/zsh-you-should-use
-    zoxide                   # Smarter cd — jumps to frecent directories | https://github.com/ajeetdsouza/zoxide
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
