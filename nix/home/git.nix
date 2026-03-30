@@ -14,6 +14,7 @@
   programs.git = {
     enable = true;
     hooks = {
+      # Shows startify quote https://github.com/antlis/vim-startify-quotes
       post-commit = pkgs.writeShellScript "post-commit" ''
         QUOTES_FILE="/home/lad/Projects/github/vim-startify-quotes/quotes.json"
         if [ -f "$QUOTES_FILE" ]; then
