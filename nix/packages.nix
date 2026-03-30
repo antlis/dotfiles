@@ -105,6 +105,7 @@ in
     amnezia-vpn            # Self-hosted VPN client with censorship bypass | https://amnezia.org
     dig                    # DNS lookup utility — query nameservers and troubleshoot DNS resolution | https://man.archlinux.org/man/dig.1
     kubectl                # Kubernetes CLI — deploy and manage containerized workloads on clusters | https://kubernetes.io/docs/reference/kubectl
+    jq                     # JSON processor | https://jqlang.org/
 
     # ── Docker ────────────────────────────────────────────────────────────────
     docker                 # Container runtime for building and running images | https://www.docker.com
