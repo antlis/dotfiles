@@ -11,6 +11,8 @@ let
     };
     cargoHash = "sha256-Y50dAfbDVZGoTf0rq0Z5fMc9sFVVGGPQv+LCywaktEU=";
   };
+
+  nodePackages = import ./node-packages.nix { inherit pkgs; };
 in
 {
   environment.systemPackages = with pkgs; [
@@ -31,7 +33,6 @@ in
     xev                    # X11 event viewer — shows keycodes, mouse events, and window events; useful for debugging keybindings | https://www.x.org/archive/X11R7.7/doc/man/man1/xev.1.xhtml
     gnupg                  # GNU Privacy Guard — encrypt, sign, and manage keys via OpenPGP | https://gnupg.org
     openssl                # Cryptography toolkit — TLS/SSL, certificates, and general-purpose crypto primitives | https://openssl.org
-    nodePackages.pnpm      # Fast, disk-efficient Node.js package manager | https://pnpm.io
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty
@@ -49,6 +50,7 @@ in
     cowsay                 # Cowsay messages
     pv                     # Typewriter effect
     toilet                 # ASCII art for text | https://linuxcommandlibrary.com/man/toilet
+    imagemagick            # https://imagemagick.org/
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
@@ -118,8 +120,5 @@ in
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
 
-    # ── Node ──────────────────────────────────────────────────────────────────
-    nodePackages.pm2       # Production process manager for Node.js with load balancing and zero-downtime reloads | https://github.com/Unitech/pm2
-
-  ];
+  ] ++ nodePackages;
 }
