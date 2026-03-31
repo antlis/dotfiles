@@ -16,6 +16,7 @@ in
       ./home/opencode.nix
     ];
     services.dunst.enable = true;
+    services.ssh-agent.enable = true;
     home.activation.createScreenshotDir = lib.mkAfter ''
       mkdir -p ${c.screenshotDir}
     '';
