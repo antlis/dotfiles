@@ -1,11 +1,10 @@
 { config, pkgs, lib, ... }:
-
 {
   imports =
     [
-      ./hardware-configuration.nix
+      ../hardware-configuration.nix
+      ../home/home.nix
       ./packages.nix
-      ./home.nix
       ./bluetooth.nix
     ];
 
