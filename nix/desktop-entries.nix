@@ -68,5 +68,21 @@ in
       terminal = false;
       categories = [ "Network" "WebBrowser" ];
     };
+    beekeeper-studio = {
+      name = "Beekeeper Studio";
+      comment = "SQL editor and database manager";
+      exec = "/home/lad/Applications/Beekeeper-Studio-5.6.3.AppImage";
+      icon = "/home/lad/.local/share/icons/beekeeper.png";
+      terminal = false;
+      categories = [ "Development" "Database" ];
+    };
+    yougile = {
+      name = "YouGile";
+      comment = "Project management";
+      exec = "/home/lad/Applications/YouGile-40.41.3-x86_64.AppImage";
+      icon = "/home/lad/.local/share/icons/yougile.png";
+      terminal = false;
+      categories = [ "Office" ];
+    };
   };
 }
