@@ -79,18 +79,6 @@ in
       # ── Tmux git ─────────────────────────────────────────────────────────────
       if [[ $TMUX ]]; then source ~/.tmux-git/tmux-git.sh; fi
 
-      # ── Lazy load nvm ────────────────────────────────────────────────────────
-      export NVM_DIR="$HOME/.nvm"
-      _load_nvm() {
-        unfunction node npm npx nvm pnpm 2>/dev/null
-        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-      }
-      node()  { _load_nvm; node "$@"; }
-      npm()   { _load_nvm; npm "$@"; }
-      npx()   { _load_nvm; npx "$@"; }
-      nvm()   { _load_nvm; nvm "$@"; }
-
       # ── Lazy load rvm ────────────────────────────────────────────────────────
       rvm() {
         unfunction rvm
