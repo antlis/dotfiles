@@ -201,6 +201,10 @@ in
     };
   };
   programs.nix-ld.enable = true;
+  programs.appimage = {
+    enable = true;
+    binfmt = true;  # lets you run AppImages directly without ./
+  };
 
   services.libinput = {
      enable = true;
