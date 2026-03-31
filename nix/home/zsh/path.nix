@@ -4,6 +4,14 @@ let
 in
 {
   programs.zsh = {
+    history = {
+      path = "${config.xdg.configHome}/zsh/.zsh_history";
+      size = 50000;
+      save = 50000;
+      extended = true;
+      share = true;
+      ignoreDups = true;
+    };
     sessionVariables = {
       NVIM_APPNAME = "nvim-lazyvim";
       GH_EDITOR    = "nvim";
