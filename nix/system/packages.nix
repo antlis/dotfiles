@@ -54,6 +54,7 @@ in
     imagemagick            # https://imagemagick.org/
     worktrunk              # Git worktree management for parallel | https://worktrunk.dev/
     gh                     # GitHub CLI | https://cli.github.com
+    glab                   # GitLab CLI | https://gitlab.com/gitlab-org/cli
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
