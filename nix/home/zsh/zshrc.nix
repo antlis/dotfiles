@@ -47,6 +47,7 @@ in
       # ── OMZ plugins ──────────────────────────────────────────────────────────
       zinit snippet OMZP::git
       zinit snippet OMZP::vi-mode
+      zinit snippet OMZP::kubectl
 
       # ── Local plugins (eager — must be available immediately) ────────────────
       zinit light ${pkgs.zsh-fzf-tab}/share/fzf-tab
