@@ -2,7 +2,6 @@
 {
   imports =
     [
-      ../hardware-configuration.nix
       ../home/home.nix
       ./packages.nix
       ./bluetooth.nix
