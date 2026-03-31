@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 let
 
   brave-rofi-rust = pkgs.rustPlatform.buildRustPackage {
@@ -13,7 +13,7 @@ let
     cargoHash = "sha256-Y50dAfbDVZGoTf0rq0Z5fMc9sFVVGGPQv+LCywaktEU=";
   };
 
-  # worktrunk = (builtins.getFlake "github:max-sixty/worktrunk").packages.${pkgs.system}.default
+  worktrunk = inputs.worktrunk.packages.${pkgs.system}.default;
 
   nodePackages = import ./node-packages.nix { inherit pkgs; };
 in
@@ -52,7 +52,7 @@ in
     pv                     # Typewriter effect
     toilet                 # ASCII art for text | https://linuxcommandlibrary.com/man/toilet
     imagemagick            # https://imagemagick.org/
-    # worktrunk              # Git worktree management for parallel | https://worktrunk.dev/
+    worktrunk              # Git worktree management for parallel | https://worktrunk.dev/
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
