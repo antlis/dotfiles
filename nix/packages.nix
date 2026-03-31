@@ -53,6 +53,7 @@ in
     toilet                 # ASCII art for text | https://linuxcommandlibrary.com/man/toilet
     imagemagick            # https://imagemagick.org/
     worktrunk              # Git worktree management for parallel | https://worktrunk.dev/
+    gh                     # GitHub CLI | https://cli.github.com
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
