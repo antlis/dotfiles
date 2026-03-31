@@ -6,9 +6,6 @@ if [[ ! -d "$ZINIT_HOME" ]]; then
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
-# ── Theme (eager — must load before prompt appears) ────────────────────────────
-zinit snippet OMZT::robbyrussell
-
 # ── OMZ libs (eager) ──────────────────────────────────────────────────────────
 zinit snippet OMZL::git.zsh
 zinit snippet OMZL::key-bindings.zsh
@@ -36,6 +33,12 @@ source ~/.zsh-custom/functions.zsh
 
 # ── Keybinds ───────────────────────────────────────────────────────────────────
 bindkey '^x^x' edit-command-line
+
+# ── Env ────────────────────────────────────────────────────────────────────────
+export NVIM_APPNAME=nvim-lazyvim
+export GH_EDITOR="nvim"
+export EDITOR="nvim"
+export PAGER=more
 
 # ── PATH ───────────────────────────────────────────────────────────────────────
 export PATH="$HOME/.opencode/bin:$PATH"
@@ -78,43 +81,21 @@ if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
   . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 fi
 
-# ── Env ────────────────────────────────────────────────────────────────────────
-export NVIM_APPNAME=nvim-lazyvim
-export GH_EDITOR="nvim"
-export EDITOR="nvim"
-export PAGER=more
-
 # ── FZF ────────────────────────────────────────────────────────────────────────
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --no-ignore-vcs'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_DEFAULT_OPTS='--height 96% --reverse --preview "bat --color=always --style=numbers --line-range=:500 {}"'
 
-# ── Tools (fast, keep eager) ───────────────────────────────────────────────────
+# ── Tools ─────────────────────────────────────────────────────────────────────
 unalias z 2>/dev/null; eval "$(zoxide init zsh)"
+
+# ── Starship prompt ───────────────────────────────────────────────────────────
+export STARSHIP_CONFIG=~/.config/starship.toml
+eval "$(starship init zsh)"
 
 # ── Tmux git ───────────────────────────────────────────────────────────────────
 if [[ $TMUX ]]; then source ~/.tmux-git/tmux-git.sh; fi
-
-# ── Google Cloud SDK ───────────────────────────────────────────────────────────
-if [ -f "${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc" ]; then
-  . "${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/path.zsh.inc"
-fi
-if [ -f "${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc" ]; then
-  . "${HOME}/google-cloud-sdk-345.0.0-linux-x86_64/google-cloud-sdk/completion.zsh.inc"
-fi
-
-# ── Lazy load nvm ─────────────────────────────────────────────────────────────
-export NVM_DIR="$HOME/.nvm"
-_load_nvm() {
-  unfunction node npm npx nvm pnpm 2>/dev/null
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-}
-node()  { _load_nvm; node "$@"; }
-npm()   { _load_nvm; npm "$@"; }
-npx()   { _load_nvm; npx "$@"; }
-nvm()   { _load_nvm; nvm "$@"; }
 
 # ── Lazy load rvm ─────────────────────────────────────────────────────────────
 rvm() {
@@ -134,19 +115,7 @@ gvm() {
   gvm "$@"
 }
 
-# ── Lazy load ssh-agent ────────────────────────────────────────────────────────
-_load_ssh_agent() {
-  unfunction ssh ssh-add scp sftp 2>/dev/null
-  eval "$(ssh-agent -s)" > /dev/null
+# ── SSH agent — add keys if agent has no identities loaded ────────────────────
+if [[ $(ssh-add -l 2>/dev/null) == "The agent has no identities." ]]; then
   ssh-add ~/.ssh/id_rsa ~/.ssh/id_lsgitlab_rsa 2>/dev/null
-}
-ssh()     { _load_ssh_agent; ssh "$@"; }
-ssh-add() { _load_ssh_agent; ssh-add "$@"; }
-scp()     { _load_ssh_agent; scp "$@"; }
-sftp()    { _load_ssh_agent; sftp "$@"; }
-git() {
-  if [[ "$1" == "push" || "$1" == "pull" || "$1" == "fetch" || "$1" == "clone" ]]; then
-    _load_ssh_agent
-  fi
-  command git "$@"
-}
+fi
