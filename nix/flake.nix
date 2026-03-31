@@ -20,7 +20,7 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     c = import ./constants.nix;
-    privateNix = /. + c.homeDir + "/dotfiles/nix/private.nix";
+    privateNix = /. + c.homeDir + "/dotfiles/nix/system/private.nix";
   in
   {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
@@ -29,7 +29,7 @@
         inherit inputs;
       };
       modules = [
-        ./configuration.nix
+        ./system/configuration.nix
         home-manager.nixosModules.home-manager
         (builtins.path { path = privateNix; name = "private.nix"; })
       ];

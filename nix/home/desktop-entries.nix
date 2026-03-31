@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  c = import ./constants.nix;
+  c = import ../constants.nix;
   screenshotScript = flag: pkgs.writeShellScript "screenshot" ''
     gnome-screenshot ${flag}
     LATEST=$(ls -t ${c.screenshotDir}/*.png | head -1)

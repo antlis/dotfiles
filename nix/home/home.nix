@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  c = import ./constants.nix;
+  c = import ../constants.nix;
 in
 {
   home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
@@ -8,14 +8,14 @@ in
     home.username = c.username;
     home.homeDirectory = c.homeDir;
     imports = [
-      ./home/i3/i3.nix
-      ./home/i3/i3status.nix
-      ./home/zsh/zshrc.nix
+      ./i3/i3.nix
+      ./i3/i3status.nix
+      ./zsh/zshrc.nix
       ./desktop-entries.nix
-      ./home/git.nix
-      ./home/kitty.nix
-      ./home/rofi.nix
-      ./home/opencode.nix
+      ./git.nix
+      ./kitty.nix
+      ./rofi.nix
+      ./opencode.nix
     ];
     services.dunst.enable = true;
     services.ssh-agent.enable = true;
