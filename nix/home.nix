@@ -8,6 +8,8 @@ in
     home.username = c.username;
     home.homeDirectory = c.homeDir;
     imports = [
+      ./home/i3/i3.nix
+      ./home/i3/i3status.nix
       ./home/zsh/zshrc.nix
       ./desktop-entries.nix
       ./home/git.nix
@@ -34,11 +36,8 @@ in
       ".tmux.conf".source               = "${c.dotfilesDir}/tmux/.tmux.conf";
       ".tmux-git.conf".source           = "${c.dotfilesDir}/tmux/.tmux-git.conf";
       ".config/yazi".source             = "${c.dotfilesDir}/yazi/.config/yazi";
-      # ".zshrc".source                   = "${c.dotfilesDir}/zsh/.zshrc";
       ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
       ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
-      ".config/i3".source               = "${c.dotfilesDir}/i3/.config/i3";
-      ".config/i3status".source         = "${c.dotfilesDir}/i3/.config/i3status";
       ".screenlayout/monitor.sh".source = "${c.dotfilesDir}/scripts/monitor.sh";
       ".tmux-git".source = builtins.fetchGit {
         url = "https://github.com/drmad/tmux-git.git";
