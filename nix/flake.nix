@@ -31,6 +31,7 @@
       modules = [
         ./system/configuration.nix
         home-manager.nixosModules.home-manager
+        (builtins.path { path = /etc/nixos/hardware-configuration.nix; name = "hardware-configuration.nix"; })
         (builtins.path { path = privateNix; name = "private.nix"; })
       ];
     };
