@@ -1,6 +1,6 @@
 let
   username      = "lad";
-  homeDir       = "/home/${username}";
+  homeDir       = "/home/lad";
   dotfilesDir   = "${homeDir}/dotfiles";
   screenshotDir = "${homeDir}/Pictures/Screenshot";
 in
