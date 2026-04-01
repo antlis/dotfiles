@@ -57,11 +57,6 @@ in
     glab                   # GitLab CLI | https://gitlab.com/gitlab-org/cli
     asciinema              # Terminal session recorder | https://asciinema.org
 
-    # ── Zsh Plugins ───────────────────────────────────────────────────────────
-    zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
-    zsh-fzf-tab              # Replace zsh tab completion with fzf | https://github.com/Aloxaf/fzf-tab
-    zsh-you-should-use       # Reminds you to use existing aliases | https://github.com/MichaelAquilina/zsh-you-should-use
-
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
     tmuxinator             # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
