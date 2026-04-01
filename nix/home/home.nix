@@ -11,6 +11,7 @@ in
       ./i3/i3.nix
       ./i3/i3status.nix
       ./zsh/zshrc.nix
+      ./tmux/tmux.nix
       ./desktop-entries.nix
       ./git.nix
       ./kitty.nix
@@ -33,8 +34,6 @@ in
     home.file = {
       ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
         "${c.dotfilesDir}/nvim-lazyvim/.config/nvim-lazyvim";
-      ".tmux.conf".source               = "${c.dotfilesDir}/tmux/.tmux.conf";
-      ".tmux-git.conf".source           = "${c.dotfilesDir}/tmux/.tmux-git.conf";
       ".config/yazi".source             = "${c.dotfilesDir}/yazi/.config/yazi";
       ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
       ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
