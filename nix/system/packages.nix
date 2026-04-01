@@ -55,6 +55,7 @@ in
     worktrunk              # Git worktree management for parallel | https://worktrunk.dev/
     gh                     # GitHub CLI | https://cli.github.com
     glab                   # GitLab CLI | https://gitlab.com/gitlab-org/cli
+    asciinema              # Terminal session recorder | https://asciinema.org
 
     # ── Zsh Plugins ───────────────────────────────────────────────────────────
     zsh-syntax-highlighting  # Fish-like syntax highlighting for zsh | https://github.com/zsh-users/zsh-syntax-highlighting
