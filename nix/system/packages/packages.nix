@@ -5,6 +5,8 @@ let
   nodePackages = import ./node-packages.nix { inherit pkgs; };
 
   rustPackages = import ./rust-packages.nix { inherit pkgs inputs; };
+
+  pythonPackages = import ./python-packages.nix { inherit pkgs; };
 in
 {
   environment.systemPackages = with pkgs; [
@@ -50,15 +52,7 @@ in
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
-    # Patches warning - WARNING: You are running tmuxinator with an unsupported version of tmux.
-    # TODO: fix it or switch tmuxup or something else
-    # tmuxinator is an ancient crap, and slow as heck
-    (tmuxinator.overrideAttrs (old: {
-      postInstall = (old.postInstall or "") + ''
-        sed -i 's/"3.5a",/"3.5a", "3.6a",/' \
-          $out/lib/ruby/gems/*/gems/tmuxinator-*/lib/tmuxinator/tmux_version.rb
-      '';
-    }))                    # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
+    # tmuxinator and tmuxrs replaced by tmuxp (see python-packages.nix)
 
     # ── Editors & IDE ─────────────────────────────────────────────────────────
     neovim                 # Hyperextensible Vim-based text editor | https://neovim.io
@@ -117,5 +111,5 @@ in
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
 
-  ] ++ nodePackages ++ rustPackages;
+  ] ++ nodePackages ++ rustPackages ++ pythonPackages;
 }
