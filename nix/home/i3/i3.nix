@@ -77,6 +77,7 @@ in
 
       # ── Startup ───────────────────────────────────────────────────────────
       startup = [
+        { command = "${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.i3lock}/bin/i3lock --color=6B4C9A --nofork"; notification = false; }
         { command = "keynav </dev/null &>/dev/null"; notification = false; }
         { command = "pidgin"; notification = false; }
         { command = "AmneziaVPN"; notification = false; }
@@ -102,16 +103,14 @@ in
 
     # ── extraConfig: things the HM module can't express ───────────────────
     extraConfig = ''
-      # Floating modifier
       floating_modifier ${mod}
 
-      # System menu mode
       set $sysmenu (l)ock, (L)ogout, (P)oweroff, (R)eboot
       mode "$sysmenu" {
-          bindsym l       exec "i3lock -c 111111", mode "default"
-          bindsym Shift+l exec "i3-msg exit",      mode "default"
-          bindsym Shift+p exec "shutdown now",      mode "default"
-          bindsym Shift+r exec reboot,              mode "default"
+          bindsym l       exec "loginctl lock-session", mode "default"
+          bindsym Shift+l exec "i3-msg exit",           mode "default"
+          bindsym Shift+p exec "shutdown now",           mode "default"
+          bindsym Shift+r exec reboot,                   mode "default"
           bindsym Return  mode "default"
           bindsym Escape  mode "default"
       }

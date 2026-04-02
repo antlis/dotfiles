@@ -36,6 +36,7 @@ in
     xev                    # X11 event viewer — shows keycodes, mouse events, and window events; useful for debugging keybindings | https://www.x.org/archive/X11R7.7/doc/man/man1/xev.1.xhtml
     gnupg                  # GNU Privacy Guard — encrypt, sign, and manage keys via OpenPGP | https://gnupg.org
     openssl                # Cryptography toolkit — TLS/SSL, certificates, and general-purpose crypto primitives | https://openssl.org
+    xss-lock               # xss-lock hooks up your favorite locker to the MIT screen saver extension for X and also to systemd's login manager. | https://man.archlinux.org/man/xss-lock.1
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty

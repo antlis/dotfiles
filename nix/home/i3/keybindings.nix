@@ -134,9 +134,6 @@
   # System menu mode
   "${mod}+Shift+x" = "mode \"$sysmenu\"";
 
-  # Screen off / lock
-  "XF86LaunchA" = "exec i3lock --color=$(echo \"#$(openssl rand -hex 3)\")";
-
   # Volume
   "XF86AudioRaiseVolume" = "exec --no-startup-id pactl set-sink-volume 0 +5%";
   "XF86AudioLowerVolume" = "exec --no-startup-id pactl set-sink-volume 0 -5%";
@@ -149,6 +146,9 @@
 
   # Display toggle
   "XF86Display" = "exec --no-startup-id xrandr --auto";
+
+  # Hibernate since short power button press never sends event
+  "${mod}+F12" = "exec --no-startup-id loginctl lock-session && systemctl hibernate";
 
   # Show keybindings
   "${mod}+slash" = "exec --no-startup-id grep \"^bindsym\" ~/.config/i3/config | sed 's/bindsym //' | rofi -dmenu -p \"⌨ keybindings\" -i";
