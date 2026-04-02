@@ -80,9 +80,6 @@ in
       # ── Tmuxinator ───────────────────────────────────────────────────────────
       export TMUXINATOR_DISABLE_VERSION_WARNING=1
 
-      # ── Tmux git ─────────────────────────────────────────────────────────────
-      if [[ $TMUX ]]; then source ~/.tmux-git/tmux-git.sh; fi
-
       # ── Lazy load rvm ────────────────────────────────────────────────────────
       rvm() {
         unfunction rvm
