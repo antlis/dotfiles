@@ -38,14 +38,6 @@ in
       ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
       ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
       ".screenlayout/monitor.sh".source = "${c.dotfilesDir}/scripts/monitor.sh";
-      ".tmux-git".source = builtins.fetchGit {
-        url = "https://github.com/drmad/tmux-git.git";
-        ref = "master";
-      };
-      ".tmux/plugins/tpm".source = builtins.fetchGit {
-        url = "https://github.com/tmux-plugins/tpm.git";
-        ref = "master";
-      };
       ".config/tmux-airline-dracula".source = builtins.fetchGit {
         url = "https://github.com/sei40kr/tmux-airline-dracula.git";
         ref = "master";
