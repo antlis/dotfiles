@@ -12,6 +12,23 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.blacklistedKernelModules = [ "kvm_intel" "kvm_amd" ];
 
+  # Hibernation settings
+  boot.initrd.kernelModules = [ "nvme_core" "nvme" "ext4" ];
+  powerManagement.enable = true;
+  # Use root partition UUID for resume + swapfile offset
+  boot.resumeDevice = "/dev/disk/by-uuid/63b6c192-6a12-4b05-aec3-11d89885aefc";
+  boot.kernelParams = [
+    "resume_offset=54599680"   # offset of your swapfile (from 'filefrag -v')
+    "mem_sleep_default=deep"
+  ];
+  # Suspend-then-hibernate and power buttons
+  services.power-profiles-daemon.enable = true;
+  services.logind.settings.Login = {
+    LidSwitch         = "suspend-then-hibernate";
+    PowerKey          = "hibernate";
+    PowerKeyLongPress = "poweroff";
+  };
+
   services.openssh.enable = true;
   # Enable sshd, but don't start it on boot
   systemd.services.sshd.wantedBy = lib.mkForce [];
