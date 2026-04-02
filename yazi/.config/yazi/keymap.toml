@@ -3,6 +3,12 @@
 "$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
 
 [[mgr.prepend_keymap]]
+on = "<C-e>"
+run = "shell 'dragon-drop --and-exit \"$@\"' --confirm"
+# run = "shell -- dragon -x -i -T %s1"
+desc = "Drag and drop selected file(s)"
+
+[[mgr.prepend_keymap]]
 on = "z"
 run = "plugin zoxide"
 desc = "Jump to a directory using zoxide"
