@@ -9,7 +9,6 @@
     historyLimit = 10000;
     mouse = true;
     escapeTime = 0;
-    statusInterval = 5;
     keyMode = "vi";
     terminal = "screen-256color";
 
@@ -28,6 +27,8 @@
       set -g allow-passthrough on
       set -ga update-environment TERM
       set -ga update-environment TERM_PROGRAM
+
+      set -g status-interval 5
 
       # ── Pane indexing ─────────────────────────────────────────────────────────
       setw -g pane-base-index 1
