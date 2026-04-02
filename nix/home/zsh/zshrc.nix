@@ -77,6 +77,9 @@ in
       # ── Tools ────────────────────────────────────────────────────────────────
       unalias z 2>/dev/null; eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
 
+      # ── Tmuxinator ───────────────────────────────────────────────────────────
+      export TMUXINATOR_DISABLE_VERSION_WARNING=1
+
       # ── Tmux git ─────────────────────────────────────────────────────────────
       if [[ $TMUX ]]; then source ~/.tmux-git/tmux-git.sh; fi
 
