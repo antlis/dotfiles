@@ -56,6 +56,7 @@ in
     gh                     # GitHub CLI | https://cli.github.com
     glab                   # GitLab CLI | https://gitlab.com/gitlab-org/cli
     asciinema              # Terminal session recorder | https://asciinema.org
+    dragon-drop            # Drag-and-drop source/target for X11 | https://github.com/mwh/dragon
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
