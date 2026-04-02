@@ -3,7 +3,7 @@
   imports =
     [
       ../home/home.nix
-      ./packages.nix
+      ./packages/packages.nix
       ./bluetooth.nix
     ];
 
