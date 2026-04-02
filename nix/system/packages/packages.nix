@@ -1,21 +1,10 @@
 { config, pkgs, inputs, ... }:
 let
-
-  brave-rofi-rust = pkgs.rustPlatform.buildRustPackage {
-    pname = "brave-rofi-rust";
-    version = "main";
-    src = pkgs.fetchFromGitHub {
-      owner = "antlis";
-      repo = "brave-rofi-rust";
-      rev = "master";
-      hash = "sha256-STlBrSYZ+SkM1JV2pQciYfVQhKStnantUACxz7AuJxY=";
-    };
-    cargoHash = "sha256-Y50dAfbDVZGoTf0rq0Z5fMc9sFVVGGPQv+LCywaktEU=";
-  };
-
   worktrunk = inputs.worktrunk.packages.${pkgs.system}.default;
 
   nodePackages = import ./node-packages.nix { inherit pkgs; };
+
+  rustPackages = import ./rust-packages.nix { inherit pkgs inputs; };
 in
 {
   environment.systemPackages = with pkgs; [
@@ -61,7 +50,7 @@ in
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
-    tmuxinator             # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
+    # tmuxinator           # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
 
     # ── Editors & IDE ─────────────────────────────────────────────────────────
     neovim                 # Hyperextensible Vim-based text editor | https://neovim.io
@@ -114,13 +103,11 @@ in
 
     # ── Rofi & Launchers ──────────────────────────────────────────────────────
     rofi                   # Application launcher and window switcher | https://github.com/davatorium/rofi
-    brave-rofi-rust        # Rofi plugin to search Brave browser bookmarks and history | https://github.com/antlis/brave-rofi-rust
 
     # ── Rust Toolchain ────────────────────────────────────────────────────────
-    cargo                  # Rust package manager and build tool | https://doc.rust-lang.org/cargo
 
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
 
-  ] ++ nodePackages;
+  ] ++ nodePackages ++ rustPackages;
 }
