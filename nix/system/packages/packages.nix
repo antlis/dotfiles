@@ -50,7 +50,7 @@ in
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
-    # tmuxinator           # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
+    tmuxinator             # Manage and restore tmux session layouts via YAML | https://github.com/tmuxinator/tmuxinator
 
     # ── Editors & IDE ─────────────────────────────────────────────────────────
     neovim                 # Hyperextensible Vim-based text editor | https://neovim.io
