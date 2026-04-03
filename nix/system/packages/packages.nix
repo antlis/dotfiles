@@ -28,6 +28,8 @@ in
     gnupg                  # GNU Privacy Guard — encrypt, sign, and manage keys via OpenPGP | https://gnupg.org
     openssl                # Cryptography toolkit — TLS/SSL, certificates, and general-purpose crypto primitives | https://openssl.org
     xss-lock               # xss-lock hooks up your favorite locker to the MIT screen saver extension for X and also to systemd's login manager. | https://man.archlinux.org/man/xss-lock.1
+    pandoc                 # Document converter | https://pandoc.org/
+    texliveMedium          # TeX Live — provides pdflatex and common LaTeX packages. pdflatex engine for pandoc
 
     # ── Terminal & Shell ──────────────────────────────────────────────────────
     kitty                  # GPU-accelerated terminal emulator | https://sw.kovidgoyal.net/kitty
@@ -110,6 +112,7 @@ in
 
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
+    claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
 
   ] ++ nodePackages ++ rustPackages ++ pythonPackages;
 }
