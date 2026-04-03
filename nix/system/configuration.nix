@@ -132,12 +132,6 @@
     Defaults pwfeedback
   '';
 
-  # TODO: Remove after ditching stopphish
-  security.pki.certificateFiles = [
-    /home/lad/Projects/wrk/stopphish/rootCA.crt
-    /etc/ssl/certs/custom/rootCA.crt
-  ];
-
   services.pipewire = {
     enable = true;
     alsa.enable = true;
