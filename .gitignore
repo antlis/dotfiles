@@ -1,6 +1,7 @@
 zsh/.zsh_private
 nvim-lazyvim/.config/nvim-lazyvim/lazy-lock.json
 profile/
-nix/private.nix
+nix/system/private.nix
 yazi/.config/yazi/plugins/
 yazi/.config/yazi/flavors/
+nix/system/private.nix
