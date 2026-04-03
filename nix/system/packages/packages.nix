@@ -38,7 +38,7 @@ in
     btop                   # Interactive process and resource monitor | https://github.com/aristocratos/btop
     duf                    # Modern df replacement with a better UI | https://github.com/muesli/duf
     pay-respects           # Suggests correct command when you mistype (thefuck alternative) | https://codeberg.org/iff/pay-respects
-    neofetch               # System info display in the terminal | https://github.com/dylanaraps/neofetch
+    fastfetch              # System info display in the terminal | https://github.com/fastfetch-cli/fastfetch
     tldr                   # Simplified community-driven man pages with practical examples | https://tldr.sh
     navi                   # Interactive cheatsheet tool — browse and execute one-liners | https://github.com/denisidoro/navi
     lolcat                 # Rainbows and unicorns | https://github.com/busyloop/lolcat
