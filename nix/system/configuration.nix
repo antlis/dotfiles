@@ -155,8 +155,6 @@
   programs.dconf.enable = true;
   programs.firefox.enable = true;
 
-  nixpkgs.config.allowUnfree = true;
-
   environment.shells = with pkgs; [ zsh ];
   environment.sessionVariables = {
     BROWSER = "brave";

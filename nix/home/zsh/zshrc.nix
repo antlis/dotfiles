@@ -77,8 +77,8 @@ in
       # ── Tools ────────────────────────────────────────────────────────────────
       unalias z 2>/dev/null; eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
 
-      # ── Tmuxinator ───────────────────────────────────────────────────────────
-      export TMUXINATOR_DISABLE_VERSION_WARNING=1
+      # For tmuxp
+      export DISABLE_AUTO_TITLE='true'
 
       # ── Lazy load rvm ────────────────────────────────────────────────────────
       rvm() {
