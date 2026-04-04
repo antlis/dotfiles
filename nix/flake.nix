@@ -18,6 +18,14 @@
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Niri + Noctalia (remove these two inputs to disable)
+    niri.url = "github:sodiboo/niri-flake";
+
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, claude-code, ... }@inputs:
@@ -49,6 +57,11 @@
       modules = [
         ./system/configuration.nix
         home-manager.nixosModules.home-manager
+
+        # Niri + Noctalia (remove these 3 lines to disable)
+        inputs.niri.nixosModules.niri
+        ./niri/system.nix
+        ./niri/home.nix
 
         ({ config, ... }: {
           nixpkgs.pkgs = pkgs;
