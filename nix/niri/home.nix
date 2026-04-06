@@ -1,9 +1,49 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   c = import ../constants.nix;
+  niriPackages = import ./packages.nix { inherit pkgs; };
 in
 {
-  home-manager.users.${c.username} = { pkgs, ... }: {
+  home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
+    home.stateVersion = "25.11";
+    home.username = c.username;
+    home.homeDirectory = c.homeDir;
+    imports = [
+      ../home/zsh/zshrc.nix
+      ../home/tmux/tmux.nix
+      ../home/desktop-entries.nix
+      ../home/git.nix
+      ../home/kitty.nix
+      ../home/rofi.nix
+      ../home/opencode.nix
+    ];
+    home.packages = niriPackages;
+    services.dunst.enable = true;
+    services.ssh-agent.enable = true;
+    home.activation.createScreenshotDir = lib.mkAfter ''
+      mkdir -p ${c.screenshotDir}
+    '';
+    home.activation.setupScreenlayout = lib.mkAfter ''
+      mkdir -p ${c.homeDir}/.screenlayout
+    '';
+    dconf.settings = {
+      "org/gnome/gnome-screenshot" = {
+        auto-save-directory = "file://${c.screenshotDir}";
+      };
+    };
+    home.file = {
+      ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
+        "${c.dotfilesDir}/nvim-lazyvim/.config/nvim-lazyvim";
+      ".config/yazi".source             = "${c.dotfilesDir}/yazi/.config/yazi";
+      ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
+      ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
+      ".screenlayout/monitor.sh".source = "${c.dotfilesDir}/scripts/monitor.sh";
+      ".config/tmux-airline-dracula".source = builtins.fetchGit {
+        url = "https://github.com/sei40kr/tmux-airline-dracula.git";
+        ref = "master";
+      };
+    };
+
     programs.niri.settings = {
       input.keyboard.xkb = {
         layout = "us,ru";
@@ -22,14 +62,6 @@ in
       layout = {
         gaps = 8;
 
-        # gaps = 0;
-        # struts = {
-        #   left = 0;
-        #   right = 0;
-        #   bottom = 0;
-        #   top = 0;
-        # };
-
         center-focused-column = "never";
 
         focus-ring = {
@@ -45,11 +77,38 @@ in
       };
 
       spawn-at-startup = [
+        { command = [ "${pkgs.kitty}/bin/kitty" ]; }
         { command = [ "noctalia-shell" ]; }
       ];
 
+      workspaces = {
+        "01" = {};
+        "02" = {};
+        "03" = {};
+        "04" = {};
+        "05" = {};
+        "06" = {};
+        "07" = {};
+        "08" = {};
+        "09" = {};
+        "10" = {};
+      };
+
       window-rules = [
-        # Workspace 2 - Browsers
+        # Workspace 01 - Terminal
+        {
+          matches = [ { app-id = "kitty"; } ];
+          open-on-workspace = "01";
+          open-fullscreen = true;
+          geometry-corner-radius = {
+            top-left = 0.0;
+            top-right = 0.0;
+            bottom-left = 0.0;
+            bottom-right = 0.0;
+          };
+        }
+
+        # Workspace 02 - Browsers
         {
           matches = [
             { app-id = "firefox"; }
@@ -60,24 +119,29 @@ in
             { app-id = "google-chrome"; }
             { app-id = "zen"; }
             { app-id = "brave-browser"; }
+            { app-id = "brave"; }
+            { app-id = "Brave"; }
+            { app-id = "Brave-browser"; }
             { app-id = "qutebrowser"; }
           ];
-          open-on-workspace = "2";
+          open-on-workspace = "02";
         }
 
-        # Workspace 3 - File managers / torrents
+        # Workspace 03 - File managers / torrents
         {
           matches = [
             { app-id = "org.gnome.Nautilus"; }
+            { app-id = "nautilus"; }
+            { app-id = "Nautilus"; }
             { app-id = "qbittorrent"; }
             { app-id = "thunar"; }
             { app-id = "transmission-gtk"; }
             { app-id = "transmission-qt"; }
           ];
-          open-on-workspace = "3";
+          open-on-workspace = "03";
         }
 
-        # Workspace 4 - Creative / AI
+        # Workspace 04 - Creative / AI
         {
           matches = [
             { app-id = "krita"; }
@@ -88,10 +152,10 @@ in
             { app-id = "electron-deepseek"; }
             { app-id = "copilot-desktop"; }
           ];
-          open-on-workspace = "4";
+          open-on-workspace = "04";
         }
 
-        # Workspace 5 - Dev / editors
+        # Workspace 05 - Dev / editors
         {
           matches = [
             { app-id = "code"; }
@@ -100,27 +164,25 @@ in
             { app-id = "obsidian"; }
             { app-id = "sublime_text"; }
           ];
-          open-on-workspace = "5";
+          open-on-workspace = "05";
         }
 
-        # Workspace 6 - Messaging
+        # Workspace 06 - Messaging
         {
           matches = [
             { app-id = "slack"; }
             { app-id = "signal"; }
             { app-id = "org.telegram.desktop"; }
-            { app-id = "materialgram"; }
-            { app-id = "ayugram-desktop"; }
+            { app-id = "com.ayugram.desktop"; }
             { app-id = "zoom"; }
             { app-id = "discord"; }
             { app-id = "element"; }
-            { app-id = "skype"; }
             { app-id = "yougile"; }
           ];
-          open-on-workspace = "6";
+          open-on-workspace = "06";
         }
 
-        # Workspace 7 - Dev tools
+        # Workspace 07 - Dev tools
         {
           matches = [
             { app-id = "bitwarden"; }
@@ -130,10 +192,11 @@ in
             { app-id = "dbeaver"; }
             { app-id = "postman"; }
           ];
-          open-on-workspace = "7";
+          open-on-workspace = "07";
+          open-fullscreen = true;
         }
 
-        # Workspace 8 - Utilities / VPN
+        # Workspace 08 - Utilities / VPN
         {
           matches = [
             { app-id = "filezilla"; }
@@ -143,23 +206,29 @@ in
             { app-id = "pavucontrol"; }
             { app-id = "steam"; }
             { app-id = "org.kde.kdeconnect"; }
-            { app-id = "AmneziaVPN"; }
             { app-id = "mullvad-vpn"; }
             { app-id = "pia-client"; }
             { app-id = "nekoray"; }
             { app-id = "com.cisco.anyconnect.gui"; }
           ];
-          open-on-workspace = "8";
+          open-on-workspace = "08";
         }
 
-        # Workspace 9 - VMs / remote
+        # AmneziaVPN - matched by title since app-id is empty
+        {
+          matches = [ { title = "AmneziaVPN"; } ];
+          open-on-workspace = "08";
+          open-fullscreen = true;
+        }
+
+        # Workspace 09 - VMs / remote
         {
           matches = [
             { app-id = "virtualbox"; }
             { app-id = "org.remmina.Remmina"; }
             { app-id = "netsoft-com.netsoft.hubstaff"; }
           ];
-          open-on-workspace = "9";
+          open-on-workspace = "09";
         }
 
         # Workspace 10 - Media
@@ -229,25 +298,25 @@ in
         "Mod+F".action.fullscreen-window = [];
 
         # Workspaces
-        "Mod+1".action.focus-workspace = 1;
-        "Mod+2".action.focus-workspace = 2;
-        "Mod+3".action.focus-workspace = 3;
-        "Mod+4".action.focus-workspace = 4;
-        "Mod+5".action.focus-workspace = 5;
-        "Mod+6".action.focus-workspace = 6;
-        "Mod+7".action.focus-workspace = 7;
-        "Mod+8".action.focus-workspace = 8;
-        "Mod+9".action.focus-workspace = 9;
+        "Mod+1".action.focus-workspace = "01";
+        "Mod+2".action.focus-workspace = "02";
+        "Mod+3".action.focus-workspace = "03";
+        "Mod+4".action.focus-workspace = "04";
+        "Mod+5".action.focus-workspace = "05";
+        "Mod+6".action.focus-workspace = "06";
+        "Mod+7".action.focus-workspace = "07";
+        "Mod+8".action.focus-workspace = "08";
+        "Mod+9".action.focus-workspace = "09";
 
-        "Mod+Shift+1".action.move-column-to-workspace = 1;
-        "Mod+Shift+2".action.move-column-to-workspace = 2;
-        "Mod+Shift+3".action.move-column-to-workspace = 3;
-        "Mod+Shift+4".action.move-column-to-workspace = 4;
-        "Mod+Shift+5".action.move-column-to-workspace = 5;
-        "Mod+Shift+6".action.move-column-to-workspace = 6;
-        "Mod+Shift+7".action.move-column-to-workspace = 7;
-        "Mod+Shift+8".action.move-column-to-workspace = 8;
-        "Mod+Shift+9".action.move-column-to-workspace = 9;
+        "Mod+Shift+1".action.move-column-to-workspace = "01";
+        "Mod+Shift+2".action.move-column-to-workspace = "02";
+        "Mod+Shift+3".action.move-column-to-workspace = "03";
+        "Mod+Shift+4".action.move-column-to-workspace = "04";
+        "Mod+Shift+5".action.move-column-to-workspace = "05";
+        "Mod+Shift+6".action.move-column-to-workspace = "06";
+        "Mod+Shift+7".action.move-column-to-workspace = "07";
+        "Mod+Shift+8".action.move-column-to-workspace = "08";
+        "Mod+Shift+9".action.move-column-to-workspace = "09";
 
         # Move workspace between monitors
         "Mod+Ctrl+L".action.move-workspace-to-monitor-right = [];
@@ -277,7 +346,7 @@ in
 
         # App shortcuts
         "Mod+Ctrl+2" = spawn [ "brave" ];
-        "Mod+Ctrl+8" = spawn [ "AmneziaVPN" ];
+        "Mod+Ctrl+8" = spawn [ "/run/current-system/sw/bin/AmneziaVPN" ];
 
         # Niri control
         "Mod+Shift+E".action.quit = [];
