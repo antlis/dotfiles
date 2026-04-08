@@ -1,7 +1,18 @@
 # AGENTS.md
 
-This repository contains dotfiles and NixOS configuration. Most files are configuration
-rather than executable code, but the following guidelines apply when editing.
+This file provides guidance to AI coding agents working in this repository.
+
+## What This Is
+
+Personal dotfiles and NixOS configuration for a Linux desktop environment. Most files are declarative configuration, not executable code. The system runs NixOS with dual compositor support (i3 for X11, Niri for Wayland), Neovim (LazyVim), Zsh, Kitty terminal, and many TUI tools.
+
+## How Dotfiles Are Managed
+
+Two parallel systems exist:
+- **NixOS + Home Manager** (`nix/`): Declarative configs for the NixOS machine. Home Manager generates symlinks for neovim, yazi, xbindkeysrc, etc. This is the primary system.
+- **GNU Stow** (top-level dirs): Each top-level directory (e.g., `kitty/`, `tmux/`) mirrors the home directory structure. Run `stow <dirname>` to symlink into `~`. Used on non-NixOS systems.
+
+Some configs exist in both `nix/home/` (Nix-managed) and as top-level stow packages. When editing, check which is active on the target system.
 
 ## Build / Lint / Validation Commands
 
@@ -34,6 +45,17 @@ bash -n script.sh
 shellcheck script.sh
 ```
 
+## Architecture
+
+- `nix/flake.nix` — Entry point. Imports system and home configs, plus external flakes (niri, noctalia shell, claude-code).
+- `nix/constants.nix` — Shared values (username, paths) used across modules.
+- `nix/system/` — NixOS system-level: boot, services, power management, packages.
+- `nix/system/private.nix` — Gitignored. Sensitive system config.
+- `nix/home/` — Home Manager: per-program configs (zsh/, tmux/, i3/, git.nix, kitty.nix, etc.).
+- `nix/niri/` — Optional Niri Wayland compositor module (system + home + packages).
+- `hypr/` — Hyprland config (standalone, not Nix-managed). Split into `custom/` (user prefs) and `hyprland/` (compositor-specific + scripts).
+- `scripts/bootstrap.sh` — Clones external repos and plugins for non-NixOS setup.
+
 ## Code Style Guidelines
 
 ### Nix (.nix files)
@@ -46,6 +68,7 @@ shellcheck script.sh
 - **Let bindings**: Use `let ... in` for local definitions, indent body 2 spaces
 - **Prefer inheriting**: Use `inherit` to reduce repetition
 - **Naming**: Use camelCase for variable names in Nix (`myVariable`), kebab-case for file names
+- **Formatting**: Run `nix fmt` (nixfmt-rfc-style)
 
 Example:
 ```nix
@@ -104,36 +127,10 @@ clone_or_pull() {
 - **Line length**: Prefer under 100 chars where reasonable
 - **No trailing whitespace**: Remove on save
 - **Executable scripts**: `chmod +x` for scripts in scripts/ and hypr/scripts/
-- **Symlinks**: Use GNU Stow for managing dotfiles on non-NixOS systems
 
-## Repository Structure
+## Important Notes
 
-```
-.
-├── nix/           # NixOS flake (system + home manager configs)
-│   ├── flake.nix  # Main entry point
-│   ├── system/    # NixOS system modules
-│   ├── home/      # Home Manager user configs
-│   └── niri/      # Niri (Wayland) config (optional)
-├── hypr/          # Hyprland (Wayland compositor) config
-├── i3/            # i3 window manager config
-├── zsh/           # Zsh config for non-NixOS systems
-├── nvim-lazyvim/  # Neovim/LazyVim config
-├── tmux/          # Tmux config
-├── kitty/         # Terminal emulator config
-├── rofi/          # Application launcher config
-├── yazi/          # File manager config
-├── scripts/       # Utility scripts (bootstrap.sh, monitor.sh)
-├── starship/      # Prompt config
-├── git/           # Git config
-├── keynav/        # Keyboard mouse config
-├── xbindkeysrc/   # X11 keybindings
-└── opencode/      # OpenCode AI assistant config
-```
-
-## Notes
-
-- Nix config uses NixOS 25.11 + Home Manager release-25.11
-- Zsh uses Zinit for fast plugin loading (turbo mode)
-- Some configs exist in both `nix/home/` (Nix-managed) and top-level (stow-managed)
-- Private configs go in `nix/system/private.nix` (gitignored)
+- NixOS 25.11 + Home Manager release-25.11
+- Zsh uses Zinit with turbo mode for fast plugin loading
+- Git uses `gh` (GitHub CLI) for credential management and `delta` as the pager
+- Neovim config at `nvim-lazyvim/` uses LazyVim distribution with 40+ plugins managed via lazy.nvim
