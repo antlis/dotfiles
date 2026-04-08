@@ -4,18 +4,21 @@ Nix flake for declarative system configuration using NixOS + Home Manager.
 
 ## Structure
 
-- `flake.nix` - Main flake entry point
+- `flake.nix` - Main flake entry point; imports nixpkgs, home-manager, and external flakes (niri, noctalia, claude-code)
 - `constants.nix` - Shared constants (username, home dir, paths)
 - `system/` - NixOS system-level configuration
   - `configuration.nix` - Main system config (boot, power, services)
   - `packages/` - System packages (python, node, rust)
   - `bluetooth.nix` - Bluetooth configuration
+  - `private.nix` - Sensitive system config (gitignored)
 - `home/` - Home Manager user configuration
+  - `home.nix` - Main entry point; imports all other home modules and manages symlinks
   - `zsh/` - Zsh configuration (via zinit)
   - `tmux/` - Tmux configuration
   - `i3/` - i3 window manager config
-  - `kitty/`, `rofi/`, `git/`, `opencode.nix` - Various app configs
-- `niri/` - Niri (Wayland compositor) config (optional)
+  - `kitty.nix`, `rofi.nix`, `git.nix`, `opencode.nix` - App configs
+  - `desktop-entries.nix` - Custom `.desktop` entries
+- `niri/` - Niri (Wayland compositor) config (optional module with system, home, and packages)
 
 ## Features
 

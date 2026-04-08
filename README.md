@@ -1,6 +1,6 @@
 # 🏠 dotfiles
 
-> My personal Arch Linux configuration files, managed with GNU Stow
+> My personal Linux configuration files — NixOS with Home Manager, or GNU Stow on other distros
 
 ![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)
 ![NixOS](https://img.shields.io/badge/-NixOS-5277C3?style=for-the-badge&logo=NixOS&logoColor=white)
@@ -8,11 +8,22 @@
 
 ## 📦 Setup
 
-This repository uses [GNU Stow](https://www.gnu.org/software/stow/) for symlink management.
+### NixOS (primary)
+
+```bash
+cd nix/
+sudo nixos-rebuild switch --flake .#nixos
+```
+
+See [`nix/README.md`](nix/README.md) for details.
+
+### GNU Stow (other distros)
+
+This repository also supports [GNU Stow](https://www.gnu.org/software/stow/) for symlink management.
 
 ```bash
 # Clone the repository
-git clone <your-repo-url> ~/.dotfiles
+git clone git@github.com:lad/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Install a specific configuration
@@ -32,6 +43,7 @@ stow */
 | Tool | Description | Config |
 |------|-------------|--------|
 | ![Hyprland](https://img.shields.io/badge/-Hyprland-58E1FF?style=flat&logo=wayland&logoColor=white) **hypr** | Modern Wayland compositor with eye-candy animations | `hypr/` |
+| ![Niri](https://img.shields.io/badge/-Niri-7B68EE?style=flat&logo=wayland&logoColor=white) **niri** | Scrollable tiling Wayland compositor | `nix/niri/` |
 | ![i3](https://img.shields.io/badge/-i3wm-2A2A2A?style=flat) **i3** | Tiling window manager for X11 | `i3/` |
 
 ### 🖥️ Terminal & Shell
@@ -90,8 +102,8 @@ stow */
 
 ## 📝 Notes
 
-- **OS**: Arch Linux / NixOS 🐧
-- **Management**: GNU Stow for symlink farm (or Nix for NixOS)
+- **OS**: NixOS / Arch Linux 🐧
+- **Management**: NixOS + Home Manager (primary), or GNU Stow for symlink farm
 - **Philosophy**: Minimal, fast, keyboard-driven workflow
 
 ## 🔧 Requirements
