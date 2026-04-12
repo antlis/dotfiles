@@ -1,25 +1,3 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "figma": {
-      "type": "local",
-      "command": ["npx", "-y", "figma-mcp"],
-      "enabled": true
-    },
-    "browsermcp": {
-      "type": "local",
-      "command": ["npx", "-y", "@browsermcp/mcp@latest"],
-      "enabled": true
-    },
-    "playwright": {
-      "type": "local",
-      "command": ["npx", "-y", "@playwright/mcp@latest"],
-      "enabled": true
-    },
-    "pdf-reader": {
-      "type": "local",
-      "command": ["npx", "--prefer-offline", "@sylphx/pdf-reader-mcp"],
-      "enabled": true
-    }
-  }
+  "$schema": "https://opencode.ai/config.json"
 }

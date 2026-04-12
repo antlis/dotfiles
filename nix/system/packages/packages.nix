@@ -7,6 +7,8 @@ let
   rustPackages = import ./rust-packages.nix { inherit pkgs inputs; };
 
   pythonPackages = import ./python-packages.nix { inherit pkgs; };
+
+  opencode = inputs.opencode.packages.${pkgs.system}.default;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -54,15 +56,17 @@ in
 
     # ── Multiplexer ───────────────────────────────────────────────────────────
     tmux                   # Terminal multiplexer — split panes, sessions, and detach | https://github.com/tmux/tmux
-    # tmuxinator and tmuxrs replaced by tmuxp (see python-packages.nix)
+    sesh                   # Manage tmux session with zoxide | https://github.com/joshmedeski/sesh
 
     # ── Editors & IDE ─────────────────────────────────────────────────────────
     neovim                 # Hyperextensible Vim-based text editor | https://neovim.io
     nodejs                 # JavaScript runtime (required by many LSPs and tools) | https://nodejs.org
+    bun                    # Bun is a fast JavaScript all-in-one toolkit | https://bun.com/
     gcc                    # C compiler (required by treesitter parsers) | https://gcc.gnu.org
     tree-sitter            # Parser generator for syntax highlighting and code analysis | https://tree-sitter.github.io
     ripgrep                # Fast regex search tool (used by telescope/fzf) | https://github.com/BurntSushi/ripgrep
     fd                     # Fast and user-friendly find replacement (used by telescope/fzf) | https://github.com/sharkdp/fd
+    zed-editor             # Zed is a minimal code editor crafted for speed and collaboration with humans and AI. | https://zed.dev/
 
     # ── Notes & Knowledge ─────────────────────────────────────────────────────
     obsidian               # Markdown-based knowledge base and note-taking app | https://obsidian.md

@@ -26,6 +26,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    opencode = {
+      url = "github:sst/opencode";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, claude-code, ... }@inputs:
@@ -40,6 +44,7 @@
 
       overlays = [
         inputs.claude-code.overlays.default
+        inputs.opencode.overlays.default
       ];
     };
 
