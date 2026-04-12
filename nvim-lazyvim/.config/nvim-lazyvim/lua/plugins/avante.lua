@@ -29,21 +29,17 @@ end
 local function apply_avante_highlights()
   local colors = get_colors()
 
-  -- Set highlights to link to theme colors instead of hardcoded ones
   local highlights = {
-    -- Sidebar and popup colors
     { "AvanteSidebarNormal", link = "NormalFloat" },
     { "AvanteSidebarWinSeparator", link = "FloatBorder" },
     { "AvanteSidebarWinHorizontalSeparator", link = "WinSeparator" },
     { "AvantePopupHint", link = "NormalFloat" },
     { "AvantePromptInputBorder", link = "FloatBorder" },
 
-    -- Title and subtitle colors - use theme colors
     { "AvanteTitle", fg = colors.bg, bg = colors.string_fg },
     { "AvanteSubtitle", fg = colors.bg, bg = colors.keyword_fg },
     { "AvanteThirdTitle", fg = colors.comment_fg, bg = colors.bg },
 
-    -- Button colors
     { "AvanteButtonDefault", fg = colors.bg, bg = colors.comment_fg },
     { "AvanteButtonDefaultHover", fg = colors.bg, bg = colors.string_fg },
     { "AvanteButtonPrimary", fg = colors.bg, bg = colors.comment_fg },
@@ -51,7 +47,6 @@ local function apply_avante_highlights()
     { "AvanteButtonDanger", fg = colors.bg, bg = colors.comment_fg },
     { "AvanteButtonDangerHover", fg = colors.bg, bg = colors.error_fg },
 
-    -- State spinner colors
     { "AvanteStateSpinnerGenerating", fg = colors.bg, bg = colors.keyword_fg },
     { "AvanteStateSpinnerToolCalling", fg = colors.bg, bg = colors.keyword_fg },
     { "AvanteStateSpinnerFailed", fg = colors.bg, bg = colors.error_fg },
@@ -59,16 +54,13 @@ local function apply_avante_highlights()
     { "AvanteStateSpinnerSearching", fg = colors.bg, bg = colors.keyword_fg },
     { "AvanteStateSpinnerThinking", fg = colors.bg, bg = colors.keyword_fg },
 
-    -- Task colors
     { "AvanteTaskRunning", fg = colors.keyword_fg, bg = colors.bg },
     { "AvanteTaskCompleted", fg = colors.string_fg, bg = colors.bg },
     { "AvanteTaskFailed", fg = colors.error_fg, bg = colors.bg },
 
-    -- Conflict colors
     { "AvanteConflictCurrent", bg = colors.error_fg, bold = true },
     { "AvanteConflictIncoming", bg = colors.keyword_fg, bold = true },
 
-    -- Other UI elements
     { "AvanteSuggestion", link = "Comment" },
     { "AvanteAnnotation", link = "Comment" },
     { "AvanteInlineHint", link = "Keyword" },
@@ -94,8 +86,17 @@ return {
       or "make",
     event = "VeryLazy",
     opts = {
-      provider = "nanogpt",
+      provider = "claude",
       providers = {
+        claude = {
+          endpoint = "https://api.anthropic.com",
+          -- model = "claude-sonnet-4-20250514",
+          model = "claude-opus-4-6",
+          api_key_name = "ANTHROPIC_API_KEY",
+          extra_request_body = {
+            max_tokens = 8192,
+          },
+        },
         nanogpt = {
           __inherited_from = "openai",
           endpoint = "https://nano-gpt.com/api/v1",
@@ -119,15 +120,12 @@ return {
     config = function(_, opts)
       require("avante").setup(opts)
 
-      -- Apply custom highlights after avante is set up
-      -- Use autocmd to ensure colorscheme is loaded
       vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
         callback = function()
           apply_avante_highlights()
         end,
       })
 
-      -- Also apply immediately in case colorscheme is already loaded
       vim.schedule(apply_avante_highlights)
     end,
     cmd = {
@@ -146,17 +144,17 @@ return {
       "AvanteToggle",
     },
     keys = {
-      { "<leader>aa", "<cmd>AvanteAsk<CR>", desc = "Ask Avante" },
-      { "<leader>ac", "<cmd>AvanteChat<CR>", desc = "Chat with Avante" },
-      { "<leader>ae", "<cmd>AvanteEdit<CR>", desc = "Edit Avante" },
-      { "<leader>af", "<cmd>AvanteFocus<CR>", desc = "Focus Avante" },
-      { "<leader>ah", "<cmd>AvanteHistory<CR>", desc = "Avante History" },
-      { "<leader>am", "<cmd>AvanteModels<CR>", desc = "Select Avante Model" },
-      { "<leader>an", "<cmd>AvanteChatNew<CR>", desc = "New Avante Chat" },
+      { "<leader>aa", "<cmd>AvanteAsk<CR>",            desc = "Ask Avante" },
+      { "<leader>ac", "<cmd>AvanteChat<CR>",           desc = "Chat with Avante" },
+      { "<leader>ae", "<cmd>AvanteEdit<CR>",           desc = "Edit Avante" },
+      { "<leader>af", "<cmd>AvanteFocus<CR>",          desc = "Focus Avante" },
+      { "<leader>ah", "<cmd>AvanteHistory<CR>",        desc = "Avante History" },
+      { "<leader>am", "<cmd>AvanteModels<CR>",         desc = "Select Avante Model" },
+      { "<leader>an", "<cmd>AvanteChatNew<CR>",        desc = "New Avante Chat" },
       { "<leader>ap", "<cmd>AvanteSwitchProvider<CR>", desc = "Switch Avante Provider" },
-      { "<leader>ar", "<cmd>AvanteRefresh<CR>", desc = "Refresh Avante" },
-      { "<leader>as", "<cmd>AvanteStop<CR>", desc = "Stop Avante" },
-      { "<leader>at", "<cmd>AvanteToggle<CR>", desc = "Toggle Avante" },
+      { "<leader>ar", "<cmd>AvanteRefresh<CR>",        desc = "Refresh Avante" },
+      { "<leader>as", "<cmd>AvanteStop<CR>",           desc = "Stop Avante" },
+      { "<leader>at", "<cmd>AvanteToggle<CR>",         desc = "Toggle Avante" },
     },
   },
 }
