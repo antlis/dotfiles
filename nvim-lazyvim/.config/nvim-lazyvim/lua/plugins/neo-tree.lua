@@ -37,8 +37,6 @@ return {
     vim.cmd([[Neotree close]])
   end,
   init = function()
-    -- FIX: use `autocmd` for lazy-loading neo-tree instead of directly requiring it,
-    -- because `cwd` is not set up properly.
     vim.api.nvim_create_autocmd("BufEnter", {
       group = vim.api.nvim_create_augroup("Neotree_start_directory", { clear = true }),
       desc = "Start Neo-tree with directory",
@@ -62,6 +60,12 @@ return {
       bind_to_cwd = false,
       follow_current_file = { enabled = true },
       use_libuv_file_watcher = true,
+      filtered_items = {
+        visible = true,
+        hide_dotfiles = false,
+        hide_gitignored = false,
+        hide_hidden = false,
+      },
     },
     window = {
       position = 'right',
@@ -88,9 +92,9 @@ return {
     },
     default_component_configs = {
       indent = {
-        with_expanders = true, -- if nil and file nesting is enabled, will enable expanders
-        expander_collapsed = "",
-        expander_expanded = "",
+        with_expanders = true,
+        expander_collapsed = "",
+        expander_expanded = "",
         expander_highlight = "NeoTreeExpander",
       },
       git_status = {
@@ -105,7 +109,6 @@ return {
     local function on_move(data)
       LazyVim.lsp.on_rename(data.source, data.destination)
     end
-
     local events = require("neo-tree.events")
     opts.event_handlers = opts.event_handlers or {}
     vim.list_extend(opts.event_handlers, {
