@@ -43,6 +43,7 @@
     { class = "obsidian"; }
     { class = "Obsidian"; }
     { class = "Sublime_text"; }
+    { class = "dev.zed.Zed"; }
   ];
   "6" = [
     { class = "Pidgin"; }

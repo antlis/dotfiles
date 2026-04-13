@@ -217,6 +217,7 @@ assign [class="cursor"]       workspace 5
 assign [class="obsidian"]     workspace 5
 assign [class="Obsidian"]     workspace 5
 assign [class="Sublime_text"] workspace 5
+assign [class="dev.zed.Zed"]  workspace 5
 
 # 6 — Messaging
 assign [class="Pidgin"]           workspace 6
