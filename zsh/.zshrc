@@ -124,3 +124,8 @@ gvm() {
 if [[ $(ssh-add -l 2>/dev/null) == "The agent has no identities." ]]; then
   ssh-add ~/.ssh/id_rsa ~/.ssh/id_lsgitlab_rsa 2>/dev/null
 fi
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# Turso
+export PATH="$PATH:/home/lad/.turso"
