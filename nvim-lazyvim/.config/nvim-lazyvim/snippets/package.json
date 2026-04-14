@@ -1,0 +1,23 @@
+{
+  "name": "custom-snippets",
+  "contributes": {
+    "snippets": [
+      {
+        "language": "vue",
+        "path": "./vue.json"
+      },
+      {
+        "language": "vue",
+        "path": "./nuxt.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./vue.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./nuxt.json"
+      }
+    ]
+  }
+}

@@ -86,22 +86,22 @@ return {
       or "make",
     event = "VeryLazy",
     opts = {
-      provider = "claude",
+      provider = "nanogpt",
       providers = {
-        claude = {
-          endpoint = "https://api.anthropic.com",
-          -- model = "claude-sonnet-4-20250514",
-          model = "claude-opus-4-6",
-          api_key_name = "ANTHROPIC_API_KEY",
-          extra_request_body = {
-            max_tokens = 8192,
-          },
-        },
+        -- claude = {
+        --   endpoint = "https://api.anthropic.com",
+        --   -- model = "claude-sonnet-4-20250514",
+        --   model = "claude-opus-4-6",
+        --   api_key_name = "ANTHROPIC_API_KEY",
+        --   extra_request_body = {
+        --     max_tokens = 8192,
+        --   },
+        -- },
         nanogpt = {
           __inherited_from = "openai",
           endpoint = "https://nano-gpt.com/api/v1",
           api_key_name = "NANOGPT_API_KEY",
-          model = "minimax/minimax-m2.5",
+          model = "minimax/minimax-m2.7",
           -- model = 'zai-org/glm-5',
         },
       },

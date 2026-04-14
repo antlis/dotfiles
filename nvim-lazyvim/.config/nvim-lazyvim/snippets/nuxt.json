@@ -1,0 +1,449 @@
+{
+  "Nuxt Page": {
+    "prefix": "npage",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "definePageMeta({",
+      "  ${1:layout: '${2:default}',}",
+      "})",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    ",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Nuxt page with definePageMeta"
+  },
+  "Nuxt Layout": {
+    "prefix": "nlayout",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    <slot />",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Nuxt layout component"
+  },
+  "Nuxt Error Page": {
+    "prefix": "nerror-page",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "import type { NuxtError } from '#app'",
+      "",
+      "const props = defineProps<{",
+      "  error: NuxtError",
+      "}>()",
+      "",
+      "const handleClear = () => clearError({ redirect: '/' })",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    <h1>{{ error.statusCode }}</h1>",
+      "    <p>{{ error.message }}</p>",
+      "    <button @click=\"handleClear\">Go Home</button>",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Nuxt error page component"
+  },
+  "Nuxt Plugin": {
+    "prefix": "nplugin",
+    "body": [
+      "export default defineNuxtPlugin((nuxtApp) => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt plugin"
+  },
+  "Nuxt Middleware": {
+    "prefix": "nmiddleware",
+    "body": [
+      "export default defineNuxtRouteMiddleware((to, from) => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt route middleware"
+  },
+  "Nuxt Server Middleware": {
+    "prefix": "nserver-middleware",
+    "body": [
+      "export default defineEventHandler((event) => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt server middleware / event handler"
+  },
+
+  "useFetch": {
+    "prefix": "nfetch",
+    "body": [
+      "const { data: ${1:data}, status, error } = await useFetch('${2:/api/endpoint}', {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt useFetch composable"
+  },
+  "useFetch minimal": {
+    "prefix": "nfetch-min",
+    "body": "const { data: ${1:data} } = await useFetch('${2:/api/endpoint}')",
+    "description": "Nuxt useFetch minimal"
+  },
+  "useLazyFetch": {
+    "prefix": "nlazyfetch",
+    "body": [
+      "const { data: ${1:data}, status, error } = useLazyFetch('${2:/api/endpoint}', {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt useLazyFetch composable"
+  },
+  "useAsyncData": {
+    "prefix": "nasyncdata",
+    "body": [
+      "const { data: ${1:data}, status, error } = await useAsyncData('${2:key}', () => {",
+      "  return $fetch('${3:/api/endpoint}')",
+      "})"
+    ],
+    "description": "Nuxt useAsyncData composable"
+  },
+  "useLazyAsyncData": {
+    "prefix": "nlazyasyncdata",
+    "body": [
+      "const { data: ${1:data}, status, error } = useLazyAsyncData('${2:key}', () => {",
+      "  return $fetch('${3:/api/endpoint}')",
+      "})"
+    ],
+    "description": "Nuxt useLazyAsyncData composable"
+  },
+  "$fetch": {
+    "prefix": "nfetchdollar",
+    "body": [
+      "const ${1:data} = await $fetch('${2:/api/endpoint}', {",
+      "  method: '${3|GET,POST,PUT,PATCH,DELETE|}',",
+      "  ${4:body: { $0 \\},}",
+      "})"
+    ],
+    "description": "$fetch call"
+  },
+
+  "definePageMeta": {
+    "prefix": "npagemeta",
+    "body": [
+      "definePageMeta({",
+      "  ${1:layout}: '${2:default}',",
+      "  ${3:middleware}: '${4:auth}',",
+      "})"
+    ],
+    "description": "definePageMeta"
+  },
+  "definePageMeta with auth": {
+    "prefix": "npagemeta-auth",
+    "body": [
+      "definePageMeta({",
+      "  middleware: 'auth',",
+      "})"
+    ],
+    "description": "definePageMeta with auth middleware"
+  },
+
+  "useHead": {
+    "prefix": "nhead",
+    "body": [
+      "useHead({",
+      "  title: '${1:Page Title}',",
+      "  meta: [",
+      "    { name: 'description', content: '${2:description}' },",
+      "  ],",
+      "})"
+    ],
+    "description": "Nuxt useHead"
+  },
+  "useSeoMeta": {
+    "prefix": "nseometa",
+    "body": [
+      "useSeoMeta({",
+      "  title: '${1:Title}',",
+      "  ogTitle: '${1:Title}',",
+      "  description: '${2:Description}',",
+      "  ogDescription: '${2:Description}',",
+      "  ogImage: '${3:https://example.com/image.png}',",
+      "})"
+    ],
+    "description": "Nuxt useSeoMeta"
+  },
+
+  "useState": {
+    "prefix": "nstate",
+    "body": "const ${1:state} = useState<${2:string}>('${3:key}', () => ${4:''})$0",
+    "description": "Nuxt useState"
+  },
+  "useRuntimeConfig": {
+    "prefix": "nconfig",
+    "body": "const config = useRuntimeConfig()",
+    "description": "Nuxt useRuntimeConfig"
+  },
+  "useAppConfig": {
+    "prefix": "nappconfig",
+    "body": "const appConfig = useAppConfig()",
+    "description": "Nuxt useAppConfig"
+  },
+  "useCookie": {
+    "prefix": "ncookie",
+    "body": "const ${1:cookie} = useCookie<${2:string}>('${3:name}')",
+    "description": "Nuxt useCookie"
+  },
+  "useRoute (Nuxt)": {
+    "prefix": "nroute",
+    "body": "const route = useRoute()",
+    "description": "Nuxt useRoute"
+  },
+  "useRouter (Nuxt)": {
+    "prefix": "nrouter",
+    "body": "const router = useRouter()",
+    "description": "Nuxt useRouter"
+  },
+  "navigateTo": {
+    "prefix": "nnavigate",
+    "body": "await navigateTo('${1:/path}')",
+    "description": "Nuxt navigateTo"
+  },
+  "useRequestHeaders": {
+    "prefix": "nreqheaders",
+    "body": "const headers = useRequestHeaders(['${1:cookie}'])",
+    "description": "Nuxt useRequestHeaders"
+  },
+  "useRequestEvent": {
+    "prefix": "nreqevent",
+    "body": "const event = useRequestEvent()",
+    "description": "Nuxt useRequestEvent"
+  },
+  "useError": {
+    "prefix": "nerror",
+    "body": "const error = useError()",
+    "description": "Nuxt useError"
+  },
+  "createError": {
+    "prefix": "ncreateerror",
+    "body": [
+      "throw createError({",
+      "  statusCode: ${1:404},",
+      "  statusMessage: '${2:Not Found}',",
+      "})"
+    ],
+    "description": "Nuxt createError"
+  },
+  "showError": {
+    "prefix": "nshowerror",
+    "body": "showError({ statusCode: ${1:404}, statusMessage: '${2:Not Found}' })",
+    "description": "Nuxt showError"
+  },
+  "clearError": {
+    "prefix": "nclearerror",
+    "body": "clearError({ redirect: '${1:/}' })",
+    "description": "Nuxt clearError"
+  },
+
+  "Nitro API Route": {
+    "prefix": "napi",
+    "body": [
+      "export default defineEventHandler(async (event) => {",
+      "  $0",
+      "  return { }",
+      "})"
+    ],
+    "description": "Nitro API event handler"
+  },
+  "Nitro API Route with body": {
+    "prefix": "napi-post",
+    "body": [
+      "export default defineEventHandler(async (event) => {",
+      "  const body = await readBody(event)",
+      "  $0",
+      "  return { }",
+      "})"
+    ],
+    "description": "Nitro API POST handler with readBody"
+  },
+  "Nitro API Route with query": {
+    "prefix": "napi-get",
+    "body": [
+      "export default defineEventHandler(async (event) => {",
+      "  const query = getQuery(event)",
+      "  $0",
+      "  return { }",
+      "})"
+    ],
+    "description": "Nitro API GET handler with getQuery"
+  },
+  "Nitro API Route with params": {
+    "prefix": "napi-params",
+    "body": [
+      "export default defineEventHandler(async (event) => {",
+      "  const { ${1:id} } = getRouterParams(event)",
+      "  $0",
+      "  return { }",
+      "})"
+    ],
+    "description": "Nitro API handler with route params"
+  },
+  "readBody": {
+    "prefix": "nreadbody",
+    "body": "const body = await readBody(event)",
+    "description": "Nitro readBody"
+  },
+  "getQuery": {
+    "prefix": "ngetquery",
+    "body": "const query = getQuery(event)",
+    "description": "Nitro getQuery"
+  },
+  "getRouterParams": {
+    "prefix": "ngetparams",
+    "body": "const { ${1:id} } = getRouterParams(event)",
+    "description": "Nitro getRouterParams"
+  },
+  "setResponseStatus": {
+    "prefix": "nstatus",
+    "body": "setResponseStatus(event, ${1:201})",
+    "description": "Nitro setResponseStatus"
+  },
+  "sendRedirect": {
+    "prefix": "nredirect",
+    "body": "await sendRedirect(event, '${1:/path}', ${2:302})",
+    "description": "Nitro sendRedirect"
+  },
+
+  "NuxtLink": {
+    "prefix": "nnuxtlink",
+    "body": "<NuxtLink to=\"${1:/}\">$0</NuxtLink>",
+    "description": "NuxtLink component"
+  },
+  "NuxtLink external": {
+    "prefix": "nnuxtlink-ext",
+    "body": "<NuxtLink to=\"${1:https://}\" external target=\"_blank\">$0</NuxtLink>",
+    "description": "NuxtLink external"
+  },
+  "NuxtPage": {
+    "prefix": "nnuxtpage",
+    "body": "<NuxtPage />",
+    "description": "NuxtPage component"
+  },
+  "NuxtLayout": {
+    "prefix": "nnuxtlayout",
+    "body": [
+      "<NuxtLayout name=\"${1:default}\">",
+      "  $0",
+      "</NuxtLayout>"
+    ],
+    "description": "NuxtLayout component"
+  },
+  "NuxtImg": {
+    "prefix": "nnuxtimg",
+    "body": "<NuxtImg src=\"${1:/image.png}\" alt=\"${2:description}\" width=\"${3:300}\" />",
+    "description": "NuxtImg component"
+  },
+  "NuxtLoadingIndicator": {
+    "prefix": "nloading",
+    "body": "<NuxtLoadingIndicator />",
+    "description": "NuxtLoadingIndicator component"
+  },
+  "ClientOnly": {
+    "prefix": "nclientonly",
+    "body": [
+      "<ClientOnly>",
+      "  $0",
+      "  <template #fallback>",
+      "    <div>Loading...</div>",
+      "  </template>",
+      "</ClientOnly>"
+    ],
+    "description": "ClientOnly component"
+  },
+
+  "Nuxt Composable": {
+    "prefix": "ncomposable",
+    "body": [
+      "export const use${1:Name} = () => {",
+      "  $0",
+      "",
+      "  return {",
+      "    ",
+      "  }",
+      "}"
+    ],
+    "description": "Nuxt composable with auto-import"
+  },
+  "Nuxt Server Composable": {
+    "prefix": "nserver-composable",
+    "body": [
+      "export const use${1:Name} = (event: H3Event) => {",
+      "  $0",
+      "",
+      "  return {",
+      "    ",
+      "  }",
+      "}"
+    ],
+    "description": "Nuxt server utility composable"
+  },
+
+  "Nuxt Config Snippet": {
+    "prefix": "nnuxtconfig",
+    "body": [
+      "export default defineNuxtConfig({",
+      "  modules: [$1],",
+      "  runtimeConfig: {",
+      "    ${2:secretKey}: '',",
+      "    public: {",
+      "      ${3:apiBase}: '',",
+      "    },",
+      "  },",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt config file boilerplate"
+  },
+
+  "callOnce": {
+    "prefix": "ncallonce",
+    "body": [
+      "await callOnce(async () => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Nuxt callOnce"
+  },
+  "useNuxtData": {
+    "prefix": "nnuxtdata",
+    "body": "const { data: ${1:cachedData} } = useNuxtData('${2:key}')",
+    "description": "Nuxt useNuxtData for cached async data"
+  },
+  "refreshNuxtData": {
+    "prefix": "nrefresh",
+    "body": "await refreshNuxtData('${1:key}')",
+    "description": "Refresh Nuxt async data"
+  },
+  "clearNuxtData": {
+    "prefix": "ncleardata",
+    "body": "clearNuxtData('${1:key}')",
+    "description": "Clear Nuxt cached data"
+  },
+  "preloadRouteComponents": {
+    "prefix": "npreload",
+    "body": "await preloadRouteComponents('${1:/path}')",
+    "description": "Preload route components"
+  },
+  "abortNavigation": {
+    "prefix": "nabort",
+    "body": "return abortNavigation()",
+    "description": "Abort navigation in middleware"
+  }
+}
