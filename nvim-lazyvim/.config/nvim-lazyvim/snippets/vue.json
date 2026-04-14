@@ -1,0 +1,433 @@
+{
+  "Vue SFC Template": {
+    "prefix": "vbase",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    ",
+      "  </div>",
+      "</template>",
+      "",
+      "<style scoped>",
+      "</style>"
+    ],
+    "description": "Vue 3 SFC with script setup, template, and scoped style"
+  },
+  "Vue SFC Minimal": {
+    "prefix": "vbase-min",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "$0",
+      "</script>",
+      "",
+      "<template>",
+      "  <div>",
+      "    ",
+      "  </div>",
+      "</template>"
+    ],
+    "description": "Vue 3 SFC minimal (no style block)"
+  },
+
+  "defineProps": {
+    "prefix": "vprops",
+    "body": [
+      "const props = defineProps<{",
+      "  ${1:name}: ${2:string}",
+      "}>()"
+    ],
+    "description": "defineProps with TypeScript"
+  },
+  "defineProps with defaults": {
+    "prefix": "vprops-default",
+    "body": [
+      "const props = withDefaults(defineProps<{",
+      "  ${1:name}?: ${2:string}",
+      "}>(), {",
+      "  ${1:name}: ${3:undefined},",
+      "})"
+    ],
+    "description": "defineProps with withDefaults"
+  },
+  "defineEmits": {
+    "prefix": "vemits",
+    "body": [
+      "const emit = defineEmits<{",
+      "  ${1:eventName}: [${2:payload}: ${3:string}]",
+      "}>()"
+    ],
+    "description": "defineEmits with TypeScript"
+  },
+  "defineModel": {
+    "prefix": "vmodel",
+    "body": [
+      "const ${1:modelValue} = defineModel<${2:string}>('${1:modelValue}')"
+    ],
+    "description": "defineModel"
+  },
+  "defineExpose": {
+    "prefix": "vexpose",
+    "body": [
+      "defineExpose({",
+      "  $0",
+      "})"
+    ],
+    "description": "defineExpose"
+  },
+  "defineSlots": {
+    "prefix": "vslots",
+    "body": [
+      "const slots = defineSlots<{",
+      "  ${1:default}(props: { ${2:item}: ${3:any} }): any",
+      "}>()"
+    ],
+    "description": "defineSlots with TypeScript"
+  },
+
+  "ref": {
+    "prefix": "vref",
+    "body": "const ${1:name} = ref<${2:string}>(${3:''})$0",
+    "description": "Vue ref"
+  },
+  "reactive": {
+    "prefix": "vreactive",
+    "body": [
+      "const ${1:state} = reactive({",
+      "  ${2:key}: ${3:value},",
+      "})"
+    ],
+    "description": "Vue reactive"
+  },
+  "computed": {
+    "prefix": "vcomputed",
+    "body": [
+      "const ${1:name} = computed(() => {",
+      "  return $0",
+      "})"
+    ],
+    "description": "Vue computed"
+  },
+  "computed get/set": {
+    "prefix": "vcomputed-gs",
+    "body": [
+      "const ${1:name} = computed({",
+      "  get() {",
+      "    return ${2}",
+      "  },",
+      "  set(${3:val}) {",
+      "    ${0}",
+      "  },",
+      "})"
+    ],
+    "description": "Vue computed with getter and setter"
+  },
+  "watch": {
+    "prefix": "vwatch",
+    "body": [
+      "watch(${1:source}, (${2:newVal}, ${3:oldVal}) => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue watch"
+  },
+  "watch with options": {
+    "prefix": "vwatch-opts",
+    "body": [
+      "watch(${1:source}, (${2:newVal}, ${3:oldVal}) => {",
+      "  $0",
+      "}, { ${4|immediate,deep,flush|}: true })"
+    ],
+    "description": "Vue watch with options"
+  },
+  "watchEffect": {
+    "prefix": "vwatcheffect",
+    "body": [
+      "watchEffect(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue watchEffect"
+  },
+
+  "onMounted": {
+    "prefix": "vonmounted",
+    "body": [
+      "onMounted(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue onMounted lifecycle hook"
+  },
+  "onUnmounted": {
+    "prefix": "vonunmounted",
+    "body": [
+      "onUnmounted(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue onUnmounted lifecycle hook"
+  },
+  "onBeforeMount": {
+    "prefix": "vonbeforemount",
+    "body": [
+      "onBeforeMount(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue onBeforeMount lifecycle hook"
+  },
+  "onBeforeUnmount": {
+    "prefix": "vonbeforeunmount",
+    "body": [
+      "onBeforeUnmount(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue onBeforeUnmount lifecycle hook"
+  },
+  "onUpdated": {
+    "prefix": "vonupdated",
+    "body": [
+      "onUpdated(() => {",
+      "  $0",
+      "})"
+    ],
+    "description": "Vue onUpdated lifecycle hook"
+  },
+
+  "provide": {
+    "prefix": "vprovide",
+    "body": "provide('${1:key}', ${2:value})",
+    "description": "Vue provide"
+  },
+  "inject": {
+    "prefix": "vinject",
+    "body": "const ${1:value} = inject<${2:string}>('${3:key}')",
+    "description": "Vue inject"
+  },
+  "composable": {
+    "prefix": "vcomposable",
+    "body": [
+      "export function use${1:Name}() {",
+      "  $0",
+      "",
+      "  return {",
+      "    ",
+      "  }",
+      "}"
+    ],
+    "description": "Vue composable function"
+  },
+  "toRefs": {
+    "prefix": "vtorefs",
+    "body": "const { ${1:key} } = toRefs(${2:props})",
+    "description": "Vue toRefs destructure"
+  },
+  "toRef": {
+    "prefix": "vtoref",
+    "body": "const ${1:name} = toRef(${2:props}, '${1:name}')",
+    "description": "Vue toRef"
+  },
+  "shallowRef": {
+    "prefix": "vshallowref",
+    "body": "const ${1:name} = shallowRef<${2:any}>(${3:null})",
+    "description": "Vue shallowRef"
+  },
+  "nextTick": {
+    "prefix": "vnexttick",
+    "body": [
+      "await nextTick()",
+      "$0"
+    ],
+    "description": "Vue nextTick"
+  },
+  "templateRef": {
+    "prefix": "vtref",
+    "body": "const ${1:el} = useTemplateRef<${2:HTMLElement}>('${1:el}')",
+    "description": "useTemplateRef"
+  },
+
+  "v-for": {
+    "prefix": "vfor",
+    "body": "<${1:div} v-for=\"${2:item} in ${3:items}\" :key=\"${2:item}.${4:id}\">$0</${1:div}>",
+    "description": "v-for directive"
+  },
+  "v-if": {
+    "prefix": "vif",
+    "body": "<${1:div} v-if=\"${2:condition}\">$0</${1:div}>",
+    "description": "v-if directive"
+  },
+  "v-if v-else": {
+    "prefix": "vifelse",
+    "body": [
+      "<${1:div} v-if=\"${2:condition}\">$3</${1:div}>",
+      "<${1:div} v-else>$0</${1:div}>"
+    ],
+    "description": "v-if v-else directives"
+  },
+  "v-show": {
+    "prefix": "vshow",
+    "body": "<${1:div} v-show=\"${2:condition}\">$0</${1:div}>",
+    "description": "v-show directive"
+  },
+  "v-model": {
+    "prefix": "vmodel-input",
+    "body": "<input v-model=\"${1:value}\" type=\"${2:text}\" />",
+    "description": "v-model input"
+  },
+  "v-slot": {
+    "prefix": "vslot",
+    "body": "<template #${1:default}=\"{ ${2:item} }\">$0</template>",
+    "description": "Named scoped slot"
+  },
+  "component": {
+    "prefix": "vcomponent",
+    "body": "<${1:Component} ${2:v-bind=\"props\"} />$0",
+    "description": "Component usage"
+  },
+  "transition": {
+    "prefix": "vtransition",
+    "body": [
+      "<Transition name=\"${1:fade}\">",
+      "  $0",
+      "</Transition>"
+    ],
+    "description": "Vue Transition component"
+  },
+  "transition-group": {
+    "prefix": "vtransition-group",
+    "body": [
+      "<TransitionGroup name=\"${1:list}\" tag=\"${2:ul}\">",
+      "  $0",
+      "</TransitionGroup>"
+    ],
+    "description": "Vue TransitionGroup component"
+  },
+  "teleport": {
+    "prefix": "vteleport",
+    "body": [
+      "<Teleport to=\"${1:body}\">",
+      "  $0",
+      "</Teleport>"
+    ],
+    "description": "Vue Teleport component"
+  },
+  "suspense": {
+    "prefix": "vsuspense",
+    "body": [
+      "<Suspense>",
+      "  <template #default>",
+      "    $0",
+      "  </template>",
+      "  <template #fallback>",
+      "    <div>Loading...</div>",
+      "  </template>",
+      "</Suspense>"
+    ],
+    "description": "Vue Suspense component"
+  },
+  "keep-alive": {
+    "prefix": "vkeepalive",
+    "body": [
+      "<KeepAlive>",
+      "  $0",
+      "</KeepAlive>"
+    ],
+    "description": "Vue KeepAlive component"
+  },
+
+  "import component": {
+    "prefix": "vimp",
+    "body": "import ${1:Component} from '${2:@/components/${1:Component}.vue}'",
+    "description": "Import Vue component"
+  },
+  "import composable": {
+    "prefix": "vimp-composable",
+    "body": "import { use${1:Name} } from '${2:@/composables/use${1:Name}}'",
+    "description": "Import Vue composable"
+  },
+
+  "defineOptions": {
+    "prefix": "voptions",
+    "body": [
+      "defineOptions({",
+      "  name: '${1:ComponentName}',",
+      "})"
+    ],
+    "description": "defineOptions"
+  },
+
+  "VueRouter useRoute": {
+    "prefix": "vuse-route",
+    "body": "const route = useRoute()",
+    "description": "Vue Router useRoute"
+  },
+  "VueRouter useRouter": {
+    "prefix": "vuse-router",
+    "body": "const router = useRouter()",
+    "description": "Vue Router useRouter"
+  },
+  "Router push": {
+    "prefix": "vrouter-push",
+    "body": "router.push({ ${1|name,path|}: '${2}' })",
+    "description": "Router push navigation"
+  },
+  "RouterLink": {
+    "prefix": "vrouterlink",
+    "body": "<RouterLink :to=\"{ ${1|name,path|}: '${2}' }\">$0</RouterLink>",
+    "description": "RouterLink component"
+  },
+
+  "Pinia Store Setup": {
+    "prefix": "vpinia",
+    "body": [
+      "export const use${1:Name}Store = defineStore('${2:id}', () => {",
+      "  const ${3:state} = ref(${4:null})",
+      "",
+      "  const ${5:getter} = computed(() => ${3:state}.value)",
+      "",
+      "  function ${6:action}() {",
+      "    $0",
+      "  }",
+      "",
+      "  return { ${3:state}, ${5:getter}, ${6:action} }",
+      "})"
+    ],
+    "description": "Pinia store with setup syntax"
+  },
+  "Pinia storeToRefs": {
+    "prefix": "vpinia-refs",
+    "body": "const { ${1:state} } = storeToRefs(use${2:Name}Store())",
+    "description": "Pinia storeToRefs destructure"
+  },
+
+  "v-bind style": {
+    "prefix": "vbind-style",
+    "body": ":style=\"{ ${1:property}: ${2:value} }\"",
+    "description": "Dynamic style binding"
+  },
+  "v-bind class object": {
+    "prefix": "vbind-class",
+    "body": ":class=\"{ '${1:class-name}': ${2:condition} }\"",
+    "description": "Dynamic class binding (object)"
+  },
+  "v-bind class array": {
+    "prefix": "vbind-class-arr",
+    "body": ":class=\"[${1:baseClass}, { '${2:active}': ${3:isActive} }]\"",
+    "description": "Dynamic class binding (array)"
+  },
+  "v-on event": {
+    "prefix": "von",
+    "body": "@${1:click}=\"${2:handler}\"",
+    "description": "Event handler"
+  },
+  "emit event": {
+    "prefix": "vemit",
+    "body": "emit('${1:event}'${2:, ${3:payload}})",
+    "description": "Emit event"
+  }
+}
