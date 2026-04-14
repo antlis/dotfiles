@@ -160,6 +160,7 @@ bindsym $mod+Shift+x mode "$sysmenu"
 # ── Window Rules ─────────────────────────────────────────────────────────────
 for_window [class="^.*"]      border pixel 0
 for_window [class="popup_kitty"] floating enable, border pixel 2, resize set 800 600, move position center
+for_window [class="fullscreen_kitty"] fullscreen enable
 for_window [title="fzf-menu"] floating enable
 for_window [class="Code"]     fullscreen enable
 for_window [class="mpv"]      fullscreen enable
