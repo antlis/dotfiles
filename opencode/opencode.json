@@ -20,6 +20,11 @@
       "type": "local",
       "command": ["npx", "--prefer-offline", "@sylphx/pdf-reader-mcp"],
       "enabled": true
+    },
+    "gitlab": {
+      "type": "local",
+      "command": ["glab", "mcp", "serve"],
+      "enabled": true
     }
   }
 }
