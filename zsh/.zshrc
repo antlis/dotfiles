@@ -31,6 +31,9 @@ zinit wait lucid for \
 source ~/.zsh-custom/aliases.zsh
 source ~/.zsh-custom/functions.zsh
 
+# ── Options ───────────────────────────────────────────────────────────────────
+setopt AUTO_CD
+
 # ── Keybinds ───────────────────────────────────────────────────────────────────
 bindkey '^x^x' edit-command-line
 
