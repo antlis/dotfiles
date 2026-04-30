@@ -60,6 +60,7 @@
   networking.networkmanager = {
     enable = true;
     plugins = with pkgs; [
+      networkmanager-openvpn
       networkmanager-l2tp
       networkmanager-strongswan
     ];
@@ -75,7 +76,6 @@
   '';
   services.xl2tpd.enable = true;
   environment.etc."NetworkManager/VPN/nm-l2tp-service.name".source = "${pkgs.networkmanager-l2tp}/lib/NetworkManager/VPN/nm-l2tp-service.name";
-  # TODO: remove hubstaff l2tp etc when find better job
   environment.systemPackages = with pkgs; [
     ppp
     hubstaff
