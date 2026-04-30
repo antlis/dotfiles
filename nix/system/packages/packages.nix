@@ -109,6 +109,10 @@ in
     docker                 # Container runtime for building and running images | https://www.docker.com
     docker-compose         # Multi-container Docker orchestration via YAML | https://docs.docker.com/compose
 
+    # ── .NET ──────────────────────────────────────────────────────────────────
+    dotnet-sdk_9           # .NET 9 SDK
+    dotnet-sdk_10          # .NET 10 SDK
+
     # ── Rofi & Launchers ──────────────────────────────────────────────────────
     rofi                   # Application launcher and window switcher | https://github.com/davatorium/rofi
 
