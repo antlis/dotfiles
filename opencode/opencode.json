@@ -25,6 +25,11 @@
       "type": "local",
       "command": ["glab", "mcp", "serve"],
       "enabled": true
+    },
+    "obsidian": {
+      "type": "local",
+      "command": ["npx", "-y", "@bitbonsai/mcpvault", "/home/lad/Documents/vault"],
+      "enabled": true
     }
   }
 }
