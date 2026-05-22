@@ -90,6 +90,9 @@ in
     # ── Media ─────────────────────────────────────────────────────────────────
     mpv                    # Minimal and scriptable video player | https://mpv.io
     yt-dlp                 # YouTube and media downloader supporting 1000+ sites | https://github.com/yt-dlp/yt-dlp
+    ffmpegthumbnailer      # Lightweight video thumbnailer for file managers (MKV/MP4/etc) | https://github.com/dirkvdb/ffmpegthumbnailer
+    totem                  # GNOME video player — provides totem-video-thumbnailer for Nautilus | https://wiki.gnome.org/Apps/Videos
+    gst_all_1.gst-libav    # GStreamer ffmpeg plugin — provides video codecs for thumbnailing | https://gstreamer.freedesktop.org
     pulseaudio             # Audio server — includes pactl for volume control | https://www.freedesktop.org/wiki/Software/PulseAudio
 
     # ── Screen Recording ──────────────────────────────────────────────────────
@@ -114,6 +117,10 @@ in
       dotnet-sdk_9           # .NET 9 SDK
       dotnet-sdk_10          # .NET 10 SDK
     ])
+
+    # ── Wine (for U-SIEM Console) ────────────────────────────────────────────
+    wineWow64Packages.stable # Windows compatibility layer (32+64-bit) | https://www.winehq.org
+    winetricks               # Wine helper for installing Windows components | https://github.com/Winetricks/winetricks
 
     # ── Rofi & Launchers ──────────────────────────────────────────────────────
     rofi                   # Application launcher and window switcher | https://github.com/davatorium/rofi
