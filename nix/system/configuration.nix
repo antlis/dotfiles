@@ -53,6 +53,8 @@
   # Enable sshd, but don't start it on boot
   systemd.services.sshd.wantedBy = lib.mkForce [];
 
+  hardware.graphics.enable32Bit = true;
+
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ "lad" ];
 

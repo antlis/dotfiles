@@ -30,6 +30,10 @@ in
       "org/gnome/gnome-screenshot" = {
         auto-save-directory = "file://${c.screenshotDir}";
       };
+      "org/gnome/nautilus/preferences" = {
+        show-image-thumbnails = "always";
+        show-directory-item-counts = "never";
+      };
     };
     home.file = {
       ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
