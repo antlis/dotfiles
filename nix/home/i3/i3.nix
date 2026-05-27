@@ -77,7 +77,7 @@ in
 
       # ── Startup ───────────────────────────────────────────────────────────
       startup = [
-        { command = "${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.i3lock}/bin/i3lock --color=6B4C9A --nofork"; notification = false; }
+        { command = "${pkgs.xss-lock}/bin/xss-lock -- ${pkgs.i3lock-color}/bin/i3lock --color=6B4C9A --nofork --clock --time-color=FFFFFFCC --time-size=64 --date-color=FFFFFF99 --date-size=24 --indicator --ring-color=6B4C9A --inside-color=00000088"; notification = false; }
         { command = "keynav </dev/null &>/dev/null"; notification = false; }
         { command = "pidgin"; notification = false; }
         { command = "AmneziaVPN"; notification = false; }
