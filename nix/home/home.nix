@@ -17,6 +17,7 @@ in
       ./kitty.nix
       ./rofi.nix
       ./opencode.nix
+      ./pi.nix
     ];
     services.dunst.enable = true;
     services.ssh-agent.enable = true;

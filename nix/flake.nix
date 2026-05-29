@@ -34,6 +34,12 @@
       # nix/hashes.json matches the bun 1.3.13 build. Bump once nixpkgs has 1.3.14.
       url = "github:sst/opencode/49c6b46afc2815f396512b8ade2838a58785c636";
     };
+
+    # pi coding agent (https://pi.dev). No official nixpkgs entry; this community
+    # flake builds @earendil-works/pi-coding-agent and exposes pkgs.pi-coding-agent
+    # via its overlay. Intentionally NOT following our nixpkgs: it pins its own
+    # nixpkgs so its pi.cachix.org cache hits and we avoid a local npm build.
+    pi.url = "github:lukasl-dev/pi.nix";
   };
 
   outputs = { self, nixpkgs, home-manager, claude-code, ... }@inputs:
@@ -49,6 +55,7 @@
       overlays = [
         inputs.claude-code.overlays.default
         inputs.opencode.overlays.default
+        inputs.pi.overlays.default
       ];
     };
 

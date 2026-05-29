@@ -130,6 +130,7 @@ in
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
     claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
+    pi-coding-agent        # pi minimal terminal coding agent | https://pi.dev (flake: github:lukasl-dev/pi.nix)
 
   ] ++ nodePackages ++ rustPackages ++ pythonPackages;
 }
