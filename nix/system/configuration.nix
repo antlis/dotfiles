@@ -190,5 +190,11 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Binary cache for the pi coding agent (pi.nix flake) so it isn't built locally.
+  nix.settings.substituters = [ "https://pi.cachix.org" ];
+  nix.settings.trusted-public-keys = [
+    "pi.cachix.org-1:lGeoGJaZ5ZDabuRzkcD5EBTNnDM4HJ1vqeOxlWk1Flk="
+  ];
+
   system.stateVersion = "25.11";
 }
