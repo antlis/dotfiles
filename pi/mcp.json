@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-mcp"],
+      "lifecycle": "lazy"
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": ["-y", "@browsermcp/mcp@latest"],
+      "lifecycle": "lazy"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "lifecycle": "lazy"
+    },
+    "pdf-reader": {
+      "command": "npx",
+      "args": ["--prefer-offline", "@sylphx/pdf-reader-mcp"],
+      "lifecycle": "lazy"
+    },
+    "gitlab": {
+      "command": "glab",
+      "args": ["mcp", "serve"],
+      "lifecycle": "lazy"
+    },
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "@bitbonsai/mcpvault", "/home/lad/Documents/vault"],
+      "lifecycle": "lazy"
+    }
+  }
+}
