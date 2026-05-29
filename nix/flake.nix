@@ -28,7 +28,11 @@
     };
 
     opencode = {
-      url = "github:sst/opencode";
+      # Pinned: commits from 2026-05-18 onward require bun 1.3.14, which is not
+      # yet in nixpkgs 25.11 (has 1.3.13). This is the newest "update nix
+      # node_modules hashes" commit still on bun 1.3.13 (2026-05-17), so its
+      # nix/hashes.json matches the bun 1.3.13 build. Bump once nixpkgs has 1.3.14.
+      url = "github:sst/opencode/49c6b46afc2815f396512b8ade2838a58785c636";
     };
   };
 
