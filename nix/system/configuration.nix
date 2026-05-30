@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", ... }:
 {
   imports =
     [
@@ -195,6 +195,80 @@
   nix.settings.trusted-public-keys = [
     "pi.cachix.org-1:lGeoGJaZ5ZDabuRzkcD5EBTNnDM4HJ1vqeOxlWk1Flk="
   ];
+
+  # --- VPN toggles (reality-on/off, hysteria-on/off, ssh-vpn-on/off) ---
+  # Run as root so sing-box can create the tun device and sshuttle can set routes.
+  # Not started at boot (no wantedBy) — toggled on demand from the desktop/CLI.
+  systemd.services.reality-vpn = let
+    serverIp = vpnServerIp;
+    # Pin traffic to the VPN server to the main routing table (real gateway), at a
+    # higher priority than sing-box's auto_route rules — otherwise sing-box's own
+    # connection to the server loops back into the tun and times out.
+    pinRoute = pkgs.writeShellScript "reality-pin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+      ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100
+    '';
+    unpinRoute = pkgs.writeShellScript "reality-unpin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+    '';
+  in {
+    description = "Reality VPN (sing-box full tunnel)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/reality.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.hysteria-vpn = let
+    serverIp = vpnServerIp;
+    pinRoute = pkgs.writeShellScript "hysteria-pin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+      ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100
+    '';
+    unpinRoute = pkgs.writeShellScript "hysteria-unpin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+    '';
+  in {
+    description = "Hysteria2 VPN (sing-box full tunnel, UDP/QUIC)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/hysteria.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.ssh-vpn = {
+    description = "SSH VPN (sshuttle tunnel)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = ''${pkgs.sshuttle}/bin/sshuttle -r ${vpnSshHost} 0/0 --dns --ssh-cmd "${pkgs.openssh}/bin/ssh -i /home/lad/.ssh/id_rsa -F /home/lad/.ssh/config -o UserKnownHostsFile=/home/lad/.ssh/known_hosts -o StrictHostKeyChecking=accept-new"'';
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  # Let lad toggle exactly these two units without a password (for one-click launchers).
+  security.sudo.extraRules = [{
+    users = [ "lad" ];
+    commands = let sc = "/run/current-system/sw/bin/systemctl"; in [
+      { command = "${sc} start reality-vpn";  options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop reality-vpn";   options = [ "NOPASSWD" ]; }
+      { command = "${sc} start hysteria-vpn"; options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop hysteria-vpn";  options = [ "NOPASSWD" ]; }
+      { command = "${sc} start ssh-vpn";      options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop ssh-vpn";       options = [ "NOPASSWD" ]; }
+    ];
+  }];
 
   system.stateVersion = "25.11";
 }
