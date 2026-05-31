@@ -1,4 +1,8 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], ... }:
+let
+  olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
+  naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
+in
 {
   imports =
     [
@@ -246,18 +250,219 @@
       RestartSec = 3;
     };
   };
+  systemd.services.chain-vpn = let
+    serverIp = vpnChainEntryIp;
+    pinRoute = pkgs.writeShellScript "chain-pin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+      ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100
+    '';
+    unpinRoute = pkgs.writeShellScript "chain-unpin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+    '';
+  in {
+    description = "Chain VPN (sing-box multi-hop: domestic entry -> foreign exit)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/chain.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  # XHTTP bridge: Xray does VLESS-XHTTP to Cloudflare (defeats CF's WS buffering),
+  # exposing a local SOCKS that the cf-vpn tun routes into. PartOf cf-vpn so it
+  # starts/stops together. (sing-box can't do XHTTP, hence the Xray bridge.)
+  systemd.services.cf-bridge = {
+    description = "Cloudflare XHTTP bridge (Xray: SOCKS127.0.0.1:1080 -> VLESS-XHTTP via Cloudflare)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    partOf = [ "cf-vpn.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.xray}/bin/xray run -c /home/lad/.config/xray/cf.json";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.cf-vpn = let
+    serverIp = vpnCfEntryIp;
+    pinRoute = pkgs.writeShellScript "cf-pin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+      ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100
+    '';
+    unpinRoute = pkgs.writeShellScript "cf-unpin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+    '';
+  in {
+    description = "Cloudflare-fronted VPN (sing-box tun -> Xray XHTTP bridge -> Cloudflare)";
+    after = [ "network-online.target" "cf-bridge.service" ];
+    wants = [ "network-online.target" ];
+    requires = [ "cf-bridge.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/cloudflare.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.olcrtc-bridge = let
+    # The exit server's alpha reconnect logic can wedge after a disconnect; restart it
+    # (while the previous link is still up) so the bridge always meets a fresh peer.
+    serverRefresh = pkgs.writeShellScript "olcrtc-server-refresh" ''
+      ${pkgs.openssh}/bin/ssh -i /home/lad/.ssh/vpn_ed25519 -o IdentitiesOnly=yes \
+        -F /home/lad/.ssh/config -o UserKnownHostsFile=/home/lad/.ssh/known_hosts \
+        -o StrictHostKeyChecking=accept-new -o ConnectTimeout=12 \
+        ${vpnSshHost} 'systemctl restart olcrtc'
+    '';
+  in {
+    description = "olcrtc client bridge (WebRTC-over-Jitsi -> SOCKS 127.0.0.1:8808)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    partOf = [ "olcrtc-vpn.service" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "lad";
+      WorkingDirectory = "/home/lad/.config/olcrtc";
+      ExecStartPre = [ "-${serverRefresh}" "${pkgs.coreutils}/bin/sleep 5" ];
+      ExecStart = "${olcrtc}/bin/olcrtc /home/lad/.config/olcrtc/client.yaml";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.olcrtc-vpn = let
+    # Pin signaling + TURN IPs (from private.nix) so the bridge's WebRTC bypasses the tun.
+    jitsiIps = vpnOlcrtcRelayIps;
+    pinRoute = pkgs.writeShellScript "olcrtc-pin-route" ''
+      for ip in ${lib.concatStringsSep " " jitsiIps}; do
+        ${pkgs.iproute2}/bin/ip rule del to $ip/32 lookup main priority 100 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip rule add to $ip/32 lookup main priority 100
+      done
+    '';
+    unpinRoute = pkgs.writeShellScript "olcrtc-unpin-route" ''
+      for ip in ${lib.concatStringsSep " " jitsiIps}; do
+        ${pkgs.iproute2}/bin/ip rule del to $ip/32 lookup main priority 100 2>/dev/null || true
+      done
+    '';
+  in {
+    description = "olcrtc VPN (sing-box tun -> olcrtc WebRTC bridge -> Jitsi -> exit)";
+    after = [ "network-online.target" "olcrtc-bridge.service" ];
+    wants = [ "network-online.target" ];
+    requires = [ "olcrtc-bridge.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/olcrtc.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.naive-bridge = {
+    description = "naiveproxy client bridge (Chrome-stack HTTP/2 -> SOCKS 127.0.0.1:1081)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    partOf = [ "naive-vpn.service" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "lad";
+      ExecStart = "${naiveproxy}/bin/naive /home/lad/.config/naive/config.json";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
+  systemd.services.naive-vpn = let
+    serverIp = vpnServerIp; # naive exit = vps-nl origin (www.antlis.xyz -> here); pin out of the tun
+    pinRoute = pkgs.writeShellScript "naive-pin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+      ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100
+    '';
+    unpinRoute = pkgs.writeShellScript "naive-unpin-route" ''
+      ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
+    '';
+  in {
+    description = "naiveproxy VPN (sing-box tun -> naive Chrome-stack bridge -> NL exit)";
+    after = [ "network-online.target" "naive-bridge.service" ];
+    wants = [ "network-online.target" ];
+    requires = [ "naive-bridge.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStartPre = "${pinRoute}";
+      ExecStart = "${pkgs.sing-box}/bin/sing-box run -c /home/lad/.config/sing-box/naive.json";
+      ExecStopPost = "${unpinRoute}";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+  };
   systemd.services.ssh-vpn = {
     description = "SSH VPN (sshuttle tunnel)";
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStart = ''${pkgs.sshuttle}/bin/sshuttle -r ${vpnSshHost} 0/0 --dns --ssh-cmd "${pkgs.openssh}/bin/ssh -i /home/lad/.ssh/id_rsa -F /home/lad/.ssh/config -o UserKnownHostsFile=/home/lad/.ssh/known_hosts -o StrictHostKeyChecking=accept-new"'';
+      ExecStart = ''${pkgs.sshuttle}/bin/sshuttle -r ${vpnSshHost} 0/0 --dns --ssh-cmd "${pkgs.openssh}/bin/ssh -i /home/lad/.ssh/vpn_ed25519 -o IdentitiesOnly=yes -F /home/lad/.ssh/config -o UserKnownHostsFile=/home/lad/.ssh/known_hosts -o StrictHostKeyChecking=accept-new"'';
       Restart = "on-failure";
       RestartSec = 3;
     };
   };
-  # Let lad toggle exactly these two units without a password (for one-click launchers).
+  # Auto-failover watchdog: if the active VPN tier stops passing traffic for
+  # ~THRESHOLD*INTERVAL, rotate to the next tier. Only acts when a tier is
+  # already active (respects the "no VPN" state). The i3bar shows the switch.
+  systemd.services.vpn-failover = let
+    watch = pkgs.writeShellScript "vpn-failover" ''
+      set -u
+      SC=/run/current-system/sw/bin/systemctl
+      CURL=${pkgs.curl}/bin/curl
+      TIERS="reality-vpn hysteria-vpn chain-vpn cf-vpn"
+      INTERVAL=30
+      THRESHOLD=3
+      fails=0
+      active_tier() { for t in $TIERS; do if $SC is-active --quiet "$t"; then echo "$t"; return 0; fi; done; return 1; }
+      next_tier() {
+        case "$1" in
+          reality-vpn)  echo hysteria-vpn ;;
+          hysteria-vpn) echo chain-vpn ;;
+          chain-vpn)    echo cf-vpn ;;
+          *)            echo reality-vpn ;;
+        esac
+      }
+      online() {
+        $CURL -s --max-time 8 -o /dev/null https://www.gstatic.com/generate_204 && return 0
+        $CURL -s --max-time 8 -o /dev/null https://1.1.1.1/cdn-cgi/trace && return 0
+        return 1
+      }
+      echo "vpn-failover: watching ($TIERS)"
+      while true; do
+        if ! cur=$(active_tier); then fails=0; sleep $INTERVAL; continue; fi
+        if online; then
+          fails=0
+        else
+          fails=$((fails + 1))
+          echo "vpn-failover: $cur check failed ($fails/$THRESHOLD)"
+        fi
+        if [ "$fails" -ge "$THRESHOLD" ]; then
+          nxt=$(next_tier "$cur")
+          echo "vpn-failover: $cur DOWN -> switching to $nxt"
+          $SC stop "$cur" 2>/dev/null || true
+          $SC start "$nxt" 2>/dev/null || true
+          fails=0
+          sleep 12
+        fi
+        sleep $INTERVAL
+      done
+    '';
+  in {
+    description = "VPN auto-failover watchdog (rotate tiers when the active one stops passing traffic)";
+    after = [ "network-online.target" ];
+    # NOT wantedBy — started manually via failover-on, stopped via failover-off.
+    serviceConfig = { ExecStart = "${watch}"; Restart = "on-failure"; RestartSec = 5; };
+  };
+
+  # Let lad toggle the VPN units (and pause the watchdog) without a password.
   security.sudo.extraRules = [{
     users = [ "lad" ];
     commands = let sc = "/run/current-system/sw/bin/systemctl"; in [
@@ -265,8 +470,18 @@
       { command = "${sc} stop reality-vpn";   options = [ "NOPASSWD" ]; }
       { command = "${sc} start hysteria-vpn"; options = [ "NOPASSWD" ]; }
       { command = "${sc} stop hysteria-vpn";  options = [ "NOPASSWD" ]; }
+      { command = "${sc} start chain-vpn";    options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop chain-vpn";     options = [ "NOPASSWD" ]; }
+      { command = "${sc} start cf-vpn";       options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop cf-vpn";        options = [ "NOPASSWD" ]; }
+      { command = "${sc} start olcrtc-vpn";   options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop olcrtc-vpn";    options = [ "NOPASSWD" ]; }
+      { command = "${sc} start naive-vpn";    options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop naive-vpn";     options = [ "NOPASSWD" ]; }
       { command = "${sc} start ssh-vpn";      options = [ "NOPASSWD" ]; }
       { command = "${sc} stop ssh-vpn";       options = [ "NOPASSWD" ]; }
+      { command = "${sc} start vpn-failover"; options = [ "NOPASSWD" ]; }
+      { command = "${sc} stop vpn-failover";  options = [ "NOPASSWD" ]; }
     ];
   }];
 

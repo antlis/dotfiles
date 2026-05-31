@@ -10,6 +10,8 @@ in
     extraConfig = {
       modi = "window,drun,combi";
       combi-modi = "window,drun,ssh,~/.local/bin/rofi-bookmarks,~/.js/";
+      show-icons = true;
+      icon-theme = "Papirus-Dark";
     };
   };
 }

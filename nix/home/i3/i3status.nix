@@ -8,6 +8,7 @@
     general = {
       colors = true;
       interval = 5;
+      output_format = "i3bar";
     };
 
     modules = {
