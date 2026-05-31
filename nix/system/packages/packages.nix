@@ -24,6 +24,7 @@ in
     keynav                 # Keyboard-driven mouse control | https://www.semicomplete.com/projects/keynav
     x2x                    # Share keyboard/mouse across X displays | https://github.com/dottedmag/x2x
     adwaita-icon-theme     # GNOME icon theme | https://gitlab.gnome.org/GNOME/adwaita-icon-theme
+    papirus-icon-theme     # Full-color icon theme — provides named icons (network-vpn, etc.) Adwaita 49 dropped; rofi resolves against it | https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
     dunst                  # Lightweight notification daemon | https://dunst-project.org
     libnotify              # Provides notify-send CLI for desktop notifications | https://man.archlinux.org/man/notify-send.1.en
     xev                    # X11 event viewer — shows keycodes, mouse events, and window events; useful for debugging keybindings | https://www.x.org/archive/X11R7.7/doc/man/man1/xev.1.xhtml
