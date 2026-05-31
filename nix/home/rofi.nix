@@ -10,7 +10,9 @@ in
     extraConfig = {
       modi = "window,drun,combi";
       combi-modi = "window,drun,ssh,~/.local/bin/rofi-bookmarks,~/.js/";
-      show-icons = true;
+      # Icons are enabled per-launch (mod+d passes -show-icons) so script modes
+      # like bookmarks/tabs don't get an empty icon column. icon-theme is global
+      # but only takes effect when a mode actually shows icons.
       icon-theme = "Papirus-Dark";
     };
   };
