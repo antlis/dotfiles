@@ -67,9 +67,21 @@ listview {
 
 element {
   padding: 5px;
+  spacing: 10px;           /* gap between icon and text (global spacing is 0) */
   text-color: @text-alt;
   highlight: bold #95ee8f; /* green */
   border-radius: 3px;
+}
+
+element-icon {
+  size: 1.2em;
+  vertical-align: 0.5;     /* center the icon against the text */
+  background-color: transparent;
+}
+
+element-text {
+  vertical-align: 0.5;     /* center text against the icon */
+  background-color: transparent;
 }
 
 element selected {
