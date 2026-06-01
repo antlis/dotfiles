@@ -1,4 +1,4 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], workVpnName ? "", workVpnTransportIps ? [ ], ... }:
 let
   olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
   naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
@@ -70,7 +70,50 @@ in
       networkmanager-l2tp
       networkmanager-strongswan
     ];
+    # Split-tunnel coexistence for the corporate work VPN (workVpnName): when it
+    # comes up, pin every subnet it pushes (corp internal nets + corp DNS) to the
+    # main table ABOVE any active sing-box circumvention tier's rules, so corp
+    # traffic uses the work tunnel while everything else stays on the AI tunnel.
+    dispatcherScripts = lib.optionals (workVpnName != "") [{
+      type = "basic";
+      source = pkgs.writeShellScript "work-vpn-split" ''
+        [ "$CONNECTION_ID" = "${workVpnName}" ] || exit 0
+        ip=${pkgs.iproute2}/bin/ip
+        iface="''${VPN_IP_IFACE:-$DEVICE_IP_IFACE}"
+        case "$2" in
+          vpn-up|up)
+            for net in $($ip route show dev "$iface" 2>/dev/null | ${pkgs.gawk}/bin/awk '$1!="default"{print $1}'); do
+              $ip rule add to "$net" lookup main priority 91 2>/dev/null || true
+            done
+            ;;
+          vpn-down|down)
+            while $ip rule del priority 91 2>/dev/null; do :; done
+            ;;
+        esac
+      '';
+    }];
   };
+  # Always-on: pin the work VPN's transport/front-door IPs to the main table so
+  # the OpenVPN (UDP) handshake reaches them over the bare line even when a
+  # sing-box circumvention tier is active (its TCP-only/QUIC-reject tun can't
+  # carry the handshake). Higher priority (90) than the dispatcher's subnet pins (91).
+  systemd.services.work-vpn-transport-pin = lib.mkIf (workVpnTransportIps != [ ]) {
+    description = "Pin work VPN transport IPs to main routing table";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "work-vpn-pin-up" (lib.concatMapStringsSep "\n" (ip: ''
+        ${pkgs.iproute2}/bin/ip rule del to ${ip}/32 lookup main priority 90 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip rule add to ${ip}/32 lookup main priority 90
+      '') workVpnTransportIps);
+      ExecStop = pkgs.writeShellScript "work-vpn-pin-down" (lib.concatMapStringsSep "\n" (ip: ''
+        ${pkgs.iproute2}/bin/ip rule del to ${ip}/32 lookup main priority 90 2>/dev/null || true
+      '') workVpnTransportIps);
+    };
+  };
+
   services.strongswan = {
     enable = true;
     secrets = [ "ipsec.d/ipsec.nm-l2tp.secrets" ];
