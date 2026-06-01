@@ -149,6 +149,49 @@ let
     sudo ${systemctl} stop vpn-failover
     ${notify} -i network-disconnected "VPN failover" "Watchdog OFF"
   '';
+  # Single rofi menu for all VPN tiers. Marks the active one (●), selecting a tier
+  # connects it (each -on auto-stops the others); plus Disconnect + Failover toggle.
+  vpnMenu = pkgs.writeShellScriptBin "vpn-menu" ''
+    sc=${systemctl}
+    active="none"
+    for pair in "reality-vpn:Reality" "hysteria-vpn:Hysteria2" "naive-vpn:naive" "olcrtc-vpn:olcrtc" "cf-vpn:Cloudflare" "chain-vpn:Chain" "ssh-vpn:SSH"; do
+      unit="''${pair%%:*}"; name="''${pair##*:}"
+      $sc is-active --quiet "$unit" && active="$name"
+    done
+    amn=""
+    ${pkgs.iproute2}/bin/ip link show amn0 >/dev/null 2>&1 && amn="   ⚠ Amnezia (amn0) up — disable it before a sing-box tier"
+    fo=$($sc is-active --quiet vpn-failover && echo ON || echo OFF)
+    # rofi dmenu icon protocol: "<label>\0icon\x1f<themed-icon-name>". -show-icons renders it.
+    row() { printf '%s\0icon\x1f%s\n' "$1" "$2"; }
+    mark() { if [ "$1" = "$active" ]; then row "🟢 $1" "$2"; else row "$1" "$2"; fi; }
+    choice=$( { mark Reality security-high; mark Hysteria2 network-wireless; \
+                mark naive applications-internet; mark olcrtc camera-web; \
+                mark Cloudflare weather-overcast; mark Chain insert-link; mark SSH utilities-terminal; \
+                row "✕ Disconnect ($active)" network-offline; \
+                row "⚙ Failover: $fo" view-refresh; } \
+              | ${pkgs.rofi}/bin/rofi -dmenu -i -show-icons -p "VPN" -mesg "Active: $active$amn" )
+    case "$choice" in
+      "✕ Disconnect"*)
+        case "$active" in
+          Reality)    ${realityOff}/bin/reality-off ;;
+          Hysteria2)  ${hysteriaOff}/bin/hysteria-off ;;
+          naive)      ${naiveOff}/bin/naive-off ;;
+          olcrtc)     ${olcrtcOff}/bin/olcrtc-off ;;
+          Cloudflare) ${cfOff}/bin/cf-off ;;
+          Chain)      ${chainOff}/bin/chain-off ;;
+          SSH)        ${sshVpnOff}/bin/ssh-vpn-off ;;
+        esac ;;
+      *"Failover: ON")  ${failoverOff}/bin/failover-off ;;
+      *"Failover: OFF") ${failoverOn}/bin/failover-on ;;
+      *Reality)    ${realityOn}/bin/reality-on ;;
+      *Hysteria2)  ${hysteriaOn}/bin/hysteria-on ;;
+      *naive)      ${naiveOn}/bin/naive-on ;;
+      *olcrtc)     ${olcrtcOn}/bin/olcrtc-on ;;
+      *Cloudflare) ${cfOn}/bin/cf-on ;;
+      *Chain)      ${chainOn}/bin/chain-on ;;
+      *SSH)        ${sshVpnOn}/bin/ssh-vpn-on ;;
+    esac
+  '';
 in
 {
   xdg.desktopEntries = {
@@ -210,150 +253,24 @@ in
       name = "Beekeeper Studio";
       comment = "SQL editor and database manager";
       exec = "/home/lad/Applications/Beekeeper-Studio-5.6.3.AppImage";
-      icon = "/home/lad/.local/share/icons/beekeeper.png";
+      icon = "beekeeper-studio"; # named icon from papirus (the old .png path never existed)
       terminal = false;
       categories = [ "Development" "Database" ];
     };
-    yougile = {
-      name = "YouGile";
-      comment = "Project management";
-      exec = "/home/lad/Applications/YouGile-40.41.3-x86_64.AppImage";
-      icon = "/home/lad/.local/share/icons/yougile.png";
-      terminal = false;
-      categories = [ "Office" ];
-    };
-    reality-on = {
-      name = "Reality VPN — On";
-      comment = "Full-tunnel VPN, disguised as HTTPS";
-      exec = "${realityOn}/bin/reality-on";
-      icon = "security-high";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    reality-off = {
-      name = "Reality VPN — Off";
-      comment = "Disconnect the Reality full-tunnel VPN";
-      exec = "${realityOff}/bin/reality-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    ssh-vpn-on = {
-      name = "SSH VPN — On";
-      comment = "sshuttle tunnel";
-      exec = "${sshVpnOn}/bin/ssh-vpn-on";
-      icon = "network-server";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    ssh-vpn-off = {
-      name = "SSH VPN — Off";
-      comment = "Disconnect the sshuttle VPN";
-      exec = "${sshVpnOff}/bin/ssh-vpn-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    hysteria-on = {
-      name = "Hysteria2 VPN — On";
-      comment = "UDP/QUIC full tunnel — backup transport";
-      exec = "${hysteriaOn}/bin/hysteria-on";
-      icon = "network-wireless-hotspot";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    hysteria-off = {
-      name = "Hysteria2 VPN — Off";
-      comment = "Disconnect the Hysteria2 VPN";
-      exec = "${hysteriaOff}/bin/hysteria-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    chain-on = {
-      name = "Chain VPN — On";
-      comment = "Multi-hop relay (domestic entry → foreign exit)";
-      exec = "${chainOn}/bin/chain-on";
-      icon = "insert-link";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    chain-off = {
-      name = "Chain VPN — Off";
-      comment = "Disconnect the multi-hop chain";
-      exec = "${chainOff}/bin/chain-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    cf-on = {
-      name = "Cloudflare VPN — On";
-      comment = "VLESS-WS via Cloudflare — survives IP-blocking (last resort)";
-      exec = "${cfOn}/bin/cf-on";
-      icon = "cloudstatus";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    cf-off = {
-      name = "Cloudflare VPN — Off";
-      comment = "Disconnect the Cloudflare-fronted VPN";
-      exec = "${cfOff}/bin/cf-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    olcrtc-on = {
-      name = "olcrtc VPN — On";
-      comment = "WebRTC-over-Jitsi tunnel — beats CF throttling from residential RU";
-      exec = "${olcrtcOn}/bin/olcrtc-on";
-      icon = "jitsi";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    olcrtc-off = {
-      name = "olcrtc VPN — Off";
-      comment = "Disconnect the olcrtc WebRTC tunnel";
-      exec = "${olcrtcOff}/bin/olcrtc-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    naive-on = {
-      name = "naive VPN — On";
-      comment = "Chrome-HTTP/2 proxy — looks like normal browsing; fingerprint-diverse from Reality";
-      exec = "${naiveOn}/bin/naive-on";
-      icon = "google-chrome";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    naive-off = {
-      name = "naive VPN — Off";
-      comment = "Disconnect the naiveproxy tunnel";
-      exec = "${naiveOff}/bin/naive-off";
-      icon = "network-disconnected";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    failover-on = {
-      name = "VPN Failover — On";
-      comment = "Watchdog: auto-switch tiers if the active VPN stops working";
-      exec = "${failoverOn}/bin/failover-on";
-      icon = "view-refresh";
-      terminal = false;
-      categories = [ "Network" ];
-    };
-    failover-off = {
-      name = "VPN Failover — Off";
-      comment = "Stop the auto-failover watchdog";
-      exec = "${failoverOff}/bin/failover-off";
-      icon = "network-disconnected";
+    vpn-menu = {
+      name = "VPN";
+      comment = "Pick / switch / disconnect any VPN tier (rofi menu)";
+      exec = "${vpnMenu}/bin/vpn-menu";
+      icon = "network-vpn";
       terminal = false;
       categories = [ "Network" ];
     };
   };
 
-  # CLI commands: reality/hysteria/chain/cf/ssh-vpn -on/off + failover-on/off.
+  # `vpn-menu` (rofi launcher) + the underlying CLI commands (reality/hysteria/
+  # naive/olcrtc/chain/cf/ssh-vpn -on/off + failover-on/off), still usable directly.
   home.packages = [
+    vpnMenu
     realityOn realityOff hysteriaOn hysteriaOff chainOn chainOff
     cfOn cfOff sshVpnOn sshVpnOff olcrtcOn olcrtcOff naiveOn naiveOff failoverOn failoverOff
     (pkgs.callPackage ../pkgs/olcrtc.nix { })      # `olcrtc <config>` on PATH (WebRTC tunnel)
