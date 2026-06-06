@@ -9,6 +9,7 @@ in
       ../home/home.nix
       ./packages/packages.nix
       ./bluetooth.nix
+      ./nfs-media.nix
     ];
 
   # Bootloader.
