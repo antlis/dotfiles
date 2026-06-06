@@ -1,6 +1,6 @@
 { config, pkgs, inputs, ... }:
 let
-  worktrunk = inputs.worktrunk.packages.${pkgs.system}.default;
+  worktrunk = inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   nodePackages = import ./node-packages.nix { inherit pkgs; };
 
@@ -8,7 +8,7 @@ let
 
   pythonPackages = import ./python-packages.nix { inherit pkgs; };
 
-  opencode = inputs.opencode.packages.${pkgs.system}.default;
+  opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -130,6 +130,7 @@ in
 
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
+    codex                  # OpenAI Codex CLI | https://developers.openai.com/codex/cli
     claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
     pi-coding-agent        # pi minimal terminal coding agent | https://pi.dev (flake: github:lukasl-dev/pi.nix)
 

@@ -122,6 +122,9 @@ let
     sudo ${systemctl} stop chain-vpn 2>/dev/null || true
     sudo ${systemctl} stop cf-vpn 2>/dev/null || true
     sudo ${systemctl} stop olcrtc-vpn 2>/dev/null || true
+    # stop first so a server switch (naive-{nl,pl}.json + config-{nl,pl}.json) actually
+    # reloads — `start` alone is a no-op if naive-vpn/-bridge are already running.
+    sudo ${systemctl} stop naive-vpn 2>/dev/null || true
     sudo ${systemctl} start naive-vpn
     ip=""
     for i in $(seq 1 8); do
@@ -129,12 +132,16 @@ let
       ip=$(${curl} -s --max-time 6 https://ifconfig.me) && [ -n "$ip" ] && break
       ip=""
     done
-    if [ -n "$ip" ]; then
-      ${notify} -i google-chrome "naive VPN (Chrome HTTP/2)" "Connected — exit IP $ip"
-    else
-      sudo ${systemctl} stop naive-vpn 2>/dev/null || true
-      sudo ${systemctl} start hysteria-vpn
-      ${notify} -i network-disconnected "naive VPN (Chrome HTTP/2)" "Failed to connect — reverted to Hysteria"
+    # Only act if naive is still the active tier — the user may have disconnected/switched
+    # during the ~24s poll, and we must not fire a stale "Connected" or revert their choice.
+    if ${systemctl} is-active --quiet naive-vpn; then
+      if [ -n "$ip" ]; then
+        ${notify} -i google-chrome "naive VPN (Chrome HTTP/2)" "Connected — exit IP $ip"
+      else
+        sudo ${systemctl} stop naive-vpn 2>/dev/null || true
+        sudo ${systemctl} start hysteria-vpn
+        ${notify} -i network-disconnected "naive VPN (Chrome HTTP/2)" "Failed to connect — reverted to Hysteria"
+      fi
     fi
   '';
   naiveOff = pkgs.writeShellScriptBin "naive-off" ''
@@ -153,42 +160,65 @@ let
   # connects it (each -on auto-stops the others); plus Disconnect + Failover toggle.
   vpnMenu = pkgs.writeShellScriptBin "vpn-menu" ''
     sc=${systemctl}
+    cfg=/home/lad/.config/sing-box
+    nv=/home/lad/.config/naive
+    ol=/home/lad/.config/olcrtc
+    g=${pkgs.gnugrep}/bin/grep
+    # Every server-switchable tier keeps NL+PL source configs; the live config is a COPY of
+    # the chosen one, swapped at runtime — so switching server is rebuild-free. Each tier
+    # exposes the active server differently, so detection is per-tier:
+    srv()  { $g -q "127.0.0.1" "$cfg/$1.json" 2>/dev/null && echo "PL" || echo "NL"; }  # reality/hysteria/naive: PL exit IP
+    srvO() { $g -q "vl4-pl" "$ol/srv-host" 2>/dev/null && echo "PL" || echo "NL"; }            # olcrtc: SSH-host marker
+    srvC() { $g -q '"server_port": 8443' "$cfg/chain.json" 2>/dev/null && echo "PL" || echo "NL"; }  # chain: Moscow relay port
     active="none"
-    for pair in "reality-vpn:Reality" "hysteria-vpn:Hysteria2" "naive-vpn:naive" "olcrtc-vpn:olcrtc" "cf-vpn:Cloudflare" "chain-vpn:Chain" "ssh-vpn:SSH"; do
-      unit="''${pair%%:*}"; name="''${pair##*:}"
-      $sc is-active --quiet "$unit" && active="$name"
-    done
+    if   $sc is-active --quiet reality-vpn;  then active="Reality · $(srv reality)"
+    elif $sc is-active --quiet hysteria-vpn; then active="Hysteria · $(srv hysteria)"
+    elif $sc is-active --quiet naive-vpn;    then active="naive · $(srv naive)"
+    elif $sc is-active --quiet olcrtc-vpn;   then active="olcrtc · $(srvO)"
+    elif $sc is-active --quiet cf-vpn;       then active="Cloudflare"
+    elif $sc is-active --quiet chain-vpn;    then active="Chain · $(srvC)"
+    elif $sc is-active --quiet ssh-vpn;      then active="SSH"
+    fi
     amn=""
     ${pkgs.iproute2}/bin/ip link show amn0 >/dev/null 2>&1 && amn="   ⚠ Amnezia (amn0) up — disable it before a sing-box tier"
     fo=$($sc is-active --quiet vpn-failover && echo ON || echo OFF)
     # rofi dmenu icon protocol: "<label>\0icon\x1f<themed-icon-name>". -show-icons renders it.
     row() { printf '%s\0icon\x1f%s\n' "$1" "$2"; }
     mark() { if [ "$1" = "$active" ]; then row "🟢 $1" "$2"; else row "$1" "$2"; fi; }
-    choice=$( { mark Reality security-high; mark Hysteria2 network-wireless; \
-                mark naive applications-internet; mark olcrtc camera-web; \
-                mark Cloudflare weather-overcast; mark Chain insert-link; mark SSH utilities-terminal; \
+    choice=$( { mark "Reality · NL" security-high; mark "Reality · PL" security-high; \
+                mark "Hysteria · NL" network-wireless; mark "Hysteria · PL" network-wireless; \
+                mark "naive · NL" applications-internet; mark "naive · PL" applications-internet; \
+                mark "olcrtc · NL" camera-web; mark "olcrtc · PL" camera-web; \
+                mark "Cloudflare" weather-overcast; \
+                mark "Chain · NL" insert-link; mark "Chain · PL" insert-link; mark "SSH" utilities-terminal; \
                 row "✕ Disconnect ($active)" network-offline; \
                 row "⚙ Failover: $fo" view-refresh; } \
-              | ${pkgs.rofi}/bin/rofi -dmenu -i -show-icons -p "VPN" -mesg "Active: $active$amn" )
+              | ${pkgs.rofi}/bin/rofi -dmenu -i -show-icons -p "VPN" -mesg "Active: $active$amn" \
+                  -theme-str 'mainbox { padding: 4% 25%; }' )
     case "$choice" in
       "✕ Disconnect"*)
         case "$active" in
-          Reality)    ${realityOff}/bin/reality-off ;;
-          Hysteria2)  ${hysteriaOff}/bin/hysteria-off ;;
-          naive)      ${naiveOff}/bin/naive-off ;;
-          olcrtc)     ${olcrtcOff}/bin/olcrtc-off ;;
+          Reality*)   ${realityOff}/bin/reality-off ;;
+          Hysteria*)  ${hysteriaOff}/bin/hysteria-off ;;
+          naive*)     ${naiveOff}/bin/naive-off ;;
+          olcrtc*)    ${olcrtcOff}/bin/olcrtc-off ;;
           Cloudflare) ${cfOff}/bin/cf-off ;;
-          Chain)      ${chainOff}/bin/chain-off ;;
+          Chain*)     ${chainOff}/bin/chain-off ;;
           SSH)        ${sshVpnOff}/bin/ssh-vpn-off ;;
         esac ;;
       *"Failover: ON")  ${failoverOff}/bin/failover-off ;;
       *"Failover: OFF") ${failoverOn}/bin/failover-on ;;
-      *Reality)    ${realityOn}/bin/reality-on ;;
-      *Hysteria2)  ${hysteriaOn}/bin/hysteria-on ;;
-      *naive)      ${naiveOn}/bin/naive-on ;;
-      *olcrtc)     ${olcrtcOn}/bin/olcrtc-on ;;
+      *"Reality · NL")  cp "$cfg/reality-nl.json" "$cfg/reality.json"; ${realityOn}/bin/reality-on ;;
+      *"Reality · PL")  cp "$cfg/reality-pl.json" "$cfg/reality.json"; ${realityOn}/bin/reality-on ;;
+      *"Hysteria · NL") cp "$cfg/hysteria-nl.json" "$cfg/hysteria.json"; ${hysteriaOn}/bin/hysteria-on ;;
+      *"Hysteria · PL") cp "$cfg/hysteria-pl.json" "$cfg/hysteria.json"; ${hysteriaOn}/bin/hysteria-on ;;
+      *"naive · NL")    cp "$cfg/naive-nl.json" "$cfg/naive.json"; cp "$nv/config-nl.json" "$nv/config.json"; ${naiveOn}/bin/naive-on ;;
+      *"naive · PL")    cp "$cfg/naive-pl.json" "$cfg/naive.json"; cp "$nv/config-pl.json" "$nv/config.json"; ${naiveOn}/bin/naive-on ;;
+      *"olcrtc · NL")   cp "$ol/client-nl.yaml" "$ol/client.yaml"; cp "$ol/srv-host-nl" "$ol/srv-host"; ${olcrtcOn}/bin/olcrtc-on ;;
+      *"olcrtc · PL")   cp "$ol/client-pl.yaml" "$ol/client.yaml"; cp "$ol/srv-host-pl" "$ol/srv-host"; ${olcrtcOn}/bin/olcrtc-on ;;
       *Cloudflare) ${cfOn}/bin/cf-on ;;
-      *Chain)      ${chainOn}/bin/chain-on ;;
+      *"Chain · NL")    cp "$cfg/chain-nl.json" "$cfg/chain.json"; ${chainOn}/bin/chain-on ;;
+      *"Chain · PL")    cp "$cfg/chain-pl.json" "$cfg/chain.json"; ${chainOn}/bin/chain-on ;;
       *SSH)        ${sshVpnOn}/bin/ssh-vpn-on ;;
     esac
   '';
@@ -275,6 +305,6 @@ in
     cfOn cfOff sshVpnOn sshVpnOff olcrtcOn olcrtcOff naiveOn naiveOff failoverOn failoverOff
     (pkgs.callPackage ../pkgs/olcrtc.nix { })      # `olcrtc <config>` on PATH (WebRTC tunnel)
     (pkgs.callPackage ../pkgs/naiveproxy.nix { })  # `naive <config>` on PATH (Chrome-stack proxy)
-    pkgs.nekoray   # GUI client (bundles Xray/sing-box; supports XHTTP) for ad-hoc profiles
+    pkgs.throne   # GUI client (formerly nekoray; bundles Xray/sing-box; supports XHTTP) for ad-hoc profiles
   ];
 }

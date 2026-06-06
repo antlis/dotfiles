@@ -53,9 +53,19 @@ in
     HibernateDelaySec=5min
   '';
 
+  # Firmware updates (fwupd/LVFS). Needed to check for a BIOS update that may
+  # fix the e820/ACPI memory-map jitter breaking hibernate resume on this T480s.
+  services.fwupd.enable = true;
+
   services.openssh.enable = true;
   # Enable sshd, but don't start it on boot
   systemd.services.sshd.wantedBy = lib.mkForce [];
+
+  # Mesh VPN client (joins our self-hosted headscale control plane). Only routes the
+  # 100.x tailnet, so it coexists with the circumvention tiers + Amnezia (no default-route
+  # grab). The one-time `tailscale up --login-server … --authkey …` join command — with the
+  # private server URL + key — lives in the vault note, kept out of this public repo.
+  services.tailscale.enable = true;
 
   hardware.graphics.enable32Bit = true;
 
@@ -114,6 +124,28 @@ in
     };
   };
 
+  # Always-on: pin Docker's bridge pool (10.210.0.0/16, see default-address-pools
+  # below) to the main table so host->container traffic — including DNAT'd
+  # published ports like MariaDB on 127.0.0.1:3306 — bypasses any active sing-box
+  # circumvention tier's rules (~prio 9000) and uses the docker bridge. Disjoint
+  # from the corp pins (90/91), so the AI tunnel and the local stack run at once.
+  systemd.services.docker-subnet-pin = {
+    description = "Pin Docker bridge pool to main routing table (coexist with sing-box tiers)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "docker-subnet-pin-up" ''
+        ${pkgs.iproute2}/bin/ip rule del to 10.210.0.0/16 lookup main priority 89 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip rule add to 10.210.0.0/16 lookup main priority 89
+      '';
+      ExecStop = pkgs.writeShellScript "docker-subnet-pin-down" ''
+        ${pkgs.iproute2}/bin/ip rule del to 10.210.0.0/16 lookup main priority 89 2>/dev/null || true
+      '';
+    };
+  };
+
   services.strongswan = {
     enable = true;
     secrets = [ "ipsec.d/ipsec.nm-l2tp.secrets" ];
@@ -131,6 +163,18 @@ in
   ];
 
   virtualisation.docker.enable = true;
+  # Keep Docker's bridge networks off the 172.16/12 space the sing-box
+  # circumvention tiers use. The naive tier's tun lands on 172.19.0.1/30, which
+  # collided with Docker's default 172.19.0.0/16 (the AppHost "aspire" network)
+  # and broke host->container connections — e.g. the API reaching MariaDB on
+  # 127.0.0.1:3306 (DNAT'd to the container's 172.x address, then hijacked into
+  # table 2022 by the tier's policy rules). Park Docker on 10.210.x instead.
+  # NOTE: existing networks keep their old subnet — after rebuild run
+  #   docker compose down (AppHost compose files) and bring the stack back up so
+  #   they recreate from this pool (or `docker network rm` the apphost nets).
+  virtualisation.docker.daemon.settings.default-address-pools = [
+    { base = "10.210.0.0/16"; size = 24; }
+  ];
 
   # Set your time zone.
   time.timeZone = "Asia/Yekaterinburg";
@@ -357,10 +401,13 @@ in
     # The exit server's alpha reconnect logic can wedge after a disconnect; restart it
     # (while the previous link is still up) so the bridge always meets a fresh peer.
     serverRefresh = pkgs.writeShellScript "olcrtc-server-refresh" ''
+      # Which exit to refresh follows the active olcrtc tier: the menu writes the SSH host
+      # alias to srv-host when switching NL<->PL (defaults to ${vpnSshHost} if absent).
+      host=$(${pkgs.coreutils}/bin/cat /home/lad/.config/olcrtc/srv-host 2>/dev/null || echo ${vpnSshHost})
       ${pkgs.openssh}/bin/ssh -i /home/lad/.ssh/vpn_ed25519 -o IdentitiesOnly=yes \
         -F /home/lad/.ssh/config -o UserKnownHostsFile=/home/lad/.ssh/known_hosts \
         -o StrictHostKeyChecking=accept-new -o ConnectTimeout=12 \
-        ${vpnSshHost} 'systemctl restart olcrtc'
+        "$host" 'systemctl restart olcrtc'
     '';
   in {
     description = "olcrtc client bridge (WebRTC-over-Jitsi -> SOCKS 127.0.0.1:8808)";
@@ -501,6 +548,7 @@ in
   in {
     description = "VPN auto-failover watchdog (rotate tiers when the active one stops passing traffic)";
     after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     # NOT wantedBy — started manually via failover-on, stopped via failover-off.
     serviceConfig = { ExecStart = "${watch}"; Restart = "on-failure"; RestartSec = 5; };
   };
