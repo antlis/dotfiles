@@ -22,6 +22,10 @@
   "${mod}+Shift+p" = "exec ~/bin/rofi/rofi-websearch-private";
   "${mod}+p"       = "exec rofi-rbw";
 
+  # Notifications (dunst)
+  "${mod}+n"       = "exec --no-startup-id ${pkgs.dunst}/bin/dunstctl history-pop";
+  "${mod}+Shift+n" = "exec --no-startup-id ${pkgs.dunst}/bin/dunstctl close-all";
+
   # Focus (vim-style)
   "${mod}+h" = "focus left";
   "${mod}+j" = "focus down";
