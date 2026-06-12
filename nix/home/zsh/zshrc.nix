@@ -64,6 +64,11 @@ in
       source ${c.homeDir}/.zsh-custom/aliases.zsh
       source ${c.homeDir}/.zsh-custom/functions.zsh
 
+      # ── Private env (gitignored) — API keys, machine-local tokens. Add keys
+      #    to ~/.zsh_private as `export FOO_API_KEY=...`. Loaded last so it
+      #    overrides anything from the public config.
+      [[ -f $HOME/.zsh_private ]] && source $HOME/.zsh_private
+
       # ── Keybinds ─────────────────────────────────────────────────────────────
       bindkey '^x^x' edit-command-line
 

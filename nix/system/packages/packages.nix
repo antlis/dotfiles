@@ -62,8 +62,12 @@ in
     # ── Editors & IDE ─────────────────────────────────────────────────────────
     neovim                 # Hyperextensible Vim-based text editor | https://neovim.io
     nodejs                 # JavaScript runtime (required by many LSPs and tools) | https://nodejs.org
-    bun                    # Bun is a fast JavaScript all-in-one toolkit | https://bun.com/
+    bubblewrap             # Bubblewrap sandbox runtime used by Codex | https://github.com/containers/bubblewrap
+    playwright             # Browser automation library and CLI | https://playwright.dev
+    playwright-mcp         # MCP server for browser control via Playwright | https://www.npmjs.com/package/@playwright/mcp
+    (callPackage ../../pkgs/bun.nix { }) # Bun 1.3.14 pinned; nixpkgs 25.11 has 1.3.3 (too old for oh-my-pi) | https://bun.com/
     gcc                    # C compiler (required by treesitter parsers) | https://gcc.gnu.org
+    stdenv.cc.cc.lib       # libstdc++.so.6 for Rust-backed tools like Headroom | https://gcc.gnu.org/onlinedocs/libstdc++/
     tree-sitter            # Parser generator for syntax highlighting and code analysis | https://tree-sitter.github.io
     ripgrep                # Fast regex search tool (used by telescope/fzf) | https://github.com/BurntSushi/ripgrep
     fd                     # Fast and user-friendly find replacement (used by telescope/fzf) | https://github.com/sharkdp/fd
@@ -95,6 +99,7 @@ in
     totem                  # GNOME video player — provides totem-video-thumbnailer for Nautilus | https://wiki.gnome.org/Apps/Videos
     gst_all_1.gst-libav    # GStreamer ffmpeg plugin — provides video codecs for thumbnailing | https://gstreamer.freedesktop.org
     pulseaudio             # Audio server — includes pactl for volume control | https://www.freedesktop.org/wiki/Software/PulseAudio
+    krita                  # Digital painting and illustration app | https://krita.org
 
     # ── Screen Recording ──────────────────────────────────────────────────────
     peek                   # Simple animated GIF screen recorder | https://github.com/phw/peek
@@ -130,7 +135,10 @@ in
 
     # ── AI ────────────────────────────────────────────────────────────────────
     opencode               # AI coding agent for the terminal | https://opencode.ai
-    codex                  # OpenAI Codex CLI | https://developers.openai.com/codex/cli
+    (callPackage ../../pkgs/codex.nix { }) # OpenAI Codex CLI — pinned prebuilt 0.137.0 (GPT-5.5); nixpkgs has only 0.92.0 | https://developers.openai.com/codex/cli
+    (callPackage ../../pkgs/headroom.nix { inherit (pkgs) python312; }) # Headroom context compression wrapper for Codex/Claude | https://github.com/chopratejas/headroom
+    (callPackage ../../pkgs/rtk.nix { }) # RTK compact command-output proxy for AI agents | https://github.com/rtk-ai/rtk
+    (callPackage ../../pkgs/omp.nix { }) # oh-my-pi coding agent (pi fork with LSP/DAP + Python+Bun kernels) | https://omp.sh
     claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
     pi-coding-agent        # pi minimal terminal coding agent | https://pi.dev (flake: github:lukasl-dev/pi.nix)
 
