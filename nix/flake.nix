@@ -66,6 +66,7 @@
           inputs.pi.overlays.default
           (final: prev: {
             amnezia-vpn = final.callPackage ./pkgs/amnezia-vpn.nix { };
+            mimocode = final.callPackage ./pkgs/mimocode.nix { };
           })
         ];
       };
