@@ -139,6 +139,7 @@ in
     (callPackage ../../pkgs/headroom.nix { inherit (pkgs) python312; }) # Headroom context compression wrapper for Codex/Claude | https://github.com/chopratejas/headroom
     (callPackage ../../pkgs/rtk.nix { }) # RTK compact command-output proxy for AI agents | https://github.com/rtk-ai/rtk
     (callPackage ../../pkgs/omp.nix { }) # oh-my-pi coding agent (pi fork with LSP/DAP + Python+Bun kernels) | https://omp.sh
+    mimocode               # MiMoCode — AI coding agent from Xiaomi | https://mimo.xiaomi.com/mimocode
     claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
     pi-coding-agent        # pi minimal terminal coding agent | https://pi.dev (flake: github:lukasl-dev/pi.nix)
 
