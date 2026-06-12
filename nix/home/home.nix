@@ -47,6 +47,10 @@ in
         url = "https://github.com/sei40kr/tmux-airline-dracula.git";
         ref = "master";
       };
+      ".codex/config.toml" = {
+        source = config.lib.file.mkOutOfStoreSymlink
+          "${c.dotfilesDir}/codex/config.toml";
+      };
     };
   };
 }

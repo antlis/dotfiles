@@ -1,0 +1,33 @@
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+model_verbosity = "low"
+personality = "pragmatic"
+web_search = "cached"
+
+[features]
+shell_snapshot = true
+multi_agent = false
+
+[projects."/home/lad/Projects/wrk/umbrella/agent-manager"]
+trust_level = "trusted"
+
+[projects."/home/lad"]
+trust_level = "trusted"
+
+[projects."/home/lad/Projects"]
+trust_level = "trusted"
+
+[tui]
+status_line = ["model-with-reasoning", "current-dir", "model", "reasoning", "project-name", "git-branch"]
+status_line_use_colors = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[mcp_servers.playwright]
+command = "/run/current-system/sw/bin/npx"
+args = ["-y", "@playwright/mcp@latest"]
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+enabled = true
+required = false
