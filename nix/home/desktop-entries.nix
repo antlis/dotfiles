@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, amneziaServerIp, ... }:
 let
   c = import ../constants.nix;
   screenshotScript = flag: pkgs.writeShellScript "screenshot" ''
@@ -167,7 +167,7 @@ let
     # Every server-switchable tier keeps NL+PL source configs; the live config is a COPY of
     # the chosen one, swapped at runtime — so switching server is rebuild-free. Each tier
     # exposes the active server differently, so detection is per-tier:
-    srv()  { $g -q "127.0.0.1" "$cfg/$1.json" 2>/dev/null && echo "PL" || echo "NL"; }  # reality/hysteria/naive: PL exit IP
+    srv()  { $g -q "${amneziaServerIp}" "$cfg/$1.json" 2>/dev/null && echo "PL" || echo "NL"; }  # reality/hysteria/naive: PL exit IP
     srvO() { $g -q "vl4-pl" "$ol/srv-host" 2>/dev/null && echo "PL" || echo "NL"; }            # olcrtc: SSH-host marker
     srvC() { $g -q '"server_port": 8443' "$cfg/chain.json" 2>/dev/null && echo "PL" || echo "NL"; }  # chain: Moscow relay port
     active="none"
