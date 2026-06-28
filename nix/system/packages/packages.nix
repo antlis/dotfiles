@@ -110,6 +110,7 @@ in
     httpie                 # User-friendly HTTP client for the terminal | https://httpie.io
     postman                # GUI HTTP client for API development and testing | https://www.postman.com
     amnezia-vpn            # Self-hosted VPN client with censorship bypass | https://amnezia.org
+    openvpn                # VPN daemon supporting TLS/SSL tunnels | https://openvpn.net
     dig                    # DNS lookup utility — query nameservers and troubleshoot DNS resolution | https://man.archlinux.org/man/dig.1
     kubectl                # Kubernetes CLI — deploy and manage containerized workloads on clusters | https://kubernetes.io/docs/reference/kubectl
     jq                     # JSON processor | https://jqlang.org/
@@ -142,6 +143,7 @@ in
     mimocode               # MiMoCode — AI coding agent from Xiaomi | https://mimo.xiaomi.com/mimocode
     claude-code            # Claude Code CLI (Anthropic) | https://github.com/sadjow/claude-code-nix
     pi-coding-agent        # pi minimal terminal coding agent | https://pi.dev (flake: github:lukasl-dev/pi.nix)
+    herdr                  # Agent multiplexer — workspaces, tabs, panes for terminal agents | https://herdr.dev
 
   ] ++ nodePackages ++ rustPackages ++ pythonPackages;
 }

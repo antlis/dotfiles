@@ -224,6 +224,17 @@ let
   '';
 in
 {
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html"             = "brave-debug.desktop";
+      "x-scheme-handler/http" = "brave-debug.desktop";
+      "x-scheme-handler/https" = "brave-debug.desktop";
+      "x-scheme-handler/about" = "brave-debug.desktop";
+      "x-scheme-handler/unknown" = "brave-debug.desktop";
+    };
+  };
+
   xdg.desktopEntries = {
     yazifloat = {
       name = "yazifloat";
