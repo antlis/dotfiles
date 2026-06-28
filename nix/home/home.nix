@@ -1,8 +1,10 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, sshHosts, ... }:
 let
   c = import ../constants.nix;
 in
 {
+  home-manager.extraSpecialArgs = { inherit sshHosts; };
+
   home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
     home.stateVersion = "25.11";
     home.username = c.username;
@@ -18,6 +20,7 @@ in
       ./rofi.nix
       ./opencode.nix
       ./pi.nix
+      ./ssh.nix
     ];
     services.dunst.enable = true;
     services.ssh-agent.enable = true;
