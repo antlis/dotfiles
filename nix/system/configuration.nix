@@ -1,4 +1,4 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], workVpnName ? "", workVpnTransportIps ? [ ], ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
 let
   olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
   naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
@@ -145,6 +145,81 @@ in
       ExecStop = pkgs.writeShellScript "docker-subnet-pin-down" ''
         ${pkgs.iproute2}/bin/ip rule del to 10.210.0.0/16 lookup main priority 89 2>/dev/null || true
       '';
+    };
+  };
+
+  # Corp access via Moscow gateway: vps-msk-2 runs the corp OpenVPN, exposing
+  # internal subnets. corp-msk-route adds a /32 host route for vps-msk-2 so it
+  # bypasses any active Amnezia full-tunnel (/1 routes). corp-msk-proxy opens
+  # SSH -D 10800 giving a SOCKS5 on localhost:10800 (no credentials — SSH key auth).
+  # Browser uses ~/.config/umbrella-proxy.pac → routes *.corp.internal through it.
+  # Git SSH uses ProxyJump vps-msk-2 (in ~/.ssh/config).
+  # Corp access via Moscow gateway (corpVpnSshHost) which runs the corp OpenVPN.
+  # corpVpnSubnets: internal subnets to route transparently via tun2socks → SOCKS5 → SSH.
+  # Values live in private.nix (gitignored); empty defaults disable all three services.
+  systemd.services.corp-tun = lib.mkIf (corpVpnSubnets != [ ]) {
+    description = "Corp transparent tunnel — tun2socks via SOCKS5 → ${corpVpnSshHost}";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" "corp-msk-proxy.service" ];
+    requires = [ "corp-msk-proxy.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = pkgs.writeShellScript "corp-tun-start" ''
+        set -e
+        ${pkgs.tun2socks}/bin/tun2socks -device tun://corp0 -proxy socks5://127.0.0.1:10800 -loglevel silent &
+        T=$!
+        for i in $(seq 1 20); do
+          ${pkgs.iproute2}/bin/ip link show corp0 >/dev/null 2>&1 && break
+          sleep 0.5
+        done
+        ${pkgs.iproute2}/bin/ip link set corp0 up
+        for subnet in ${lib.concatStringsSep " " corpVpnSubnets}; do
+          ${pkgs.iproute2}/bin/ip route replace "$subnet" dev corp0
+        done
+        trap "kill $T 2>/dev/null" TERM INT
+        wait $T
+      '';
+      ExecStopPost = pkgs.writeShellScript "corp-tun-stop" ''
+        for subnet in ${lib.concatStringsSep " " corpVpnSubnets}; do
+          ${pkgs.iproute2}/bin/ip route del "$subnet" 2>/dev/null || true
+        done
+      '';
+      Restart = "on-failure";
+      RestartSec = 3;
+      AmbientCapabilities = [ "CAP_NET_ADMIN" ];
+      CapabilityBoundingSet = [ "CAP_NET_ADMIN" ];
+    };
+  };
+
+  systemd.services.corp-msk-route = lib.mkIf (corpVpnSshHost != "") {
+    description = "Route corp gateway direct, bypassing Amnezia full-tunnel";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "corp-msk-route-up" ''
+        ${pkgs.iproute2}/bin/ip route replace ${vpnChainEntryIp} via 192.168.0.1 dev wlp61s0 2>/dev/null || true
+      '';
+      ExecStop = pkgs.writeShellScript "corp-msk-route-down" ''
+        ${pkgs.iproute2}/bin/ip route del ${vpnChainEntryIp} 2>/dev/null || true
+      '';
+    };
+  };
+
+  systemd.services.corp-msk-proxy = lib.mkIf (corpVpnSshHost != "") {
+    description = "Corp SOCKS proxy — SSH -D 10800 via ${corpVpnSshHost}";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" "corp-msk-route.service" ];
+    wants = [ "network-online.target" ];
+    requires = [ "corp-msk-route.service" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "lad";
+      Environment = "HOME=/home/lad";
+      ExecStart = "${pkgs.openssh}/bin/ssh -D 10800 -N -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=accept-new -i /home/lad/.ssh/corp_msk_service -F /home/lad/.ssh/config ${corpVpnSshHost}";
+      Restart = "on-failure";
+      RestartSec = 5;
     };
   };
 

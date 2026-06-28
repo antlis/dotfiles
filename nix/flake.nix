@@ -4,6 +4,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,6 +43,11 @@
     # via its overlay. Intentionally NOT following our nixpkgs: it pins its own
     # nixpkgs so its pi.cachix.org cache hits and we avoid a local npm build.
     pi.url = "github:lukasl-dev/pi.nix";
+
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -64,9 +71,14 @@
           inputs.claude-code.overlays.default
           inputs.opencode.overlays.default
           inputs.pi.overlays.default
+          inputs.herdr.overlays.default
           (final: prev: {
             amnezia-vpn = final.callPackage ./pkgs/amnezia-vpn.nix { };
             mimocode = final.callPackage ./pkgs/mimocode.nix { };
+          })
+          # Pull zed-editor from nixpkgs-unstable (25.11 has 0.218.6, unstable has 1.3.5+)
+          (final: prev: {
+            zed-editor = inputs.nixpkgs-unstable.legacyPackages.${system}.zed-editor;
           })
         ];
       };

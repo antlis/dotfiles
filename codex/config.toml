@@ -17,6 +17,15 @@ trust_level = "trusted"
 [projects."/home/lad/Projects"]
 trust_level = "trusted"
 
+[projects."/home/lad/Projects/github/cv"]
+trust_level = "trusted"
+
+[projects."/home/lad/Projects/github/antlis.github.io"]
+trust_level = "trusted"
+
+[projects."/home/lad/Projects/github/eleventhfloor"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "model", "reasoning", "project-name", "git-branch"]
 status_line_use_colors = true
@@ -31,3 +40,9 @@ startup_timeout_sec = 30
 tool_timeout_sec = 60
 enabled = true
 required = false
+
+[mcp_servers.playwright.tools.browser_navigate]
+approval_mode = "approve"
+
+[notice]
+hide_rate_limit_model_nudge = true
