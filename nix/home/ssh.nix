@@ -58,8 +58,8 @@
         identityFile = "~/.ssh/id_ed25519";
         identitiesOnly = true;
         proxyJump = "bastion-02";
-        strictHostKeyChecking = "no";
         extraOptions = {
+          StrictHostKeyChecking = "no";
           PreferredAuthentications = "publickey";
           PubkeyAuthentication = "yes";
         };
