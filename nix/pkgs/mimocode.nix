@@ -15,6 +15,8 @@ stdenv.mkDerivation rec {
 
   sourceRoot = ".";
 
+  dontStrip = true;
+
   installPhase = ''
     runHook preInstall
     install -Dm755 mimo "$out/bin/mimo"

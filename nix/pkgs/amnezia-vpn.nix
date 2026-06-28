@@ -73,15 +73,15 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "amnezia-vpn";
-  version = "4.8.18.0";
+  version = "4.8.19.0";
 
   __structuredAttrs = true;
 
   src = fetchFromGitHub {
     owner = "amnezia-vpn";
     repo = "amnezia-client";
-    rev = "e9ed5b59a4484d8a246e7b0e772bea65b678c607";
-    hash = "sha256-lo8fkd7lUpc5cMyVs3McdSPdDb01FQH0/Brkn2005HU=";
+    rev = "129ae44edc41fd409859c1a7e7f73ee45e01b750";
+    hash = "sha256-kftLofCyLA6DDfEXRPyy6Zx0JiQUEzpdYpTlvPihPZg=";
     fetchSubmodules = true;
   };
 
