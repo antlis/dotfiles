@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, amneziaServerIp, ... }:
 
 let
   mod = "Mod4";
   assigns = import ./assigns.nix;
   colors = import ./colors.nix;
-  bars = import ./bars.nix { inherit pkgs; };
+  bars = import ./bars.nix { inherit pkgs amneziaServerIp; };
   keybindings = import ./keybindings.nix { inherit mod pkgs; };
 in
 {

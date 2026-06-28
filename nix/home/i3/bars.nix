@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, amneziaServerIp }:
 let
   # Shows which VPN is active in the i3bar (refreshes with i3status, ~5s).
   vpnStatus = pkgs.writeShellScript "i3-vpn-block" ''
@@ -6,7 +6,7 @@ let
     # tiers with NL+PL configs show which server is live (see vpn-menu for the per-tier
     # detection: reality/hysteria/naive by exit IP, olcrtc by SSH-host marker, chain by port).
     g=${pkgs.gnugrep}/bin/grep; cfg=/home/lad/.config/sing-box
-    srv()  { $g -q "127.0.0.1" "$cfg/$1.json" 2>/dev/null && echo "PL" || echo "NL"; }
+    srv()  { $g -q "${amneziaServerIp}" "$cfg/$1.json" 2>/dev/null && echo "PL" || echo "NL"; }
     srvO() { $g -q "vl4-pl" /home/lad/.config/olcrtc/srv-host 2>/dev/null && echo "PL" || echo "NL"; }
     srvC() { $g -q '"server_port": 8443' "$cfg/chain.json" 2>/dev/null && echo "PL" || echo "NL"; }
     if   $sc is-active --quiet reality-vpn;  then t="VPN: Reality $(srv reality)";  c="#50fa7b"
