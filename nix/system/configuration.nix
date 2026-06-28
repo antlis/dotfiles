@@ -1,4 +1,4 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], amneziaServerIp ? "127.0.0.1", workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
 let
   olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
   naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
@@ -204,6 +204,29 @@ in
       '';
       ExecStop = pkgs.writeShellScript "corp-msk-route-down" ''
         ${pkgs.iproute2}/bin/ip route del ${vpnChainEntryIp} 2>/dev/null || true
+      '';
+    };
+  };
+
+  # AmneziaWG (self-hosted PL, awg2) endpoint pin. AmneziaVPN's full-tunnel adds
+  # 0.0.0.0/1 + 128.0.0.0/1 to the main table, and its own server-exclusion /32 is
+  # silently skipped ("No default gateway available") when Tailscale's policy rules
+  # are present — so the encrypted handshake to the server loops back into the
+  # not-yet-up tunnel and never connects. Pin the server /32 via the LAN gateway
+  # (longest-prefix beats /1) so handshakes always escape; lets AmneziaWG and
+  # Tailscale run together. Same home-LAN gateway assumption as corp-msk-route.
+  systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIp != "127.0.0.1") {
+    description = "Pin AmneziaWG server /32 direct, bypassing its own full-tunnel (coexist with Tailscale)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "amnezia-server-route-up" ''
+        ${pkgs.iproute2}/bin/ip route replace ${amneziaServerIp} via 192.168.0.1 dev wlp61s0 2>/dev/null || true
+      '';
+      ExecStop = pkgs.writeShellScript "amnezia-server-route-down" ''
+        ${pkgs.iproute2}/bin/ip route del ${amneziaServerIp} 2>/dev/null || true
       '';
     };
   };
