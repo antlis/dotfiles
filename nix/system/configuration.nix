@@ -161,6 +161,7 @@ in
     description = "Corp transparent tunnel — tun2socks via SOCKS5 → ${corpVpnSshHost}";
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" "corp-msk-proxy.service" ];
+    wants = [ "network-online.target" ];
     requires = [ "corp-msk-proxy.service" ];
     serviceConfig = {
       Type = "simple";
