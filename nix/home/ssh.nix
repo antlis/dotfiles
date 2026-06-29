@@ -6,11 +6,20 @@
     matchBlocks = {
       archcraft = {
         user = "lad";
-        hostname = sshHosts.archcraft;
+        # hostname = sshHosts.archcraft;        # old home-LAN IP; breaks when archcraft is on another network
+        hostname = sshHosts.archrraftMesh;      # tailnet IP — reachable anywhere via the headscale mesh
       };
       archcraft-mesh = {
         user = "lad";
         hostname = sshHosts.archrraftMesh;
+      };
+      archcraft-lan = {
+        user = "lad";
+        hostname = sshHosts.archcraft;     # home-LAN IP — fallback when the mesh path is down (e.g. archcraft full-tunneling via Amnezia)
+      };
+      arch-t480 = {
+        user = "lad";
+        hostname = sshHosts.archT480;      # tailnet IP — reachable anywhere via the headscale mesh
       };
       weasel-nl = {
         user = "root";
