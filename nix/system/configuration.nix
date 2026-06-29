@@ -1,4 +1,4 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], amneziaServerIp ? "127.0.0.1", workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], amneziaServerIps ? [ ], workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
 let
   olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
   naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
@@ -208,25 +208,76 @@ in
     };
   };
 
-  # AmneziaWG (self-hosted PL, awg2) endpoint pin. AmneziaVPN's full-tunnel adds
-  # 0.0.0.0/1 + 128.0.0.0/1 to the main table, and its own server-exclusion /32 is
-  # silently skipped ("No default gateway available") when Tailscale's policy rules
-  # are present — so the encrypted handshake to the server loops back into the
-  # not-yet-up tunnel and never connects. Pin the server /32 via the LAN gateway
-  # (longest-prefix beats /1) so handshakes always escape; lets AmneziaWG and
-  # Tailscale run together. Same home-LAN gateway assumption as corp-msk-route.
-  systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIp != "127.0.0.1") {
-    description = "Pin AmneziaWG server /32 direct, bypassing its own full-tunnel (coexist with Tailscale)";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
+  # AmneziaWG (self-hosted awg2) endpoint exemption — coexist with the full-tunnel.
+  # AmneziaVPN full-tunnels via policy routing (`ip rule 220: from all lookup 220`
+  # -> default dev amn0). Premium servers get priority-90 exemption rules so their
+  # traffic stays direct, but the self-hosted awg2 servers get NONE — so only the
+  # first handshake init escapes (a race before amn0's routing is up); every retry
+  # then loops back into amn0 and the handshake never completes ("infinite
+  # connecting"). Diagnosed 2026-06-29: init reaches the server, server replies once,
+  # no retry ever arrives again. Fix: add a high-priority (91, just after Premium's
+  # 90) `ip rule` per server IP -> main table, which follows the current physical
+  # default route — so it works on any network, not just the home LAN. Bound to amn0
+  # so it (re)asserts on every connect and ExecStop removes the rules on disconnect.
+  systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIps != [ ]) {
+    description = "Exempt self-hosted AmneziaWG server IPs from the full-tunnel (else awg2 handshakes loop into amn0)";
+    bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
+    after = [ "sys-subsystem-net-devices-amn0.device" ];
+    wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
+    # lifecycle is entirely amn0-device-driven; don't let nixos switch try to
+    # start/stop it (it can't start with amn0 absent → cosmetic switch failure).
+    restartIfChanged = false;
+    stopIfChanged = false;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "amnezia-server-route-up" ''
-        ${pkgs.iproute2}/bin/ip route replace ${amneziaServerIp} via 192.168.0.1 dev wlp61s0 2>/dev/null || true
+        ${pkgs.coreutils}/bin/sleep 3   # let Amnezia install its own routing first
+        gwline=$(${pkgs.iproute2}/bin/ip -o route show default | ${pkgs.gnugrep}/bin/grep -v amn0 | ${pkgs.coreutils}/bin/head -1)
+        gw=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*via ([0-9.]+).*/\1/p')
+        dev=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*dev ([^ ]+).*/\1/p')
+        for ip in ${lib.concatStringsSep " " amneziaServerIps}; do
+          while ${pkgs.iproute2}/bin/ip rule del to "$ip/32" lookup main priority 91 2>/dev/null; do :; done
+          ${pkgs.iproute2}/bin/ip rule add to "$ip/32" lookup main priority 91
+          [ -n "$gw" ] && ${pkgs.iproute2}/bin/ip route replace "$ip" via "$gw" dev "$dev" 2>/dev/null || true
+        done
+        ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
       '';
       ExecStop = pkgs.writeShellScript "amnezia-server-route-down" ''
-        ${pkgs.iproute2}/bin/ip route del ${amneziaServerIp} 2>/dev/null || true
+        for ip in ${lib.concatStringsSep " " amneziaServerIps}; do
+          while ${pkgs.iproute2}/bin/ip rule del to "$ip/32" lookup main priority 91 2>/dev/null; do :; done
+          ${pkgs.iproute2}/bin/ip route del "$ip" 2>/dev/null || true
+        done
+      '';
+    };
+  };
+
+  # AmneziaVPN routes ALL IPv6 into the tunnel (::/1 + 8000::/1 dev amn0), but the
+  # servers have no working IPv6 egress — so every v6 destination black-holes. Since
+  # most sites are dual-stack and DNS returns AAAA, browsers try v6 first and stall:
+  # "connects but no pages open". Replace the tunnel's v6 split-default with
+  # `unreachable` so v6 fails instantly and happy-eyeballs falls back to v4 (which
+  # works through the tunnel). Privacy-safe: v6 just stops, no leak. Bound to the
+  # amn0 device so it (re)asserts on every connect and — crucially — the ExecStop
+  # removes the dev-less unreachable routes when amn0 goes away, otherwise they would
+  # black-hole IPv6 with the VPN off.
+  systemd.services.amnezia-ipv6-blackhole = {
+    description = "Fail-fast IPv6 while AmneziaWG is up (server has no v6 egress; forces v4 fallback)";
+    bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
+    after = [ "sys-subsystem-net-devices-amn0.device" ];
+    wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      # settle: let Amnezia finish adding its routes before we override them
+      ExecStart = pkgs.writeShellScript "amnezia-ipv6-blackhole-up" ''
+        ${pkgs.coreutils}/bin/sleep 2
+        ${pkgs.iproute2}/bin/ip -6 route replace unreachable ::/1 metric 1 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip -6 route replace unreachable 8000::/1 metric 1 2>/dev/null || true
+      '';
+      ExecStop = pkgs.writeShellScript "amnezia-ipv6-blackhole-down" ''
+        ${pkgs.iproute2}/bin/ip -6 route del unreachable ::/1 metric 1 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip -6 route del unreachable 8000::/1 metric 1 2>/dev/null || true
       '';
     };
   };
