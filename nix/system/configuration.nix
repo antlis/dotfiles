@@ -393,6 +393,7 @@ in
 
   programs.dconf.enable = true;
   programs.firefox.enable = true;
+  programs.chromium.enable = true;
 
   environment.shells = with pkgs; [ zsh ];
   environment.sessionVariables = {
