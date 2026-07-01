@@ -85,6 +85,7 @@ in
 
     # ── Browsers ──────────────────────────────────────────────────────────────
     brave                  # Privacy-focused Chromium-based browser | https://brave.com
+    chromium               # Open-source browser (Google Chromium) | https://www.chromium.org
     surfraw                # CLI tool for fast web searches and browser bookmarks | https://gitlab.com/surfraw/Surfraw
 
     # ── Communication ─────────────────────────────────────────────────────────
