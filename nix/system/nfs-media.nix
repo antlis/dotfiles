@@ -1,12 +1,15 @@
-{ ... }:
+{ sshHosts, ... }:
 {
   # NFS client support so the kernel can mount nfs shares.
   boot.supportedFilesystems = [ "nfs" ];
 
-  # 4TB media drive on the home server (homelab.lan -> resolved via the
-  # networking.hosts entry in the gitignored private.nix, so no IP lands in the
-  # public repo), exported read-only from /mnt/EHDDSG-4/data (music, video,
-  # books, podcasts, ...).
+  # 4TB media drive on the home server, reached over the headscale mesh
+  # (sshHosts.archrraftMesh, from the gitignored private.nix, so no IP lands
+  # in the public repo) rather than the LAN-only homelab.lan, so this mount
+  # works both at home and away — the mesh is always up, and Tailscale prefers
+  # a direct LAN path when both sides are on the same network anyway.
+  # Exported read-only from /mnt/EHDDSG-4/data (music, video, books,
+  # podcasts, ...).
   #
   # Mounted via systemd automount, NOT at boot: nothing is mounted until the
   # first access to /mnt/media, then it mounts on demand and auto-unmounts after
@@ -14,7 +17,7 @@
   # error instead of hanging — boot is never blocked (`nofail` + automount).
   # NFSv4 (single port 2049, no rpcbind) keeps the server/firewall side simple.
   fileSystems."/mnt/media" = {
-    device = "homelab.lan:/mnt/EHDDSG-4/data";
+    device = "${sshHosts.archrraftMesh}:/mnt/EHDDSG-4/data";
     fsType = "nfs";
     options = [
       "nfsvers=4.2"
