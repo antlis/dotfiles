@@ -11,6 +11,7 @@ in
       ./bluetooth.nix
       ./nfs-media.nix
       ./nfs-home.nix
+      ./nfs-remote.nix
     ];
 
   # Bootloader.
