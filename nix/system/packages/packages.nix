@@ -107,6 +107,10 @@ in
     simplescreenrecorder   # Feature-rich screen recorder with live preview | https://www.maartenbaert.be/simplescreenrecorder
     gnome-screenshot       # Screenshot tool with region and window capture | https://gitlab.gnome.org/GNOME/gnome-screenshot
 
+    # ── Remote play ───────────────────────────────────────────────────────────
+    moonlight-qt           # Game streaming client for Sunshine/GameStream hosts (e.g. arch-t480) | https://moonlight-stream.org
+    libva-utils            # vainfo — verify VAAPI hardware video decode is working | https://github.com/intel/libva-utils
+
     # ── Networking & API ──────────────────────────────────────────────────────
     httpie                 # User-friendly HTTP client for the terminal | https://httpie.io
     postman                # GUI HTTP client for API development and testing | https://www.postman.com

@@ -69,8 +69,18 @@ in
   # grab). The one-time `tailscale up --login-server … --authkey …` join command — with the
   # private server URL + key — lives in the vault note, kept out of this public repo.
   services.tailscale.enable = true;
+  # open UDP 41641 so peers can reach us for DIRECT connections (else inbound
+  # disco/handshake hits nixos-fw-refuse -j DROP and every path stays relayed).
+  services.tailscale.openFirewall = true;
 
-  hardware.graphics.enable32Bit = true;
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    # iHD VAAPI driver for the Intel UHD 620 (Kaby Lake) — hardware video decode,
+    # needed by Moonlight (game streaming) and any VAAPI consumer.
+    extraPackages = with pkgs; [ intel-media-driver ];
+  };
+  environment.sessionVariables.LIBVA_DRIVER_NAME = "iHD";
 
   virtualisation.virtualbox.host.enable = true;
   users.extraGroups.vboxusers.members = [ "lad" ];
@@ -221,7 +231,7 @@ in
   # default route — so it works on any network, not just the home LAN. Bound to amn0
   # so it (re)asserts on every connect and ExecStop removes the rules on disconnect.
   systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIps != [ ]) {
-    description = "Exempt self-hosted AmneziaWG server IPs from the full-tunnel (else awg2 handshakes loop into amn0)";
+    description = "Exempt self-hosted AmneziaWG server IPs from the full-tunnel (else awg2 handshakes loop into amn0) + keep the Tailscale mesh direct";
     bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
     after = [ "sys-subsystem-net-devices-amn0.device" ];
     wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
@@ -242,6 +252,30 @@ in
           ${pkgs.iproute2}/bin/ip rule add to "$ip/32" lookup main priority 91
           [ -n "$gw" ] && ${pkgs.iproute2}/bin/ip route replace "$ip" via "$gw" dev "$dev" 2>/dev/null || true
         done
+        # --- Tailscale mesh coexistence -------------------------------------
+        # Amnezia full-tunnels by injecting 0.0.0.0/1 + 128.0.0.0/1 dev amn0 into
+        # the MAIN table (both more specific than the physical /0 default), so
+        # even Tailscale's own `fwmark 0x80000 -> main` bypass still lands in amn0
+        # and mesh peers get reached via PL (~230ms) instead of their real
+        # endpoints. Give the fwmarked Tailscale underlay its own table (100)
+        # holding just the physical default, and point a high-priority rule
+        # (above Amnezia's 220) at it. The overlay (100.64.0.0/10) stays on main —
+        # Tailscale's /10 route there beats amn0's /1, so replies leave tailscale0.
+        if [ -n "$dev" ]; then
+          # copy the physical iface's on-link (connected) routes into table 100 so
+          # same-LAN peers (e.g. arch-t480 on 192.168.x) resolve directly instead
+          # of being sent via the gateway — otherwise Tailscale can't punch a LAN path.
+          ${pkgs.iproute2}/bin/ip -o route show table main dev "$dev" scope link 2>/dev/null | while read -r r; do
+            ${pkgs.iproute2}/bin/ip route replace $r dev "$dev" table 100 2>/dev/null || true
+          done
+        fi
+        if [ -n "$gw" ] && [ -n "$dev" ]; then
+          ${pkgs.iproute2}/bin/ip route replace default via "$gw" dev "$dev" table 100
+        fi
+        while ${pkgs.iproute2}/bin/ip rule del priority 100 fwmark 0x80000/0xff0000 lookup 100 2>/dev/null; do :; done
+        ${pkgs.iproute2}/bin/ip rule add priority 100 fwmark 0x80000/0xff0000 lookup 100
+        while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
+        ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup main priority 91
         ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
       '';
       ExecStop = pkgs.writeShellScript "amnezia-server-route-down" ''
@@ -249,6 +283,9 @@ in
           while ${pkgs.iproute2}/bin/ip rule del to "$ip/32" lookup main priority 91 2>/dev/null; do :; done
           ${pkgs.iproute2}/bin/ip route del "$ip" 2>/dev/null || true
         done
+        while ${pkgs.iproute2}/bin/ip rule del priority 100 fwmark 0x80000/0xff0000 lookup 100 2>/dev/null; do :; done
+        ${pkgs.iproute2}/bin/ip route flush table 100 2>/dev/null || true
+        while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
       '';
     };
   };

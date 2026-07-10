@@ -6,3 +6,6 @@ yazi/.config/yazi/plugins/
 yazi/.config/yazi/flavors/
 nix/system/private.nix
 nix/result*
+
+# Serena code-agent artifacts (memories/cache) — never publish
+.serena/
