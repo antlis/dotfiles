@@ -159,12 +159,6 @@ in
     };
   };
 
-  # Corp access via Moscow gateway: vps-msk-2 runs the corp OpenVPN, exposing
-  # internal subnets. corp-msk-route adds a /32 host route for vps-msk-2 so it
-  # bypasses any active Amnezia full-tunnel (/1 routes). corp-msk-proxy opens
-  # SSH -D 10800 giving a SOCKS5 on localhost:10800 (no credentials — SSH key auth).
-  # Browser uses ~/.config/umbrella-proxy.pac → routes *.corp.internal through it.
-  # Git SSH uses ProxyJump vps-msk-2 (in ~/.ssh/config).
   # Corp access via Moscow gateway (corpVpnSshHost) which runs the corp OpenVPN.
   # corpVpnSubnets: internal subnets to route transparently via tun2socks → SOCKS5 → SSH.
   # Values live in private.nix (gitignored); empty defaults disable all three services.
@@ -657,7 +651,7 @@ in
     };
   };
   systemd.services.naive-vpn = let
-    serverIp = vpnServerIp; # naive exit = vps-nl origin (www.antlis.xyz -> here); pin out of the tun
+    serverIp = vpnServerIp; # naive exit = NL origin; pin out of the tun
     pinRoute = pkgs.writeShellScript "naive-pin-route" ''
       ${pkgs.iproute2}/bin/ip rule del to ${serverIp}/32 lookup main priority 100 2>/dev/null || true
       ${pkgs.iproute2}/bin/ip rule add to ${serverIp}/32 lookup main priority 100

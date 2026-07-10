@@ -21,69 +21,19 @@
         user = "lad";
         hostname = sshHosts.archT480;      # tailnet IP — reachable anywhere via the headscale mesh
       };
-      vps-nl = {
-        user = "root";
-        hostname = sshHosts.vpsNl;
-      };
-      vps-msk = {
-        user = "root";
-        hostname = sshHosts.vpsMsk;
-      };
-      vps-msk-2 = {
-        user = "root";
-        hostname = sshHosts.vpsMsk2;
-      };
-      vps-pl = {
-        user = "root";
-        hostname = sshHosts.vpsPl;
-      };
-      vps-usa = {
-        user = "root";
-        hostname = sshHosts.vpsUsa;
-      };
       thinkbook = {
         user = "lad";
         hostname = sshHosts.thinkbook;
-      };
-      vmhost = {
-        hostname = sshHosts.vmhost;
-        user = "vboxuser";
-      };
-      "gitlab.corp.internal" = {
-        proxyJump = "vps-msk-2";
-        user = "git";
-        serverAliveInterval = 15;
-        serverAliveCountMax = 8;
-      };
-      bastion-02 = {
-        hostname = "bastion.internal";
-        user = "redacted-user";
-        identityFile = "~/.ssh/id_ed25519";
-        serverAliveInterval = 240;
-        forwardAgent = true;
-      };
-      "gitlab.internal" = {
-        hostname = "gitlab.internal";
-        user = "git";
-        identityFile = "~/.ssh/id_ed25519";
-        identitiesOnly = true;
-        proxyJump = "bastion-02";
-        extraOptions = {
-          StrictHostKeyChecking = "no";
-          PreferredAuthentications = "publickey";
-          PubkeyAuthentication = "yes";
-        };
       };
       "gitlab.homelab.lan" = {
         hostname = "gitlab.homelab.lan";
         user = "git";
         port = 2222;
       };
-      "git.internal" = {
-        hostname = "git.internal";
-        user = "git";
-        port = 2424;
-      };
-    };
+    # VPS + work SSH match-blocks (real hostnames/users/proxy-jumps) live in the
+    # gitignored private.nix as sshHosts.extraMatchBlocks and are merged here, so
+    # they stay out of the public repo. Existing aliases are unchanged — same
+    # `ssh`/`git` usage as before.
+    } // (sshHosts.extraMatchBlocks or { });
   };
 }
