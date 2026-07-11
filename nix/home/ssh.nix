@@ -21,6 +21,14 @@
         user = "lad";
         hostname = sshHosts.archT480;      # tailnet IP — reachable anywhere via the headscale mesh
       };
+      arch-t480-mesh = {
+        user = "lad";
+        hostname = sshHosts.archT480;      # explicit tailnet alias (mirrors archcraft-mesh)
+      };
+      arch-t480-amn = {
+        user = "lad";
+        hostname = sshHosts.archT480Amn;   # Amnezia-subnet IP — reliable when both boxes share the Amnezia server
+      };
       thinkbook = {
         user = "lad";
         hostname = sshHosts.thinkbook;
