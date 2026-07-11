@@ -253,8 +253,9 @@ in
         # and mesh peers get reached via PL (~230ms) instead of their real
         # endpoints. Give the fwmarked Tailscale underlay its own table (100)
         # holding just the physical default, and point a high-priority rule
-        # (above Amnezia's 220) at it. The overlay (100.64.0.0/10) stays on main —
-        # Tailscale's /10 route there beats amn0's /1, so replies leave tailscale0.
+        # (above Amnezia's 220) at it. The overlay (100.64.0.0/10) is pinned to main
+        # via tailscale0 below (Tailscale itself only installs per-peer /32s in its
+        # own table 52), so it beats amn0's /1 and mesh traffic leaves tailscale0.
         if [ -n "$dev" ]; then
           # copy the physical iface's on-link (connected) routes into table 100 so
           # same-LAN peers (e.g. arch-t480 on 192.168.x) resolve directly instead
@@ -270,6 +271,9 @@ in
         ${pkgs.iproute2}/bin/ip rule add priority 100 fwmark 0x80000/0xff0000 lookup 100
         while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
         ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup main priority 91
+        # Tailscale installs only per-peer /32s (table 52), no /10 in main — so the
+        # rule above would otherwise land on amn0's /1. Pin the /10 to tailscale0.
+        ${pkgs.iproute2}/bin/ip route replace 100.64.0.0/10 dev tailscale0 2>/dev/null || true
         ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
       '';
       ExecStop = pkgs.writeShellScript "amnezia-server-route-down" ''
@@ -280,6 +284,7 @@ in
         while ${pkgs.iproute2}/bin/ip rule del priority 100 fwmark 0x80000/0xff0000 lookup 100 2>/dev/null; do :; done
         ${pkgs.iproute2}/bin/ip route flush table 100 2>/dev/null || true
         while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
+        ${pkgs.iproute2}/bin/ip route del 100.64.0.0/10 dev tailscale0 2>/dev/null || true
       '';
     };
   };
