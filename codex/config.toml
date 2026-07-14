@@ -1,3 +1,8 @@
+# --- Headroom proxy (auto-injected by headroom wrap codex) ---
+model_provider = "headroom"
+openai_base_url = "http://127.0.0.1:8787/v1"
+# --- end Headroom ---
+
 model = "gpt-5.5"
 model_reasoning_effort = "medium"
 model_verbosity = "low"
@@ -26,6 +31,9 @@ trust_level = "trusted"
 [projects."/home/lad/Projects/github/eleventhfloor"]
 trust_level = "trusted"
 
+[projects."/home/lad/Projects/github/typeforge"]
+trust_level = "trusted"
+
 [tui]
 status_line = ["model-with-reasoning", "current-dir", "model", "reasoning", "project-name", "git-branch"]
 status_line_use_colors = true
@@ -46,3 +54,30 @@ approval_mode = "approve"
 
 [notice]
 hide_rate_limit_model_nudge = true
+
+# --- Headroom MCP server ---
+[mcp_servers.headroom]
+command = "headroom"
+args = ["mcp", "serve"]
+
+[mcp_servers.headroom.tools.headroom_retrieve]
+approval_mode = "approve"
+# --- end Headroom MCP server ---
+
+# --- Headroom MCP server: serena ---
+[mcp_servers.serena]
+command = "uvx"
+args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--project-from-cwd", "--context", "codex", "--open-web-dashboard", "False"]
+
+[mcp_servers.serena.tools.replace_in_files]
+approval_mode = "approve"
+# --- end Headroom MCP server: serena ---
+
+# --- Headroom proxy (auto-injected by headroom wrap codex) ---
+[model_providers.headroom]
+name = "OpenAI via Headroom proxy"
+base_url = "http://127.0.0.1:8787/v1"
+supports_websockets = true
+requires_openai_auth = true
+env_http_headers = { "X-Headroom-Project" = "HEADROOM_PROJECT" }
+# --- end Headroom ---
