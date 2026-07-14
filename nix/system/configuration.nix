@@ -227,7 +227,10 @@ in
   systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIps != [ ]) {
     description = "Exempt self-hosted AmneziaWG server IPs from the full-tunnel (else awg2 handshakes loop into amn0) + keep the Tailscale mesh direct";
     bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
-    after = [ "sys-subsystem-net-devices-amn0.device" ];
+    # order after tailscaled too: on boot amn0 can appear before tailscaled has
+    # created tailscale0, and the /10 mesh pin below needs that iface to exist.
+    after = [ "sys-subsystem-net-devices-amn0.device" "tailscaled.service" ];
+    wants = [ "tailscaled.service" ];
     wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
     # lifecycle is entirely amn0-device-driven; don't let nixos switch try to
     # start/stop it (it can't start with amn0 absent → cosmetic switch failure).
@@ -273,6 +276,13 @@ in
         ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup main priority 91
         # Tailscale installs only per-peer /32s (table 52), no /10 in main — so the
         # rule above would otherwise land on amn0's /1. Pin the /10 to tailscale0.
+        # Wait for the iface: on boot amn0 can race ahead of tailscaled, and a
+        # route-replace against a missing tailscale0 fails silently (|| true),
+        # which is exactly what left the mesh dead after reboots.
+        for _ in $(${pkgs.coreutils}/bin/seq 1 30); do
+          ${pkgs.iproute2}/bin/ip link show tailscale0 >/dev/null 2>&1 && break
+          ${pkgs.coreutils}/bin/sleep 1
+        done
         ${pkgs.iproute2}/bin/ip route replace 100.64.0.0/10 dev tailscale0 2>/dev/null || true
         ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
       '';
