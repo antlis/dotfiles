@@ -9,6 +9,8 @@ let
   pythonPackages = import ./python-packages.nix { inherit pkgs; };
 
   opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+  zen-browser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -84,6 +86,7 @@ in
     lazydocker             # Terminal UI for Docker container management | https://github.com/jesseduffield/lazydocker
 
     # ── Browsers ──────────────────────────────────────────────────────────────
+    zen-browser            # Firefox-based browser focused on calm, minimal browsing | https://zen-browser.app
     brave                  # Privacy-focused Chromium-based browser | https://brave.com
     chromium               # Open-source browser (Google Chromium) | https://www.chromium.org
     surfraw                # CLI tool for fast web searches and browser bookmarks | https://gitlab.com/surfraw/Surfraw

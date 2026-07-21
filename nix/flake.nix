@@ -48,6 +48,13 @@
       url = "github:ogulcancelik/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Zen Browser — not in nixpkgs. Community flake tracks upstream releases and
+    # ships a prebuilt binary via its own Cachix. Intentionally NOT following our
+    # nixpkgs (per upstream's recommendation) so we hit that binary cache instead
+    # of rebuilding the wrapper locally. `packages.<system>.default` is the main
+    # Zen release. Bump with `nix flake update zen-browser` + a rebuild.
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
   };
 
   outputs =
