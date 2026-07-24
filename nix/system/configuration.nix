@@ -1,4 +1,4 @@
-{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], amneziaServerIps ? [ ], workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
+{ config, pkgs, lib, vpnServerIp ? "127.0.0.1", vpnSshHost ? "vpn-host", vpnChainEntryIp ? "127.0.0.1", vpnCfEntryIp ? "127.0.0.1", vpnOlcrtcRelayIps ? [ "127.0.0.1" ], amneziaServerIps ? [ ], amneziaServers ? [ ], workVpnName ? "", workVpnTransportIps ? [ ], corpVpnSshHost ? "", corpVpnSubnets ? [ ], ... }:
 let
   olcrtc = pkgs.callPackage ../pkgs/olcrtc.nix { };
   naiveproxy = pkgs.callPackage ../pkgs/naiveproxy.nix { };
@@ -64,10 +64,7 @@ in
   # Enable sshd, but don't start it on boot
   systemd.services.sshd.wantedBy = lib.mkForce [];
 
-  # Mesh VPN client (joins our self-hosted headscale control plane). Only routes the
-  # 100.x tailnet, so it coexists with the circumvention tiers + Amnezia (no default-route
-  # grab). The one-time `tailscale up --login-server … --authkey …` join command — with the
-  # private server URL + key — lives in the vault note, kept out of this public repo.
+  # Mesh VPN client (self-hosted control plane). Only routes the 100.x tailnet.
   services.tailscale.enable = true;
   # open UDP 41641 so peers can reach us for DIRECT connections (else inbound
   # disco/handshake hits nixos-fw-refuse -j DROP and every path stays relayed).
@@ -97,7 +94,45 @@ in
     # comes up, pin every subnet it pushes (corp internal nets + corp DNS) to the
     # main table ABOVE any active sing-box circumvention tier's rules, so corp
     # traffic uses the work tunnel while everything else stays on the AI tunnel.
-    dispatcherScripts = lib.optionals (workVpnName != "") [{
+    #
+    # Also: refresh server routes on network changes (roaming support).
+    dispatcherScripts = [{
+      type = "basic";
+      source = pkgs.writeShellScript "amnezia-route-refresh" ''
+        case "$2" in
+          up|dhcp4-change|connectivity-change)
+            ip=${pkgs.iproute2}/bin/ip
+            gwline=$($ip -o route show default | ${pkgs.gnugrep}/bin/grep -vE ' dev (amn0|tun[0-9]|tailscale|wg)' | ${pkgs.coreutils}/bin/head -1)
+            gw=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*via ([0-9.]+).*/\1/p')
+            dev=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*dev ([^ ]+).*/\1/p')
+            # Server IP /32 routes (ip rules are persistent from boot service)
+            for ip_addr in ${lib.concatStringsSep " " amneziaServerIps}; do
+              [ -n "$gw" ] && [ -n "$dev" ] && $ip route replace "$ip_addr/32" via "$gw" dev "$dev" 2>/dev/null || true
+            done
+            # Tailscale mesh: refresh table 100 with the new physical default
+            if [ -n "$dev" ]; then
+              $ip -o route show table main dev "$dev" scope link 2>/dev/null | while read -r r; do
+                $ip route replace $r dev "$dev" table 100 2>/dev/null || true
+              done
+            fi
+            if [ -n "$gw" ] && [ -n "$dev" ]; then
+              $ip route replace default via "$gw" dev "$dev" table 100
+            fi
+            # Re-assert firewall exceptions (idempotent)
+            ${lib.concatMapStrings (s: ''
+              iptables -C OUTPUT -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT 2>/dev/null || \
+                iptables -I OUTPUT 1 -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT
+              iptables -C INPUT -s ${s.ip}/32 -p udp --sport ${toString s.port} -j ACCEPT 2>/dev/null || \
+                iptables -I INPUT 1 -s ${s.ip}/32 -p udp --sport ${toString s.port} -j ACCEPT
+            '') amneziaServers}
+            iptables -C amnvpn.100.blockAll -o tailscale0 -j ACCEPT 2>/dev/null || \
+              iptables -I amnvpn.100.blockAll 1 -o tailscale0 -j ACCEPT
+            iptables -C amnvpn.100.blockAll -i tailscale0 -j ACCEPT 2>/dev/null || \
+              iptables -I amnvpn.100.blockAll 1 -i tailscale0 -j ACCEPT
+            ;;
+        esac
+      '';
+    }] ++ lib.optionals (workVpnName != "") [{
       type = "basic";
       source = pkgs.writeShellScript "work-vpn-split" ''
         [ "$CONNECTION_ID" = "${workVpnName}" ] || exit 0
@@ -198,7 +233,7 @@ in
   };
 
   systemd.services.corp-msk-route = lib.mkIf (corpVpnSshHost != "") {
-    description = "Route corp gateway direct, bypassing Amnezia full-tunnel";
+    description = "Route corp gateway direct";
     wantedBy = [ "multi-user.target" ];
     after = [ "network.target" ];
     serviceConfig = {
@@ -213,56 +248,32 @@ in
     };
   };
 
-  # AmneziaWG (self-hosted awg2) endpoint exemption — coexist with the full-tunnel.
-  # AmneziaVPN full-tunnels via policy routing (`ip rule 220: from all lookup 220`
-  # -> default dev amn0). Premium servers get priority-90 exemption rules so their
-  # traffic stays direct, but the self-hosted awg2 servers get NONE — so only the
-  # first handshake init escapes (a race before amn0's routing is up); every retry
-  # then loops back into amn0 and the handshake never completes ("infinite
-  # connecting"). Diagnosed 2026-06-29: init reaches the server, server replies once,
+  # Server endpoint route exemption — pin /32 direct so tunnel handshakes escape. Diagnosed 2026-06-29: init reaches the server, server replies once,
   # no retry ever arrives again. Fix: add a high-priority (91, just after Premium's
   # 90) `ip rule` per server IP -> main table, which follows the current physical
-  # default route — so it works on any network, not just the home LAN. Bound to amn0
-  # so it (re)asserts on every connect and ExecStop removes the rules on disconnect.
+  # default route — so it works on any network, not just the home LAN.
+  #
   systemd.services.amnezia-server-route = lib.mkIf (amneziaServerIps != [ ]) {
-    description = "Exempt self-hosted AmneziaWG server IPs from the full-tunnel (else awg2 handshakes loop into amn0) + keep the Tailscale mesh direct";
-    bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
-    # order after tailscaled too: on boot amn0 can appear before tailscaled has
-    # created tailscale0, and the /10 mesh pin below needs that iface to exist.
-    after = [ "sys-subsystem-net-devices-amn0.device" "tailscaled.service" ];
-    wants = [ "tailscaled.service" ];
-    wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
-    # lifecycle is entirely amn0-device-driven; don't let nixos switch try to
-    # start/stop it (it can't start with amn0 absent → cosmetic switch failure).
+    description = "Pin server endpoints direct + mesh coexistence";
+    after = [ "network-online.target" "tailscaled.service" ];
+    wants = [ "network-online.target" "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
     restartIfChanged = false;
     stopIfChanged = false;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "amnezia-server-route-up" ''
-        ${pkgs.coreutils}/bin/sleep 3   # let Amnezia install its own routing first
-        gwline=$(${pkgs.iproute2}/bin/ip -o route show default | ${pkgs.gnugrep}/bin/grep -v amn0 | ${pkgs.coreutils}/bin/head -1)
+        gwline=$(${pkgs.iproute2}/bin/ip -o route show default | ${pkgs.gnugrep}/bin/grep -vE ' dev (amn0|tun[0-9]|tailscale|wg)' | ${pkgs.coreutils}/bin/head -1)
         gw=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*via ([0-9.]+).*/\1/p')
         dev=$(echo "$gwline" | ${pkgs.gnused}/bin/sed -nE 's/.*dev ([^ ]+).*/\1/p')
         for ip in ${lib.concatStringsSep " " amneziaServerIps}; do
           while ${pkgs.iproute2}/bin/ip rule del to "$ip/32" lookup main priority 91 2>/dev/null; do :; done
           ${pkgs.iproute2}/bin/ip rule add to "$ip/32" lookup main priority 91
-          [ -n "$gw" ] && ${pkgs.iproute2}/bin/ip route replace "$ip" via "$gw" dev "$dev" 2>/dev/null || true
+          [ -n "$gw" ] && ${pkgs.iproute2}/bin/ip route replace "$ip/32" via "$gw" dev "$dev" 2>/dev/null || true
         done
-        # --- Tailscale mesh coexistence -------------------------------------
-        # Amnezia full-tunnels by injecting 0.0.0.0/1 + 128.0.0.0/1 dev amn0 into
-        # the MAIN table (both more specific than the physical /0 default), so
-        # even Tailscale's own `fwmark 0x80000 -> main` bypass still lands in amn0
-        # and mesh peers get reached via PL (~230ms) instead of their real
-        # endpoints. Give the fwmarked Tailscale underlay its own table (100)
-        # holding just the physical default, and point a high-priority rule
-        # (above Amnezia's 220) at it. The overlay (100.64.0.0/10) is pinned to main
-        # via tailscale0 below (Tailscale itself only installs per-peer /32s in its
-        # own table 52), so it beats amn0's /1 and mesh traffic leaves tailscale0.
+        # --- mesh coexistence ------------------------------------------------
         if [ -n "$dev" ]; then
-          # copy the physical iface's on-link (connected) routes into table 100 so
-          # same-LAN peers (e.g. arch-t480 on 192.168.x) resolve directly instead
-          # of being sent via the gateway — otherwise Tailscale can't punch a LAN path.
           ${pkgs.iproute2}/bin/ip -o route show table main dev "$dev" scope link 2>/dev/null | while read -r r; do
             ${pkgs.iproute2}/bin/ip route replace $r dev "$dev" table 100 2>/dev/null || true
           done
@@ -274,49 +285,38 @@ in
         ${pkgs.iproute2}/bin/ip rule add priority 100 fwmark 0x80000/0xff0000 lookup 100
         while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
         ${pkgs.iproute2}/bin/ip rule add to 100.64.0.0/10 lookup main priority 91
-        # Tailscale installs only per-peer /32s (table 52), no /10 in main — so the
-        # rule above would otherwise land on amn0's /1. Pin the /10 to tailscale0.
-        # Wait for the iface: on boot amn0 can race ahead of tailscaled, and a
-        # route-replace against a missing tailscale0 fails silently (|| true),
-        # which is exactly what left the mesh dead after reboots.
         for _ in $(${pkgs.coreutils}/bin/seq 1 30); do
           ${pkgs.iproute2}/bin/ip link show tailscale0 >/dev/null 2>&1 && break
           ${pkgs.coreutils}/bin/sleep 1
         done
         ${pkgs.iproute2}/bin/ip route replace 100.64.0.0/10 dev tailscale0 2>/dev/null || true
         ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
+        # --- firewall exceptions ----------------------------------------------
+        ipt=${pkgs.iptables}/bin/iptables
+        ${lib.concatMapStrings (s: ''
+          $ipt -C OUTPUT -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT 2>/dev/null || \
+            $ipt -I OUTPUT 1 -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT
+          $ipt -C INPUT -s ${s.ip}/32 -p udp --sport ${toString s.port} -j ACCEPT 2>/dev/null || \
+            $ipt -I INPUT 1 -s ${s.ip}/32 -p udp --sport ${toString s.port} -j ACCEPT
+        '') amneziaServers}
+        $ipt -C amnvpn.100.blockAll -o tailscale0 -j ACCEPT 2>/dev/null || \
+          $ipt -I amnvpn.100.blockAll 1 -o tailscale0 -j ACCEPT
+        $ipt -C amnvpn.100.blockAll -i tailscale0 -j ACCEPT 2>/dev/null || \
+          $ipt -I amnvpn.100.blockAll 1 -i tailscale0 -j ACCEPT
       '';
-      ExecStop = pkgs.writeShellScript "amnezia-server-route-down" ''
-        for ip in ${lib.concatStringsSep " " amneziaServerIps}; do
-          while ${pkgs.iproute2}/bin/ip rule del to "$ip/32" lookup main priority 91 2>/dev/null; do :; done
-          ${pkgs.iproute2}/bin/ip route del "$ip" 2>/dev/null || true
-        done
-        while ${pkgs.iproute2}/bin/ip rule del priority 100 fwmark 0x80000/0xff0000 lookup 100 2>/dev/null; do :; done
-        ${pkgs.iproute2}/bin/ip route flush table 100 2>/dev/null || true
-        while ${pkgs.iproute2}/bin/ip rule del to 100.64.0.0/10 lookup main priority 91 2>/dev/null; do :; done
-        ${pkgs.iproute2}/bin/ip route del 100.64.0.0/10 dev tailscale0 2>/dev/null || true
-      '';
+      # No ExecStop — rules persist across interface up/down cycles.
     };
   };
 
-  # AmneziaVPN routes ALL IPv6 into the tunnel (::/1 + 8000::/1 dev amn0), but the
-  # servers have no working IPv6 egress — so every v6 destination black-holes. Since
-  # most sites are dual-stack and DNS returns AAAA, browsers try v6 first and stall:
-  # "connects but no pages open". Replace the tunnel's v6 split-default with
-  # `unreachable` so v6 fails instantly and happy-eyeballs falls back to v4 (which
-  # works through the tunnel). Privacy-safe: v6 just stops, no leak. Bound to the
-  # amn0 device so it (re)asserts on every connect and — crucially — the ExecStop
-  # removes the dev-less unreachable routes when amn0 goes away, otherwise they would
-  # black-hole IPv6 with the VPN off.
+  # Tunnel routes IPv6 but server lacks v6 egress — blackholes. Force v4 fallback.
   systemd.services.amnezia-ipv6-blackhole = {
-    description = "Fail-fast IPv6 while AmneziaWG is up (server has no v6 egress; forces v4 fallback)";
+    description = "Fail-fast IPv6 while tunnel is up (forces v4 fallback)";
     bindsTo = [ "sys-subsystem-net-devices-amn0.device" ];
     after = [ "sys-subsystem-net-devices-amn0.device" ];
     wantedBy = [ "sys-subsystem-net-devices-amn0.device" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      # settle: let Amnezia finish adding its routes before we override them
       ExecStart = pkgs.writeShellScript "amnezia-ipv6-blackhole-up" ''
         ${pkgs.coreutils}/bin/sleep 2
         ${pkgs.iproute2}/bin/ip -6 route replace unreachable ::/1 metric 1 2>/dev/null || true
@@ -463,6 +463,39 @@ in
     };
   };
   programs.nix-ld.enable = true;
+  # Shared libraries for pre-compiled Chromium binaries (Playwright, etc.)
+  programs.nix-ld.libraries = with pkgs; [
+    glib
+    gtk3
+    nss
+    nspr
+    atk
+    cups
+    libdrm
+    mesa
+    xorg.libX11
+    xorg.libXcomposite
+    xorg.libXcursor
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXi
+    xorg.libXrandr
+    xorg.libXrender
+    xorg.libXtst
+    xorg.libxcb
+    xorg.libXScrnSaver
+    xorg.libxshmfence
+    libxkbcommon
+    pango
+    cairo
+    alsa-lib
+    libGL
+    expat
+    dbus
+    libgbm
+    stdenv.cc.cc.lib
+  ];
   programs.appimage = {
     enable = true;
     binfmt = true;
