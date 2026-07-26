@@ -10,12 +10,12 @@
   # latency.
   boot.supportedFilesystems = [ "nfs" ];
 
-  fileSystems."/mnt/media-remote" = {
+  fileSystems."/mnt/media-mesh" = {
     device = "${sshHosts.archrraftMesh}:/mnt/EHDDSG-4/data";
     fsType = "nfs";
     options = [
       "nfsvers=4.2"
-      "ro"
+      "rw"
       "noauto"
       "x-systemd.automount"
       "x-systemd.idle-timeout=600"
@@ -26,11 +26,27 @@
     ];
   };
 
-  fileSystems."/mnt/archcraft-remote" = {
+  fileSystems."/mnt/archcraft-mesh" = {
     device = "${sshHosts.archrraftMesh}:/home/lad";
     fsType = "nfs";
     options = [
       "nfsvers=4.2"
+      "noauto"
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=600"
+      "x-systemd.mount-timeout=15s"
+      "_netdev"
+      "soft" "timeo=200" "retrans=3"
+      "nofail"
+    ];
+  };
+
+  fileSystems."/mnt/vera-mesh" = {
+    device = "${sshHosts.archrraftMesh}:/mnt/vera";
+    fsType = "nfs";
+    options = [
+      "nfsvers=4.2"
+      "rw"
       "noauto"
       "x-systemd.automount"
       "x-systemd.idle-timeout=600"

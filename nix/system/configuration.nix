@@ -12,6 +12,7 @@ in
       ./nfs-media.nix
       ./nfs-home.nix
       ./nfs-remote.nix
+      ./nfs-notifications.nix
     ];
 
   # Bootloader.
@@ -293,6 +294,7 @@ in
         ${pkgs.iproute2}/bin/ip route flush cache 2>/dev/null || true
         # --- firewall exceptions ----------------------------------------------
         ipt=${pkgs.iptables}/bin/iptables
+        $ipt -N amnvpn.100.blockAll 2>/dev/null || true   # create chain if missing
         ${lib.concatMapStrings (s: ''
           $ipt -C OUTPUT -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT 2>/dev/null || \
             $ipt -I OUTPUT 1 -d ${s.ip}/32 -p udp --dport ${toString s.port} -j ACCEPT

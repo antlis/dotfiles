@@ -5,7 +5,7 @@
 
   # 4TB media drive on the home server (homelab.lan -> resolved via the
   # networking.hosts entry in the gitignored private.nix, so no IP lands in the
-  # public repo), exported read-only from /mnt/EHDDSG-4/data (music, video,
+  # public repo), exported read-write from /mnt/EHDDSG-4/data (music, video,
   # books, podcasts, ...).
   #
   # LAN-only by design — see nfs-remote.nix for the Tailscale-mesh path used
@@ -21,7 +21,7 @@
     fsType = "nfs";
     options = [
       "nfsvers=4.2"
-      "ro"
+      "rw"
       "noauto"                      # don't mount at boot
       "x-systemd.automount"         # mount lazily on first access
       "x-systemd.idle-timeout=600"  # unmount after 10 min idle

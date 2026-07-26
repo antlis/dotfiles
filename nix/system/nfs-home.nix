@@ -33,4 +33,22 @@
       "nofail"                      # never block boot on this mount
     ];
   };
+
+  # VeraCrypt 1TB drive — on-demand mount, only works if drive is unlocked
+  # on archcraft first (~/my-scripts/mount-vera.sh). NFS export is dynamic.
+  fileSystems."/mnt/vera" = {
+    device = "homelab.lan:/mnt/vera";
+    fsType = "nfs";
+    options = [
+      "nfsvers=4.2"
+      "rw"
+      "noauto"
+      "x-systemd.automount"
+      "x-systemd.idle-timeout=600"
+      "x-systemd.mount-timeout=10s"
+      "_netdev"
+      "soft" "timeo=150" "retrans=3"
+      "nofail"
+    ];
+  };
 }
