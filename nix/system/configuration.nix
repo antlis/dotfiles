@@ -13,6 +13,7 @@ in
       ./nfs-home.nix
       ./nfs-remote.nix
       ./nfs-notifications.nix
+      ./nfs-resilience.nix
     ];
 
   # Bootloader.
