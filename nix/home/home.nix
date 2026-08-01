@@ -43,7 +43,6 @@ in
       ".config/nvim-lazyvim".source = config.lib.file.mkOutOfStoreSymlink
         "${c.dotfilesDir}/nvim-lazyvim/.config/nvim-lazyvim";
       ".config/yazi".source             = "${c.dotfilesDir}/yazi/.config/yazi";
-      ".xbindkeysrc".source             = "${c.dotfilesDir}/xbindkeysrc/.xbindkeysrc";
       ".config/keynav".source           = "${c.dotfilesDir}/keynav/.config/keynav";
       ".screenlayout/monitor.sh".source = "${c.dotfilesDir}/scripts/monitor.sh";
       ".config/tmux-airline-dracula".source = builtins.fetchGit {
