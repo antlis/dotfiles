@@ -2,34 +2,37 @@ return {
   {
     "folke/snacks.nvim",
     opts = {
-      image = {
-        enabled = true,
-        formats = {
-          "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif",
-          "mp4", "mov", "avi", "mkv", "webm", "pdf", "icns",
-        },
-        doc = {
-          enabled = true,
-          inline = true,
-          float = true,
-          max_width = 80,
-          max_height = 40,
-        },
-        img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "assets/images" },
-        resolve = function(file, src)
-          -- try relative to current file first
-          local rel = vim.fn.fnamemodify(file, ":h") .. "/" .. src
-          if vim.fn.filereadable(rel) == 1 then
-            return rel
-          end
-          -- fallback: resolve from vault root
-          local vault = vim.fn.expand("~/Documents/vault")
-          local from_vault = vault .. "/" .. src
-          if vim.fn.filereadable(from_vault) == 1 then
-            return from_vault
-          end
-        end,
-      },
+      -- image = {
+      --   enabled = true,
+      --   formats = {
+      --     "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif",
+      --     "mp4", "mov", "avi", "mkv", "webm", "pdf", "icns",
+      --   },
+      --   doc = {
+      --     enabled = true,
+      --     inline = true,
+      --     float = true,
+      --     max_width = 80,
+      --     max_height = 40,
+      --   },
+      --   img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "assets/images" },
+      --   resolve = function(file, src)
+      --     -- try relative to current file first
+      --     local rel = vim.fn.fnamemodify(file, ":h") .. "/" .. src
+      --     if vim.fn.filereadable(rel) == 1 then
+      --       return rel
+      --     end
+      --     -- fallback: resolve from vault root
+      --     local vault = vim.fn.expand("~/Documents/vault")
+      --     local from_vault = vault .. "/" .. src
+      --     if vim.fn.filereadable(from_vault) == 1 then
+      --       return from_vault
+      --     end
+      --   end,
+      -- },
+      -- NOTE: Disabled 2026-08-01 — hangs nvim when opening journal files with
+      -- file:// image refs (e.g. file:///mnt/vera-mesh/...) that point to
+      -- unmounted or slow paths. The resolve function blocks the event loop.
       dashboard = {
         keys = {
           { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
