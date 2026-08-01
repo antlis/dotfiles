@@ -87,6 +87,24 @@
           (final: prev: {
             zed-editor = inputs.nixpkgs-unstable.legacyPackages.${system}.zed-editor;
           })
+          # Pull ayugram-desktop from nixpkgs-unstable (25.11 has 6.3.10, unstable has 6.7.8)
+          (final: prev: {
+            ayugram-desktop = inputs.nixpkgs-unstable.legacyPackages.${system}.ayugram-desktop;
+          })
+          # Wrap GNOME Camera (snapshot) to prefer VA-API hardware H.264 encoding.
+          # vah264enc ships with rank 0 (none), so encodebin falls back to
+          # openh264enc (software) -> CPU lag + OpenH264 cmInitParaError crash
+          # on record start. Setting the env var inside the wrapper covers all
+          # launch paths (desktop file, D-Bus activation, shell).
+          (final: prev: {
+            snapshot = prev.snapshot.overrideAttrs (old: {
+              nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.makeWrapper ];
+              postInstall = (old.postInstall or "") + ''
+                wrapProgram $out/bin/snapshot \
+                  --set GST_PLUGIN_FEATURE_RANK vah264enc:256
+              '';
+            });
+          })
         ];
       };
 
