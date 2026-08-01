@@ -7,9 +7,7 @@ let
 
     if [[ "$INTERFACE" == "tailscale0" && "$ACTION" == "up" ]]; then
       sleep 2
-      /run/current-system/sw/bin/systemctl restart mnt-media-mesh.automount 2>/dev/null || true
-      /run/current-system/sw/bin/systemctl restart mnt-archcraft-mesh.automount 2>/dev/null || true
-      /run/current-system/sw/bin/systemctl restart mnt-vera-mesh.automount 2>/dev/null || true
+      /home/lad/my-scripts/mount-nix-lan-or-mesh.sh
     fi
   '';
 
@@ -17,7 +15,7 @@ let
     for pid in $(pgrep -f 'mount\.nfs'); do
       elapsed=$(ps -o etimes= -p "$pid" 2>/dev/null | tr -d ' ')
       if [[ -n "$elapsed" && "$elapsed" -gt 30 ]]; then
-        echo "Killing stuck mount.nfs (pid $pid, ${elapsed}s old)"
+        echo "Killing stuck mount.nfs (pid $pid, ''${elapsed}s old)"
         kill -9 "$pid" 2>/dev/null || true
       fi
     done
@@ -53,19 +51,25 @@ in
     };
   };
 
-  # Restart automount units on failure
-  systemd.services."mnt-media-mesh".unitConfig = {
-    Restart = "on-failure";
-    RestartSec = "10";
+  # ── LAN-primary, mesh-fallback ──────────────────────────────────────────────
+  # Auto-reconcile NFS mounts every 60s (prefers LAN, falls back to mesh).
+  systemd.services.nfs-lan-or-mesh = {
+    description = "Reconcile NFS mounts (LAN-primary, mesh-fallback)";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/run/current-system/sw/bin/bash /home/lad/my-scripts/mount-nix-lan-or-mesh.sh";
+    };
   };
 
-  systemd.services."mnt-archcraft-mesh".unitConfig = {
-    Restart = "on-failure";
-    RestartSec = "10";
-  };
-
-  systemd.services."mnt-vera-mesh".unitConfig = {
-    Restart = "on-failure";
-    RestartSec = "10";
+  systemd.timers.nfs-lan-or-mesh = {
+    description = "Reconcile NFS mounts every 60s";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "30s";
+      OnUnitActiveSec = "60s";
+      Persistent = true;
+    };
   };
 }

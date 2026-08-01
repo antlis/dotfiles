@@ -10,27 +10,14 @@
   # all_squash,anonuid=1000,anongid=1000 so files map cleanly to lad:lad despite
   # the laptop/server primary-gid mismatch.
   #
-  # LAN-only by design — see nfs-remote.nix for the Tailscale-mesh path used
-  # when away, kept as separate mountpoints on purpose (no auto-switching).
-  #
-  # Same systemd automount behaviour as the media mount: lazy on first access to
-  # /mnt/archcraft, auto-unmounts when idle, never blocks boot.
-  #
-  # Note: moving files BETWEEN this mount and the read-only media drive from the
-  # laptop copies bytes server->laptop->server. For bulk moves onto the 4TB
-  # drive, run the move server-side over SSH instead (stays disk-to-disk).
+  # LAN-primary, mesh-fallback: mount-nix-lan-or-mesh.sh handles switching.
   fileSystems."/mnt/archcraft" = {
     device = "homelab.lan:/home/lad";
     fsType = "nfs";
     options = [
-      "nfsvers=4.2"
-      "noauto"                      # don't mount at boot
-      "x-systemd.automount"         # mount lazily on first access
-      "x-systemd.idle-timeout=600"  # unmount after 10 min idle
-      "x-systemd.mount-timeout=10s" # give up fast if the server is down
-      "_netdev"                     # network filesystem
-      "soft" "timeo=150" "retrans=3" # return errors instead of hanging forever
-      "nofail"                      # never block boot on this mount
+      "noauto"                      # script owns mounting
+      "x-systemd.requires=network-online.target"
+      "nofail"                      # never block boot
     ];
   };
 
@@ -40,15 +27,9 @@
     device = "homelab.lan:/mnt/vera";
     fsType = "nfs";
     options = [
-      "nfsvers=4.2"
-      "rw"
-      "noauto"
-      "x-systemd.automount"
-      "x-systemd.idle-timeout=600"
-      "x-systemd.mount-timeout=10s"
-      "_netdev"
-      "soft" "timeo=150" "retrans=3"
-      "nofail"
+      "noauto"                      # script owns mounting
+      "x-systemd.requires=network-online.target"
+      "nofail"                      # never block boot
     ];
   };
 }

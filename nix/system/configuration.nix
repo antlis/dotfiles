@@ -11,8 +11,6 @@ in
       ./bluetooth.nix
       ./nfs-media.nix
       ./nfs-home.nix
-      ./nfs-remote.nix
-      ./nfs-notifications.nix
       ./nfs-resilience.nix
     ];
 
