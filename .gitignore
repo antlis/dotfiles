@@ -9,3 +9,4 @@ nix/result*
 
 # Serena code-agent artifacts (memories/cache) — never publish
 .serena/
+spell/
