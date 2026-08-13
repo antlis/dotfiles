@@ -155,5 +155,5 @@
   "${mod}+F12" = "exec --no-startup-id loginctl lock-session && systemctl hibernate";
 
   # Show keybindings
-  "${mod}+slash" = "exec --no-startup-id grep \"^bindsym\" ~/.config/i3/config | sed 's/bindsym //' | rofi -dmenu -p \"⌨ keybindings\" -i";
+  "${mod}+slash" = "exec --no-startup-id ~/bin/rofi/rofi-i3-cheatsheet";
 }
