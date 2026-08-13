@@ -106,6 +106,7 @@ in
     krita                  # Digital painting and illustration app | https://krita.org
 
     # ── Screen Recording ──────────────────────────────────────────────────────
+    obs-studio             # Screen recorder with webcam overlay support | https://obsproject.com
     peek                   # Simple animated GIF screen recorder | https://github.com/phw/peek
     simplescreenrecorder   # Feature-rich screen recorder with live preview | https://www.maartenbaert.be/simplescreenrecorder
     gnome-screenshot       # Screenshot tool with region and window capture | https://gitlab.gnome.org/GNOME/gnome-screenshot
