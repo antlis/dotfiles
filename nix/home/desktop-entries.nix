@@ -232,6 +232,13 @@ in
       "x-scheme-handler/https" = "brave-debug.desktop";
       "x-scheme-handler/about" = "brave-debug.desktop";
       "x-scheme-handler/unknown" = "brave-debug.desktop";
+      "image/jpeg"            = "feh.desktop";
+      "image/png"             = "feh.desktop";
+      "image/gif"             = "feh.desktop";
+      "image/webp"            = "feh.desktop";
+      "image/bmp"             = "feh.desktop";
+      "image/tiff"            = "feh.desktop";
+      "image/svg+xml"         = "feh.desktop";
     };
   };
 

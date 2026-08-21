@@ -21,6 +21,7 @@ in
       ./opencode.nix
       ./pi.nix
       ./ssh.nix
+      ./ayugram.nix
     ];
     services.dunst.enable = true;
     services.ssh-agent.enable = true;

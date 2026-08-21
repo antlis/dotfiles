@@ -16,7 +16,7 @@
 # Config dir: ~/.omp/agent/ — does NOT collide with pi's ~/.pi/agent/, so the
 # two agents can coexist.
 let
-  version = "15.11.0";
+  version = "17.4.0";
   pkg = "@oh-my-pi/pi-coding-agent@${version}";
   # Our pinned 1.3.14 bun, not nixpkgs' 1.3.3.
   bun = callPackage ./bun.nix { };

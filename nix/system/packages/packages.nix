@@ -93,10 +93,14 @@ in
 
     # ── Communication ─────────────────────────────────────────────────────────
     ayugram-desktop        # Telegram desktop client with Ghost mode and extra customization | https://ayugram.one
+    hunspell               # Spell checker — used by AyuGram/Desktop spellcheck | https://hunspell.github.io
+    hunspellDicts.en-us    # English (US) dictionary for hunspell
+    hunspellDicts.ru-ru    # Russian dictionary for hunspell
     slack                  # Team messaging and collaboration | https://slack.com
     discord                # Voice, video, and text chat for communities | https://discord.com
 
     # ── Media ─────────────────────────────────────────────────────────────────
+    feh                    # Lightweight X11 image viewer | https://feh.finalrewind.org/
     mpv                    # Minimal and scriptable video player | https://mpv.io
     yt-dlp                 # YouTube and media downloader supporting 1000+ sites | https://github.com/yt-dlp/yt-dlp
     ffmpegthumbnailer      # Lightweight video thumbnailer for file managers (MKV/MP4/etc) | https://github.com/dirkvdb/ffmpegthumbnailer

@@ -444,6 +444,7 @@ in
   programs.chromium.enable = true;
 
   environment.shells = with pkgs; [ zsh ];
+  environment.pathsToLink = [ "/share/hunspell" ];
   environment.sessionVariables = {
     BROWSER = "brave";
     PAGER   = "more";
