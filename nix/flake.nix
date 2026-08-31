@@ -87,7 +87,7 @@
           (final: prev: {
             zed-editor = inputs.nixpkgs-unstable.legacyPackages.${system}.zed-editor;
           })
-          # Pull ayugram-desktop from nixpkgs-unstable (25.11 has 6.3.10, unstable has 6.7.8)
+          # Pull ayugram-desktop from nixpkgs-unstable (25.11 has 6.3.10, unstable has 7.0.9)
           (final: prev: {
             ayugram-desktop = inputs.nixpkgs-unstable.legacyPackages.${system}.ayugram-desktop;
           })

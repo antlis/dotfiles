@@ -19,6 +19,7 @@ in
       ./kitty.nix
       ./rofi.nix
       ./opencode.nix
+      ./claude.nix
       ./pi.nix
       ./ssh.nix
       ./ayugram.nix

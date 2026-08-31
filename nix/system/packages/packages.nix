@@ -11,6 +11,11 @@ let
   opencode = inputs.opencode.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   zen-browser = inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+  # .NET SDKs from nixpkgs-unstable: stable 25.11 caps at 10.0.300 (band 10.0.3xx),
+  # but agent-manager's global.json pins 10.0.400 with rollForward=latestPatch,
+  # which rejects 10.0.300. Unstable ships band 10.0.4xx (sdk_10_0 = 10.0.400).
+  dotnetUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.dotnetCorePackages;
 in
 {
   environment.systemPackages = with pkgs; [
@@ -103,6 +108,7 @@ in
     feh                    # Lightweight X11 image viewer | https://feh.finalrewind.org/
     mpv                    # Minimal and scriptable video player | https://mpv.io
     yt-dlp                 # YouTube and media downloader supporting 1000+ sites | https://github.com/yt-dlp/yt-dlp
+    ffmpeg                 # Audio/video converter and toolkit | https://ffmpeg.org
     ffmpegthumbnailer      # Lightweight video thumbnailer for file managers (MKV/MP4/etc) | https://github.com/dirkvdb/ffmpegthumbnailer
     totem                  # GNOME video player — provides totem-video-thumbnailer for Nautilus | https://wiki.gnome.org/Apps/Videos
     gst_all_1.gst-libav    # GStreamer ffmpeg plugin — provides video codecs for thumbnailing | https://gstreamer.freedesktop.org
@@ -133,9 +139,9 @@ in
     docker-compose         # Multi-container Docker orchestration via YAML | https://docs.docker.com/compose
 
     # ── .NET ──────────────────────────────────────────────────────────────────
-    (with dotnetCorePackages; combinePackages [
-      dotnet-sdk_9           # .NET 9 SDK
-      dotnet-sdk_10          # .NET 10 SDK
+    (with dotnetUnstable; combinePackages [
+      sdk_9_0                # .NET 9 SDK  (9.0.317)
+      sdk_10_0               # .NET 10 SDK (10.0.400 — matches agent-manager global.json)
     ])
 
     # ── Wine (for U-SIEM Console) ────────────────────────────────────────────
