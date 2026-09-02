@@ -1,9 +1,9 @@
-{ config, pkgs, lib, sshHosts, amneziaServerIp, ... }:
+{ config, pkgs, lib, sshHosts, amneziaServerIp, figmaApiKey, ... }:
 let
   c = import ../constants.nix;
 in
 {
-  home-manager.extraSpecialArgs = { inherit sshHosts amneziaServerIp; };
+  home-manager.extraSpecialArgs = { inherit sshHosts amneziaServerIp figmaApiKey; };
 
   home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
     home.stateVersion = "25.11";
