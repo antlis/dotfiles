@@ -82,11 +82,14 @@ end
 return {
   {
     "yetone/avante.nvim",
+    -- NixOS: prebuilt libs (default `make`) are FHS-linked and won't run, and
+    -- rustc/make aren't in nvim's PATH. Build from source inside a nix-shell so
+    -- the .so files link against the Nix store. Self-heals on every lazy update.
     build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-      or "make",
+      or "nix-shell -p rustc cargo gnumake pkg-config openssl --run 'make BUILD_FROM_SOURCE=true'",
     event = "VeryLazy",
     opts = {
-      provider = "nanogpt",
+      provider = "claude-code",
       providers = {
         -- claude = {
         --   endpoint = "https://api.anthropic.com",
@@ -103,6 +106,21 @@ return {
           api_key_name = "NANOGPT_API_KEY",
           model = "minimax/minimax-m2.7",
           -- model = 'zai-org/glm-5',
+        },
+      },
+      acp_providers = {
+        -- Override avante's default claude-code entry: upstream passes a broken
+        -- `-g` flag and the now-deprecated package name, so npx fails with
+        -- "command not found" and avante hangs on "generating". Use the
+        -- maintained package with no -g. Auth comes from the `claude` binary.
+        ["claude-code"] = {
+          command = "npx",
+          args = { "-y", "@agentclientprotocol/claude-agent-acp" },
+          env = {
+            NODE_NO_WARNINGS = "1",
+            ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
+            ACP_PERMISSION_MODE = "bypassPermissions",
+          },
         },
       },
       windows = {
