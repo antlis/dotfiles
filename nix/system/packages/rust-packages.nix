@@ -14,14 +14,14 @@ let
 
   telepad = pkgs.rustPlatform.buildRustPackage {
     pname = "telepad";
-    version = "0.8.0";
+    version = "0.8.1";
     src = pkgs.fetchFromGitHub {
       owner = "antlis";
       repo = "telepad";
-      rev = "v0.8.0";
-      hash = "sha256-pPSyI8hJYMlRLpBLGwWZGYjzz0ohRy6oD4oRDbJdlsk=";
+      rev = "v0.8.1";
+      hash = "sha256-VD/pTqcYFk+2FwbK31zjAghEUxQU4XYJido4okX4r+o=";
     };
-    cargoHash = "sha256-GKGK8uTDsbLMXrAD/pTTROSsX8s/UTSYXBtLn8oN+3I=";
+    cargoHash = "sha256-2Ut1404M09brbMo+/LCLd9BgaaFZD/iXrCUDbdWv8Uc=";
   };
 in
 [
