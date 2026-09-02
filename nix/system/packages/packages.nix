@@ -150,6 +150,7 @@ in
 
     # ── Rofi & Launchers ──────────────────────────────────────────────────────
     rofi                   # Application launcher and window switcher | https://github.com/davatorium/rofi
+    xdotool                # X11 automation — telepad uses it to switch AyuGram accounts via key injection | https://github.com/jordansissel/xdotool
 
     # ── Rust Toolchain ────────────────────────────────────────────────────────
 

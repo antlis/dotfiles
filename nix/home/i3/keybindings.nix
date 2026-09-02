@@ -14,6 +14,9 @@
   # Custom scripts / apps
   "${mod}+o"       = "exec xset dpms force off";
   "${mod}+t"       = "exec --no-startup-id env PATH=\"$HOME/.cargo/bin:$PATH\" bbr";
+  # telepad — Telegram/AyuGram quick-switcher ("g" = go to chat).
+  # Installed system-wide via rust-packages.nix, so it's on PATH.
+  "${mod}+g"       = "exec --no-startup-id telepad";
   "${mod}+Shift+h" = "exec ~/bin/rofi/rofi-brave-beta-history";
   "${mod}+b"       = "exec ~/bin/rofi/rofi-bookmarks-brave";
   "${mod}+c"       = "exec ~/bin/rofi/rofi-kamoji-picker";

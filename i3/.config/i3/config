@@ -18,6 +18,7 @@ bindsym $mod+Shift+d exec --no-startup-id zsh -c "rofi -show window"
 # ── Custom Scripts ────────────────────────────────────────────────────────────
 bindsym $mod+o       exec xset dpms force off
 bindsym $mod+t       exec --no-startup-id env PATH="$HOME/.cargo/bin:$PATH" bbr
+bindsym $mod+g       exec --no-startup-id env PATH="$HOME/.cargo/bin:$PATH" telepad
 bindsym $mod+b       exec ~/bin/rofi/rofi-bookmarks-brave
 bindsym $mod+c       exec ~/bin/rofi/rofi-kamoji-picker
 bindsym $mod+p       exec rofi-rbw
