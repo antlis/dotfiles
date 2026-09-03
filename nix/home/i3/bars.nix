@@ -30,13 +30,21 @@ let
     esac
     printf '{"name":"kbd","full_text":"%s","color":"%s","separator":true,"separator_block_width":15}' "$t" "$c"
   '';
-  # Wrap i3status' i3bar JSON and inject the keyboard + VPN blocks at the front of each line.
-  statusWrapper = pkgs.writeShellScript "i3status-vpn" ''
+  # Do-Not-Disturb indicator: only rendered while dunst is paused (toggle: $mod+Ctrl+n).
+  dndStatus = pkgs.writeShellScript "i3-dnd-block" ''
+    if [ "$(${pkgs.dunst}/bin/dunstctl is-paused)" = "true" ]; then
+      printf '{"name":"dnd","full_text":"🔕 DND","color":"#ff5555","separator":true,"separator_block_width":15}'
+    fi
+  '';
+  # Wrap i3status' i3bar JSON and inject the DND + keyboard + VPN blocks at the front of each line.
+  statusWrapper = pkgs.writeShellScript "i3status-blocks" ''
     ${pkgs.i3status}/bin/i3status | while IFS= read -r line; do
       case "$line" in
         '{'*) echo "$line" ;;
         '[')  echo "$line" ;;
-        *)    vpn="$(${vpnStatus})"; kbd="$(${kbdStatus})"; echo "''${line/\[/[$kbd,$vpn,}" ;;
+        *)    vpn="$(${vpnStatus})"; kbd="$(${kbdStatus})"; dnd="$(${dndStatus})"
+              [ -n "$dnd" ] && dnd="$dnd,"
+              echo "''${line/\[/[$dnd$kbd,$vpn,}" ;;
       esac
     done
   '';

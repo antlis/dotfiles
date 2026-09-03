@@ -1,5 +1,26 @@
 { mod, pkgs }:
 
+let
+  # Do-Not-Disturb toggle (indicator lives in the i3bar, see bars.nix).
+  # On enable: flash a "paused" toast *before* pausing so it's actually seen,
+  # then pause dunst and dock the (normally hidden) bar so 🔕 DND stays visible.
+  # USR1 forces i3status to re-emit immediately so the indicator flips instantly.
+  dndToggle = pkgs.writeShellScript "i3-dnd-toggle" ''
+    dunstctl=${pkgs.dunst}/bin/dunstctl
+    if [ "$($dunstctl is-paused)" = "true" ]; then
+      $dunstctl set-paused false
+      ${pkgs.i3}/bin/i3-msg -q "bar mode hide"
+      ${pkgs.libnotify}/bin/notify-send -u low "🔔 Notifications resumed"
+    else
+      ${pkgs.libnotify}/bin/notify-send -u low "🔕 Notifications paused"
+      sleep 0.6
+      $dunstctl set-paused true
+      ${pkgs.i3}/bin/i3-msg -q "bar mode dock"
+    fi
+    ${pkgs.procps}/bin/pkill -USR1 -x i3status
+  '';
+in
+
 {
   # Terminal
   "${mod}+Return" = "exec ${pkgs.kitty}/bin/kitty";
@@ -28,6 +49,8 @@
   # Notifications (dunst)
   "${mod}+n"       = "exec --no-startup-id ${pkgs.dunst}/bin/dunstctl history-pop";
   "${mod}+Shift+n" = "exec --no-startup-id ${pkgs.dunst}/bin/dunstctl close-all";
+  # Do-Not-Disturb toggle (pauses dunst + shows 🔕 DND in the bar)
+  "${mod}+Ctrl+n"  = "exec --no-startup-id ${dndToggle}";
 
   # Focus (vim-style)
   "${mod}+h" = "focus left";
