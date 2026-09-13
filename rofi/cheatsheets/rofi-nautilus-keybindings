@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-nautilus-keybindings — cheatsheet for GNOME Files (nautilus). Nautilus is
+# a GTK app with no readable keymap and no control channel, so this is a curated
+# list of its documented defaults (like the Discord/Figma sheets). On Enter it
+# focuses the nautilus window (`i3-msg [class="org.gnome.Nautilus"] focus`) and
+# replays the shortcut with xdotool. Destructive/quit actions
+# (Delete / Shift+Delete / Ctrl+Q) carry no key and stay display-only, so an
+# accidental pick can't trash a file or close the window.
+
+# xdotool keyspec \t  Pretty            Description   (empty = display-only)
+rows=(
+  # ── Windows & tabs ───────────────────────────────────────────────────────────
+  $'ctrl+n\tCtrl+N            New window'
+  $'ctrl+t\tCtrl+T            New tab'
+  $'ctrl+w\tCtrl+W            Close tab'
+  $'ctrl+shift+w\tCtrl+Shift+W      Close all windows'
+  $'ctrl+shift+t\tCtrl+Shift+T      Restore closed tab'
+  # ── Navigation ───────────────────────────────────────────────────────────────
+  $'alt+Left\tAlt+←             Back'
+  $'alt+Right\tAlt+→             Forward'
+  $'alt+Up\tAlt+↑             Up to parent folder'
+  $'alt+Home\tAlt+Home          Home folder'
+  $'ctrl+l\tCtrl+L            Type a path (location bar)'
+  $'ctrl+f\tCtrl+F            Search this folder'
+  $'Return\tEnter             Open selected item'
+  $'ctrl+d\tCtrl+D            Bookmark this location'
+  # ── View ─────────────────────────────────────────────────────────────────────
+  $'ctrl+h\tCtrl+H            Show/hide hidden files'
+  $'ctrl+r\tCtrl+R            Reload'
+  $'ctrl+1\tCtrl+1            Grid view'
+  $'ctrl+2\tCtrl+2            List view'
+  $'ctrl+equal\tCtrl+=            Zoom in'
+  $'ctrl+minus\tCtrl+-            Zoom out'
+  $'ctrl+0\tCtrl+0            Reset zoom'
+  $'F9\tF9                Toggle sidebar'
+  $'F10\tF10               Open main menu'
+  $'space\tSpace             Preview (Quick Look)'
+  # ── Files ────────────────────────────────────────────────────────────────────
+  $'ctrl+shift+n\tCtrl+Shift+N      New folder'
+  $'F2\tF2                Rename'
+  $'ctrl+a\tCtrl+A            Select all'
+  $'ctrl+s\tCtrl+S            Select items matching…'
+  $'ctrl+c\tCtrl+C            Copy'
+  $'ctrl+x\tCtrl+X            Cut'
+  $'ctrl+v\tCtrl+V            Paste'
+  $'ctrl+z\tCtrl+Z            Undo'
+  $'ctrl+shift+z\tCtrl+Shift+Z      Redo'
+  $'alt+Return\tAlt+Enter         Properties'
+  # ── Display-only (destructive / closes the app) ────────────────────────────────
+  $'\tDelete            Move to Trash'
+  $'\tShift+Delete      Delete permanently'
+  $'\tCtrl+Q            Quit nautilus'
+)
+
+keyspec=(); disp=()
+for r in "${rows[@]}"; do
+  keyspec+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+# Self-contained fire command: guard on a nautilus window, focus it, replay the
+# key (same action as the interactive path). Empty keyspec → display-only.
+nautilus_fire() {
+  [[ -z "$1" ]] && return
+  printf 'xdotool search --class org.gnome.Nautilus >/dev/null 2>&1 && { i3-msg '"'"'[class="org.gnome.Nautilus"] focus'"'"' >/dev/null 2>&1; sleep 0.15; xdotool key --clearmodifiers %q; }' "$1"
+}
+
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!keyspec[@]}"; do printf '%s\t%s\n' "$(nautilus_fire "${keyspec[$i]}")" "${disp[$i]}"; done
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'nautilus keys' \
+  -mesg '🗂  GNOME Files (nautilus) — Enter sends the shortcut to nautilus, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+cmd="$(nautilus_fire "${keyspec[$sel]}")"
+[[ -z "$cmd" ]] && exit 0   # display-only row
+
+if ! xdotool search --class org.gnome.Nautilus >/dev/null 2>&1; then
+  notify-send "nautilus keys" "No nautilus window found"; exit 1
+fi
+bash -c "$cmd" >/dev/null 2>&1 &

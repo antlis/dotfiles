@@ -14,6 +14,7 @@ sheets=(
   "tmux:rofi-tmux-keybindings"
   "kitty:rofi-kitty-keybindings"
   "yazi:rofi-yazi-keybindings"
+  "nautilus:rofi-nautilus-keybindings"
   "AyuGram:rofi-ayugram-keybindings"
   "mpv:rofi-mpv-keybindings"
   "Discord:rofi-discord-keybindings"

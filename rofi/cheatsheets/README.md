@@ -66,6 +66,7 @@ and drives both the picker and `all`.
 | `rofi-zen-keybindings` | Zen browser | **Live** profile JSON | focus window + `xdotool key` |
 | `rofi-brave-keybindings` | Brave | **Live** via CDP scrape (cached) | focus window + `xdotool key` (F11 → CDP) |
 | `rofi-figma-keybindings` | Figma (browser) | Curated (web app, no keymap) | focus active-tab window + `xdotool key` |
+| `rofi-nautilus-keybindings` | GNOME Files (nautilus) | Curated (GTK, no keymap) | focus window + `xdotool key` |
 
 `rofi-brave-cdp.mjs` is a helper (node + Chrome DevTools Protocol) used by the
 Brave sheet to scrape `brave://settings/system/shortcuts`.
@@ -78,7 +79,7 @@ kitty remote control, `ya emit-to`, mpv IPC), so the sheet asks the app to
 perform the action directly. Works even if the app isn't focused.
 
 **2. Focus + key replay (`xdotool`) — for apps with no control channel:**
-Discord, AyuGram, Zen, Brave, Figma. The sheet focuses the app's window (via
+Discord, AyuGram, Zen, Brave, Figma, nautilus. The sheet focuses the app's window (via
 `i3-msg [class=…] focus`, because `xdotool windowactivate` is unreliable under
 i3) then replays the keystroke. This performs the **real** action (e.g. Ctrl+W
 closes a tab) and depends on the right window/context being focused.
@@ -166,6 +167,12 @@ closes a tab) and depends on the right window/context being focused.
   Figma active it notifies instead of misfiring.
 - **Gotcha:** most Figma shortcuts are single letters (V/R/T/P…) — they only do
   the right thing when the **canvas** has focus, not a text field or panel.
+
+### nautilus — `rofi-nautilus-keybindings`
+- GTK app with no readable keymap and no control channel → **curated** GNOME Files
+  defaults. Focuses `[class="org.gnome.Nautilus"]` + replays the key.
+- Display-only: **Delete** (trash), **Shift+Delete** (permanent), **Ctrl+Q** (quit) —
+  an accidental menu pick shouldn't trash a file or close the window.
 
 ## Adding a new cheatsheet
 
