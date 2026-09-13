@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-figma-keybindings — cheatsheet for Figma's default shortcuts (Figma is a
+# web app, so there's no live keymap to read — this list is curated from Figma's
+# documented defaults, like the Discord sheet). On Enter it focuses whichever
+# browser window currently has Figma as its ACTIVE tab (matched by window title)
+# and replays the shortcut with xdotool. If no window has Figma active it
+# notifies instead of misfiring.
+#
+# Caveat: most Figma shortcuts are single letters (V/R/T/P/…). They only do the
+# right thing when the canvas has focus — if a text field or a panel is focused,
+# they'll type instead. Switch to the canvas first.
+
+# xdotool keyspec \t  Pretty            Description
+rows=(
+  # ── Tools ────────────────────────────────────────────────────────────────────
+  $'v\tV                 Move tool'
+  $'k\tK                 Scale tool'
+  $'a\tA                 Frame tool'
+  $'p\tP                 Pen tool'
+  $'shift+p\tShift+P           Pencil tool'
+  $'t\tT                 Text tool'
+  $'r\tR                 Rectangle'
+  $'o\tO                 Ellipse'
+  $'l\tL                 Line'
+  $'shift+l\tShift+L           Arrow'
+  $'i\tI                 Eyedropper (pick color)'
+  $'c\tC                 Add comment'
+  $'h\tH                 Hand tool (pan)'
+  $'s\tS                 Slice tool'
+  # ── View & zoom ──────────────────────────────────────────────────────────────
+  $'shift+1\tShift+1           Zoom to fit'
+  $'shift+2\tShift+2           Zoom to selection'
+  $'shift+0\tShift+0           Zoom to 100%'
+  $'ctrl+equal\tCtrl+=            Zoom in'
+  $'ctrl+minus\tCtrl+-            Zoom out'
+  $'shift+r\tShift+R           Toggle rulers'
+  $'ctrl+apostrophe\tCtrl+\x27           Toggle pixel grid'
+  $'ctrl+backslash\tCtrl+\\            Show/hide UI'
+  $'ctrl+alt+backslash\tCtrl+Alt+\\        Show/hide layout grids'
+  # ── Edit ─────────────────────────────────────────────────────────────────────
+  $'ctrl+z\tCtrl+Z            Undo'
+  $'ctrl+shift+z\tCtrl+Shift+Z      Redo'
+  $'ctrl+c\tCtrl+C            Copy'
+  $'ctrl+v\tCtrl+V            Paste'
+  $'ctrl+shift+v\tCtrl+Shift+V      Paste over selection'
+  $'ctrl+x\tCtrl+X            Cut'
+  $'ctrl+d\tCtrl+D            Duplicate'
+  $'ctrl+a\tCtrl+A            Select all'
+  $'ctrl+r\tCtrl+R            Rename selected layer'
+  $'ctrl+slash\tCtrl+/            Search / quick actions'
+  # ── Objects ──────────────────────────────────────────────────────────────────
+  $'ctrl+g\tCtrl+G            Group selection'
+  $'ctrl+shift+g\tCtrl+Shift+G      Ungroup'
+  $'ctrl+alt+g\tCtrl+Alt+G        Frame selection'
+  $'ctrl+e\tCtrl+E            Flatten selection'
+  $'ctrl+shift+h\tCtrl+Shift+H      Show/hide selection'
+  $'ctrl+shift+l\tCtrl+Shift+L      Lock/unlock selection'
+  $'ctrl+alt+k\tCtrl+Alt+K        Create component'
+  $'ctrl+alt+b\tCtrl+Alt+B        Detach instance'
+  $'ctrl+shift+k\tCtrl+Shift+K      Place image'
+  $'ctrl+shift+e\tCtrl+Shift+E      Export…'
+  # ── Arrange ──────────────────────────────────────────────────────────────────
+  $'ctrl+bracketright\tCtrl+]            Bring forward'
+  $'ctrl+bracketleft\tCtrl+[            Send backward'
+  $'ctrl+alt+bracketright\tCtrl+Alt+]        Bring to front'
+  $'ctrl+alt+bracketleft\tCtrl+Alt+[        Send to back'
+  # ── Align ────────────────────────────────────────────────────────────────────
+  $'alt+a\tAlt+A             Align left'
+  $'alt+d\tAlt+D             Align right'
+  $'alt+h\tAlt+H             Align horizontal centers'
+  $'alt+w\tAlt+W             Align top'
+  $'alt+s\tAlt+S             Align bottom'
+  $'alt+v\tAlt+V             Align vertical centers'
+  # ── Text (while editing) ───────────────────────────────────────────────────
+  $'ctrl+b\tCtrl+B            Bold'
+  $'ctrl+i\tCtrl+I            Italic'
+  $'ctrl+u\tCtrl+U            Underline'
+  $'ctrl+shift+period\tCtrl+Shift+.      Increase font size'
+  $'ctrl+shift+comma\tCtrl+Shift+,      Decrease font size'
+  # ── Selection navigation ─────────────────────────────────────────────────────
+  $'Return\tEnter             Enter group / select child'
+  $'shift+Return\tShift+Enter       Select parent'
+  $'Tab\tTab               Select next sibling'
+  $'shift+Tab\tShift+Tab         Select previous sibling'
+  $'Escape\tEsc               Deselect / exit'
+)
+
+keyspec=(); disp=()
+for r in "${rows[@]}"; do
+  keyspec+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+# Self-contained fire command: focus the browser window whose active tab is
+# Figma (its title contains "Figma"), then replay the key. i3-msg [id=…] is used
+# because xdotool windowactivate is unreliable under i3.
+figma_fire() {
+  printf 'wid=$(xdotool search --name Figma 2>/dev/null | head -1); [ -n "$wid" ] && { i3-msg "[id=$wid] focus" >/dev/null 2>&1; sleep 0.15; xdotool key --clearmodifiers %q; }' "$1"
+}
+
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!keyspec[@]}"; do printf '%s\t%s\n' "$(figma_fire "${keyspec[$i]}")" "${disp[$i]}"; done
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'Figma keys' \
+  -mesg '🎨  Figma keybindings — Enter sends the shortcut to the active Figma tab, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+if ! xdotool search --name Figma >/dev/null 2>&1; then
+  notify-send "Figma keys" "No window with Figma as the active tab — switch to your Figma tab first"
+  exit 1
+fi
+bash -c "$(figma_fire "${keyspec[$sel]}")" >/dev/null 2>&1 &

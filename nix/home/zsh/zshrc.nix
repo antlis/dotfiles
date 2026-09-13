@@ -82,6 +82,11 @@ in
       # ── Tools ────────────────────────────────────────────────────────────────
       unalias z 2>/dev/null; eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
 
+      # Launch yazi with a fixed remote-control client id, so the rofi cheatsheet
+      # (rofi-yazi-keybindings) can drive it via `ya emit-to 424242`. Matches the
+      # yazi/yazifloat desktop entries (see home/desktop-entries.nix).
+      yazi() { command yazi --client-id 424242 "$@"; }
+
       # For tmuxp
       export DISABLE_AUTO_TITLE='true'
 

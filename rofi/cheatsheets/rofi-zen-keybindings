@@ -10,7 +10,7 @@
 
 # Newest zen-keyboard-shortcuts.json across profiles (handles the default one).
 JSON="$(ls -t "$HOME"/.config/zen/*/zen-keyboard-shortcuts.json 2>/dev/null | head -1)"
-[[ -f "$JSON" ]] || { notify-send "Zen keys" "No zen-keyboard-shortcuts.json found under ~/.config/zen"; exit 1; }
+[[ -f "$JSON" ]] || { [[ "${1:-}" == "--emit" ]] && exit 0; notify-send "Zen keys" "No zen-keyboard-shortcuts.json found under ~/.config/zen"; exit 1; }
 
 read -r -d '' JQ <<'JQEOF'
 def kmap: {"VK_BACK":"BackSpace","VK_DELETE":"Delete","VK_ESCAPE":"Escape","VK_TAB":"Tab","VK_HOME":"Home","VK_END":"End","VK_LEFT":"Left","VK_RIGHT":"Right","VK_UP":"Up","VK_DOWN":"Down","VK_PAGE_UP":"Page_Up","VK_PAGE_DOWN":"Page_Down"};
@@ -43,13 +43,33 @@ JQEOF
 mapfile -t rows < <(jq -r "$JQ" "$JSON" 2>/dev/null \
   | awk -F'\t' '{printf "%s\t%-30s  %s\n",$1,$2,$3}')
 
-(( ${#rows[@]} == 0 )) && { notify-send "Zen keys" "Couldn't parse Zen shortcuts"; exit 1; }
+(( ${#rows[@]} == 0 )) && { [[ "${1:-}" == "--emit" ]] && exit 0; notify-send "Zen keys" "Couldn't parse Zen shortcuts"; exit 1; }
 
 real=(); disp=()
 for r in "${rows[@]}"; do
   real+=( "${r%%$'\t'*}" )
   disp+=( "${r#*$'\t'}" )
 done
+
+# Aggregate integration (rofi-keybindings all): emit a self-contained
+# `command<TAB>label` row per binding — guard on a Zen window, focus it, then
+# replay the shortcut (same action as the interactive path below).
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do
+    cmd="xdotool search --class zen-beta >/dev/null 2>&1 && { i3-msg '[class=\"zen-beta\"] focus' >/dev/null; sleep 0.15; xdotool key --clearmodifiers '${real[i]}'; }"
+    printf '%s\t%s\n' "$cmd" "${disp[i]}"
+  done
+  exit 0
+fi
+
+# cheatpad integration: emit JSON entries (key + focus-class keys action) and exit.
+if [[ "${1:-}" == "--emit" ]]; then
+  paste -d '\t' <(printf '%s\n' "${real[@]}") \
+                <(printf '%s\n' "${disp[@]}" | sed -E 's/ {2,}/ /g; s/^ +| +$//g') \
+  | jq -Rn '[inputs | select(length>0) | split("\t")
+            | {key: .[1], label: "", action: {type: "keys", keys: .[0], class: "zen-beta"}}]'
+  exit 0
+fi
 
 sel=$(printf '%s\n' "${disp[@]}" | rofi \
   -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \

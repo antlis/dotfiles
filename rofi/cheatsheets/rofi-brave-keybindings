@@ -19,6 +19,38 @@ HELPER="${SCRIPT_DIR}/rofi-brave-cdp.mjs"
 CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-brave-keys.tsv"
 PORT="${BRAVE_CDP_PORT:-9222}"
 
+# cheatpad integration: emit JSON entries from the cache (never scrape) and exit.
+# Cache lines are `keyspec<TAB>disp`. F11 gets a provider action (CDP fullscreen,
+# like the interactive path); everything else is a focus-class keys action.
+if [[ "${1:-}" == "--emit" ]]; then
+  [[ -s "$CACHE" ]] || exit 0
+  jq -Rn '[inputs | select(length>0) | split("\t")
+          | (.[1] | gsub("  +";" ") | gsub("^ +| +$";"")) as $d
+          | if .[0] == "F11"
+            then {key: $d, label: "", id: "fullscreen", action: {type: "provider"}}
+            else {key: $d, label: "", action: {type: "keys", keys: .[0], class: "Brave-browser"}}
+            end]' "$CACHE"
+  exit 0
+fi
+
+# Aggregate integration (rofi-keybindings all): emit a self-contained
+# `command<TAB>label` row per cached shortcut. F11 drives CDP fullscreen; every
+# other row focuses Brave and replays the key (same as the interactive path).
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  [[ -s "$CACHE" ]] || exit 0
+  while IFS=$'\t' read -r key disp; do
+    [[ -z "$key" ]] && continue
+    disp=$(printf '%s' "$disp" | sed -E 's/ {2,}/ /g; s/^ +| +$//g')
+    if [[ "$key" == "F11" ]]; then
+      cmd="xdotool search --class Brave-browser >/dev/null 2>&1 && { i3-msg '[class=\"Brave-browser\"] focus' >/dev/null; PORT='$PORT' node '$HELPER' fullscreen-toggle >/dev/null 2>&1; }"
+    else
+      cmd="xdotool search --class Brave-browser >/dev/null 2>&1 && { i3-msg '[class=\"Brave-browser\"] focus' >/dev/null; sleep 0.15; xdotool key --clearmodifiers '$key'; }"
+    fi
+    printf '%s\t%s\n' "$cmd" "$disp"
+  done < "$CACHE"
+  exit 0
+fi
+
 refresh() {
   local tmp; tmp="$(mktemp)"
   if PORT="$PORT" node "$HELPER" >"$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then

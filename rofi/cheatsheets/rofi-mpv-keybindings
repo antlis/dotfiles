@@ -21,6 +21,7 @@ ipc() { printf '%s\n' "$1" | nc -U -N -w 1 "$SOCK" 2>/dev/null; }
 reply=""
 [[ -S "$SOCK" ]] && reply=$(ipc '{"command":["get_property","input-bindings"]}')
 if [[ -z "$reply" ]]; then
+  [[ "${1:-}" == "--emit" ]] && exit 0
   notify-send "mpv keys" "No live mpv on $SOCK — start mpv with input-ipc-server (mpv.conf), or the socket is stale."
   exit 1
 fi
@@ -36,13 +37,36 @@ mapfile -t rows < <(
   ' | awk -F '\t' '!seen[$1]++ { printf "%s\t%-20s  %s\n", $1, $1, $2 }'
 )
 
-(( ${#rows[@]} == 0 )) && { notify-send "mpv keys" "mpv reported no bindings"; exit 1; }
+(( ${#rows[@]} == 0 )) && { [[ "${1:-}" == "--emit" ]] && exit 0; notify-send "mpv keys" "mpv reported no bindings"; exit 1; }
 
 real=(); disp=()
 for r in "${rows[@]}"; do
   real+=( "${r%%$'\t'*}" )
   disp+=( "${r#*$'\t'}" )
 done
+
+# Aggregate integration (rofi-keybindings all): emit a self-contained
+# `command<TAB>label` row per binding — send the key back over mpv's IPC socket
+# (same action as the interactive path below).
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do
+    json=$(jq -nc --arg k "${real[i]}" '{command:["keypress",$k]}')
+    cmd="printf '%s\n' '$json' | nc -U -N -w 1 '$SOCK'"
+    printf '%s\t%s\n' "$cmd" "${disp[i]}"
+  done
+  exit 0
+fi
+
+# cheatpad integration: emit JSON entries. mpv keys can't be injected by a
+# generic keysender, so each carries a `provider` action; the mpv key name goes
+# in `id` for cheatpad's act_cmd to send back over the IPC socket.
+if [[ "${1:-}" == "--emit" ]]; then
+  paste -d '\t' <(printf '%s\n' "${real[@]}") \
+                <(printf '%s\n' "${disp[@]}" | sed -E 's/ {2,}/ /g; s/^ +| +$//g') \
+  | jq -Rn '[inputs | select(length>0) | split("\t")
+            | {key: .[1], label: "", id: .[0], action: {type: "provider"}}]'
+  exit 0
+fi
 
 sel=$(printf '%s\n' "${disp[@]}" | rofi \
   -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \

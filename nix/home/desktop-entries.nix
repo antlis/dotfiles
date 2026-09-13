@@ -244,9 +244,22 @@ in
   };
 
   xdg.desktopEntries = {
+    # Override the packaged yazi.desktop so the drun (win+d) launch always
+    # carries a fixed remote-control client id — that's what lets
+    # rofi-yazi-keybindings fire actions into it via `ya emit-to 424242`.
+    yazi = {
+      name = "Yazi";
+      comment = "Blazing fast terminal file manager";
+      exec = "yazi --client-id 424242 %u";
+      icon = "yazi";
+      terminal = true;
+      type = "Application";
+      mimeType = [ "inode/directory" ];
+      categories = [ "Utility" "System" ];
+    };
     yazifloat = {
       name = "yazifloat";
-      exec = "kitty --start-as=fullscreen yazi ${c.screenshotDir}";
+      exec = "kitty --start-as=fullscreen yazi --client-id 424242 ${c.screenshotDir}";
       icon = "system-file-manager";
       terminal = false;
     };

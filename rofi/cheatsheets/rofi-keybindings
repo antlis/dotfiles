@@ -1,32 +1,80 @@
 #!/usr/bin/env bash
-# Universal keybindings cheatsheet launcher
-# Select which keybindings to view, then browse & optionally execute them.
+# Universal keybindings cheatsheet launcher.
+#   rofi-keybindings        pick a sheet, then browse & optionally execute it
+#   rofi-keybindings all    one flat single-column list across every sheet,
+#                           each row tagged [source]; Enter runs the action
 #
 # Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-labels=(
-  "i3"
-  "AyuGram"
-  "mpv"
-  "Discord"
-  "Brave"
-  "Zen"
+# label:script — single source of truth for both the picker and `all`.
+sheets=(
+  "i3:rofi-i3-cheatsheet"
+  "tmux:rofi-tmux-keybindings"
+  "kitty:rofi-kitty-keybindings"
+  "yazi:rofi-yazi-keybindings"
+  "AyuGram:rofi-ayugram-keybindings"
+  "mpv:rofi-mpv-keybindings"
+  "Discord:rofi-discord-keybindings"
+  "Brave:rofi-brave-keybindings"
+  "Zen:rofi-zen-keybindings"
+  "Figma:rofi-figma-keybindings"
 )
+
+# ── Aggregate mode: every sheet in one single-column, source-tagged list ──────
+if [[ "${1:-}" == "all" ]]; then
+  # tmux's server socket lives under $TMUX_TMPDIR (=$XDG_RUNTIME_DIR); rofi/i3
+  # launch us without it, so pass it through for the tmux rows' `tmux` calls.
+  : "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
+  export TMUX_TMPDIR="${TMUX_TMPDIR:-$XDG_RUNTIME_DIR}"
+
+  tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+  n=0
+  for pair in "${sheets[@]}"; do
+    label="${pair%%:*}"; script="${pair#*:}"
+    # Each sheet emits `command<TAB>label`; we prefix a fixed-width [source] tag.
+    # Run them in parallel so the list is as slow as the slowest sheet, not the
+    # sum of all of them (apps that aren't running emit nothing and drop out).
+    ( "${SCRIPT_DIR}/${script}" --emit-sh 2>/dev/null \
+        | awk -v a="$label" -F'\t' '{printf "%s\t[%-8s] %s\n", $1, a, $2}' \
+        > "${tmp}/$(printf '%02d' "$n")" ) &
+    ((n++))
+  done
+  wait
+
+  mapfile -t lines < <(cat "$tmp"/* 2>/dev/null)
+  (( ${#lines[@]} == 0 )) && { notify-send "keybindings" "No cheatsheet produced entries"; exit 1; }
+
+  cmds=(); disps=()
+  for line in "${lines[@]}"; do
+    cmds+=( "${line%%$'\t'*}" )
+    disps+=( "${line#*$'\t'}" )
+  done
+
+  sel=$(printf '%s\n' "${disps[@]}" | rofi \
+    -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }' \
+    -dmenu -i -format i -p 'All keys' \
+    -mesg '⌨  All keybindings — [source] tagged. Enter runs the action, Esc to close')
+
+  [[ $sel =~ ^[0-9]+$ ]] || exit 0
+  cmd="${cmds[$sel]}"
+  [[ -z "$cmd" ]] && exit 0   # display-only row
+  setsid bash -c "$cmd" >/dev/null 2>&1 &
+  exit 0
+fi
+
+# ── Picker mode ───────────────────────────────────────────────────────────────
+labels=(); for pair in "${sheets[@]}"; do labels+=( "${pair%%:*}" ); done
 
 selected=$(printf '%s\n' "${labels[@]}" | rofi \
   -dmenu -i -p 'Keybindings' \
   -mesg 'Select a cheatsheet to view')
-
 [[ -z "$selected" ]] && exit 0
 
-case "$selected" in
-  i3)      exec "${SCRIPT_DIR}/rofi-i3-cheatsheet" ;;
-  AyuGram) exec "${SCRIPT_DIR}/rofi-ayugram-keybindings" ;;
-  mpv)     exec "${SCRIPT_DIR}/rofi-mpv-keybindings" ;;
-  Discord) exec "${SCRIPT_DIR}/rofi-discord-keybindings" ;;
-  Brave)   exec "${SCRIPT_DIR}/rofi-brave-keybindings" ;;
-  Zen)     exec "${SCRIPT_DIR}/rofi-zen-keybindings" ;;
-  *)       notify-send "keybindings" "Unknown: $selected"; exit 1 ;;
-esac
+for pair in "${sheets[@]}"; do
+  if [[ "${pair%%:*}" == "$selected" ]]; then
+    exec "${SCRIPT_DIR}/${pair#*:}"
+  fi
+done
+notify-send "keybindings" "Unknown: $selected"; exit 1

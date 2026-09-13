@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-tmux-keybindings — fullscreen tmux keybinding cheatsheet that ALSO acts:
+# selecting a row runs the equivalent `tmux` command against the running server,
+# so it affects the currently attached client (no need to focus the terminal or
+# replay the prefix chord). Interactive overlays (choose-tree, copy-mode, …) open
+# in the attached client too.
+#
+# Prefix is C-a (see nix/home/tmux/tmux.nix). Rows are curated from that config
+# plus the still-bound tmux defaults, so the common bindings you'd reach for are
+# all here. Bindings that require typing into a prompt, or that destroy state,
+# carry NO command and are display-only.
+#
+# Each row: <runnable tmux command | empty>\t<pretty display>.
+
+# tmux's server socket lives under $TMUX_TMPDIR (here $XDG_RUNTIME_DIR), set in
+# the interactive shell. rofi/i3 launch this without it, so point tmux at the
+# right socket dir or every `tmux` call reports "no server".
+: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
+export TMUX_TMPDIR="${TMUX_TMPDIR:-$XDG_RUNTIME_DIR}"
+
+# realcmd \t  KEYCHORD                       description
+rows=(
+  # ── Sessions ────────────────────────────────────────────────────────────────
+  $'tmux choose-tree -Zs\tC-a s                          List / switch sessions'
+  $'tmux switch-client -n\tC-a )                          Next session'
+  $'tmux switch-client -p\tC-a (                          Previous session'
+  $'tmux detach-client\tC-a d                          Detach from session'
+  $'\tC-a $                          Rename session (prompt)'
+  # ── Windows ──────────────────────────────────────────────────────────────────
+  $'tmux new-window\tC-a c                          New window'
+  $'tmux next-window\tC-a n                          Next window'
+  $'tmux previous-window\tC-a p                          Previous window'
+  $'tmux choose-tree -Zw\tC-a w                          List / switch windows'
+  $'\tC-a 1 … 9                      Select window by number'
+  $'\tC-a ,                          Rename current window (prompt)'
+  $'\tC-a .                          Move window to index (prompt)'
+  $'\tC-a &                          Kill window  (display-only, use tmux directly)'
+  # ── Panes: split & navigate ────────────────────────────────────────────────
+  $'tmux split-window -h\tC-a |                          Split pane horizontally (side by side)'
+  $'tmux split-window -v\tC-a -                          Split pane vertically (stacked)'
+  $'tmux select-pane -L\tC-a h                          Focus pane left'
+  $'tmux select-pane -D\tC-a j                          Focus pane down'
+  $'tmux select-pane -U\tC-a k                          Focus pane up'
+  $'tmux select-pane -R\tC-a l                          Focus pane right'
+  $'tmux select-pane -L\tAlt+Left                       Focus pane left (no prefix)'
+  $'tmux select-pane -D\tAlt+Down                       Focus pane down (no prefix)'
+  $'tmux select-pane -U\tAlt+Up                         Focus pane up (no prefix)'
+  $'tmux select-pane -R\tAlt+Right                      Focus pane right (no prefix)'
+  $'tmux select-pane -t :.+\tC-a o                          Cycle to next pane'
+  $'tmux last-pane\tC-a ;                          Toggle to last active pane'
+  $'tmux display-panes\tC-a q                          Show pane numbers'
+  # ── Panes: resize / layout ──────────────────────────────────────────────────
+  $'tmux resize-pane -L 5\tC-a H                          Resize pane left  (+5)'
+  $'tmux resize-pane -D 5\tC-a J                          Resize pane down  (+5)'
+  $'tmux resize-pane -U 5\tC-a K                          Resize pane up    (+5)'
+  $'tmux resize-pane -R 5\tC-a L                          Resize pane right (+5)'
+  $'tmux resize-pane -Z\tC-a z                          Toggle pane zoom (maximize)'
+  $'tmux next-layout\tC-a Space                      Cycle pane layouts'
+  $'tmux break-pane\tC-a !                          Break pane into its own window'
+  $'tmux swap-pane -U\tC-a {                          Swap pane with previous'
+  $'tmux swap-pane -D\tC-a }                          Swap pane with next'
+  $'\tC-a x                          Kill pane  (display-only, use tmux directly)'
+  # ── Copy mode & buffers ────────────────────────────────────────────────────
+  $'tmux copy-mode\tC-a [                          Enter copy/scroll mode (vi keys)'
+  $'\t  v                          (copy mode) Begin selection'
+  $'\t  y                          (copy mode) Yank selection & exit'
+  $'tmux paste-buffer\tC-a ]                          Paste latest buffer'
+  $'tmux choose-buffer -Z\tC-a =                          Choose buffer to paste'
+  $'tmux list-buffers\tC-a #                          List paste buffers'
+  # ── Misc ──────────────────────────────────────────────────────────────────────
+  $'tmux clock-mode\tC-a t                          Show clock'
+  $'tmux source-file ~/.tmux.conf\tC-a r                          Reload tmux config'
+  $'\tC-a 0                          fzf: jump to a pane (ftpane)'
+  $'\tC-a :                          tmux command prompt'
+  $'\tC-a ?                          List all key bindings'
+)
+
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
+# The command is a self-contained `tmux ...` call (empty for display-only rows).
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do printf '%s\t%s\n' "${real[i]}" "${disp[i]}"; done
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'tmux keys' \
+  -mesg '🖥  tmux keybindings (prefix C-a) — Enter runs the tmux command, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+cmd="${real[$sel]}"
+[[ -z "$cmd" ]] && exit 0   # display-only row
+
+if ! tmux has-session 2>/dev/null; then
+  notify-send "tmux keys" "No running tmux server"; exit 1
+fi
+# Run directly (no setsid) so tmux can resolve the attached client for overlays
+# like choose-tree / copy-mode.
+bash -c "$cmd" >/dev/null 2>&1 &

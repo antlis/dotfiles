@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-yazi-keybindings — cheatsheet for yazi's manager keys, read LIVE from
+# keymap.toml (prepend + keymap + append), so it reflects your customizations.
+# On Enter it fires the binding's command into the running yazi via `ya emit-to`
+# — navigation, tabs, sort, view, selection, copy, enter/leave, rename/create
+# prompts, plugins, etc. The ONLY display-only rows are destructive or
+# session-ending commands (remove / delete / quit / close / suspend) and
+# multi-command chains, so an accidental pick can't lose data or close yazi.
+#
+# `ya emit` needs a YAZI_ID, which only exists inside yazi's own subprocesses —
+# not here. So we target a FIXED client id via `ya emit-to`: yazi is launched
+# with `--client-id 424242` from the desktop entries and the zsh wrapper (see
+# nix/home/desktop-entries.nix and nix/home/zsh/zshrc.nix). Only one yazi can use
+# that id at a time; with several open, firing hits whichever holds it.
+
+YAZI_ID=424242   # must match the --client-id in the yazi launch (desktop/zsh)
+KEYMAP="${XDG_CONFIG_HOME:-$HOME/.config}/yazi/keymap.toml"
+if [[ ! -f "$KEYMAP" ]]; then
+  [[ "${1:-}" == "--emit-sh" ]] && exit 0
+  notify-send "yazi keys" "No keymap.toml under ~/.config/yazi"; exit 1
+fi
+
+# Parse the manager keymap → `on<TAB>run<TAB>desc` rows. python3/tomllib isn't on
+# the i3/rofi launch PATH here, so this is a targeted perl parser for yazi's
+# keymap.toml: it reads the `[[mgr.*]]` blocks and the `[mgr]` inline-table array,
+# ignores every other section, joins chord arrays ("gg"), and extracts each field
+# by name (descriptions contain commas). perl is always on the launch PATH.
+read -r -d '' PARSE_PL <<'PL_EOF'
+my $file = shift @ARGV;
+open my $fh, "<", $file or exit 0;
+my $mode = "";                 # "block" = [[mgr.*]] ; "inline" = [mgr]
+my ($on, $run, $desc);
+sub unq { my $s = shift; return "" unless defined $s;
+  if    ($s =~ /^"(.*)"$/s) { $s = $1; }
+  elsif ($s =~ /^'(.*)'$/s) { $s = $1; }
+  return $s; }
+sub on_val { my $v = shift;
+  if ($v =~ /^\s*\[(.*)\]\s*$/s) { return join("", ($1 =~ /"([^"]*)"/g)); }
+  return unq($v); }
+sub flush {
+  if (defined $on && length $on) {
+    my $r = defined $run ? $run : "";
+    my $d = (defined $desc && length $desc) ? $desc : $r;
+    print "$on\t$r\t$d\n";
+  }
+  ($on, $run, $desc) = (undef, undef, undef);
+}
+while (my $l = <$fh>) {
+  chomp $l;
+  if ($l =~ /^\s*\[\[\s*([\w.]+)\s*\]\]/) {
+    flush() if $mode eq "block";
+    $mode = ($1 =~ /^mgr\.(?:prepend_keymap|append_keymap|keymap)$/) ? "block" : "";
+    next;
+  }
+  if ($l =~ /^\s*\[\s*([\w.]+)\s*\]/) {
+    flush() if $mode eq "block";
+    $mode = ($1 eq "mgr") ? "inline" : "";
+    next;
+  }
+  next unless $mode;
+  next if $l =~ /^\s*#/;
+  if ($mode eq "inline") {
+    if ($l =~ /\bon\s*=\s*(\[[^\]]*\]|"[^"]*"|'[^']*')/) {
+      my $o = on_val($1);
+      next unless length $o;
+      my ($r) = $l =~ /\brun\s*=\s*("[^"]*"|'[^']*')/;
+      my ($d) = $l =~ /\bdesc\s*=\s*("[^"]*"|'[^']*')/;
+      $r = defined $r ? unq($r) : "";
+      $d = (defined $d && length unq($d)) ? unq($d) : $r;
+      print "$o\t$r\t$d\n";
+    }
+  } else {
+    if    ($l =~ /^\s*on\s*=\s*(\[[^\]]*\]|"[^"]*"|'[^']*')/) { $on   = on_val($1); }
+    elsif ($l =~ /^\s*run\s*=\s*("[^"]*"|'[^']*')/)          { $run  = unq($1); }
+    elsif ($l =~ /^\s*desc\s*=\s*("[^"]*"|'[^']*')/)         { $desc = unq($1); }
+  }
+}
+flush() if $mode eq "block";
+PL_EOF
+
+parse() { perl -e "$PARSE_PL" "$KEYMAP"; }
+
+keys=(); runs=(); descs=()
+while IFS=$'\t' read -r on run desc; do
+  keys+=("$on"); runs+=("$run"); descs+=("$desc")
+done < <(parse)
+
+if (( ${#keys[@]} == 0 )); then
+  [[ "${1:-}" == "--emit-sh" ]] && exit 0
+  notify-send "yazi keys" "Couldn't parse any manager keys"; exit 1
+fi
+
+# Pretty key: <C-e> → Ctrl+e, <S-Tab> → Shift+Tab, <Esc> → Esc, "gg" → gg.
+prettify() {
+  local k="$1"
+  k="${k//<C-/Ctrl+}"; k="${k//<S-/Shift+}"; k="${k//<A-/Alt+}"; k="${k//<D-/Super+}"
+  k="${k//</}"; k="${k//>/}"
+  printf '%s' "$k"
+}
+
+# Fire everything EXCEPT commands that delete files or end the session; those
+# stay display-only so an accidental pick can't destroy data or close yazi.
+# (`ya emit-to` accepts hyphenated args like `arrow -99999999` — verified.)
+BLOCK_RE='^(remove|delete|quit|close|suspend)( |$)'
+fire_cmd() {
+  local run="$1"
+  [[ -z "$run" || "$run" == *";"* ]] && return
+  [[ "$run" =~ $BLOCK_RE ]] && return
+  printf 'ya emit-to %s %s' "$YAZI_ID" "$run"
+}
+
+disp=(); real=()
+for i in "${!keys[@]}"; do
+  disp+=( "$(printf '%-16s  %s' "$(prettify "${keys[$i]}")" "${descs[$i]}")" )
+  real+=( "$(fire_cmd "${runs[$i]}")" )
+done
+
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do printf '%s\t%s\n' "${real[i]}" "${disp[i]}"; done
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'yazi keys' \
+  -mesg '📁  yazi keybindings (from keymap.toml) — Enter fires safe commands, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+cmd="${real[$sel]}"
+[[ -z "$cmd" ]] && exit 0   # display-only row
+
+if ! pgrep -f "client-id $YAZI_ID" >/dev/null 2>&1; then
+  notify-send "yazi keys" "No yazi with client-id $YAZI_ID — relaunch yazi (win+d or 'yazi') after the rebuild"
+  exit 1
+fi
+bash -c "$cmd" >/dev/null 2>&1 &

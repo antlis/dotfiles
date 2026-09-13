@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-kitty-keybindings — cheatsheet for kitty's default shortcuts that ALSO
+# acts: selecting a row runs the equivalent mappable action over kitty's remote
+# control socket (`kitten @ action …`), so kitty performs it in the active
+# window — no window focus or key replay.
+#
+# Requires kitty remote control (see nix/home/kitty.nix):
+#     allow_remote_control socket-only
+#     listen_on unix:@mykitty
+# Rows are curated from kitty's stock keymap (kitty_mod = Ctrl+Shift), since the
+# config sets no custom `map`s. Bindings that need the live screen (hints,
+# clipboard, unicode input, interactive resize/rename) carry NO action and stay
+# display-only.
+#
+# Each row: <mappable action | empty>\t<pretty display>.
+
+TO="unix:@mykitty"
+
+# action \t  KEYCHORD                        description   (empty action = display-only)
+rows=(
+  # ── Tabs ───────────────────────────────────────────────────────────────────
+  $'new_tab\tCtrl+Shift+T                    New tab'
+  $'next_tab\tCtrl+Shift+Right                Next tab'
+  $'previous_tab\tCtrl+Shift+Left                 Previous tab'
+  $'close_tab\tCtrl+Shift+Q                    Close tab'
+  $'move_tab_forward\tCtrl+Shift+.                    Move tab forward'
+  $'move_tab_backward\tCtrl+Shift+,                    Move tab backward'
+  $'next_layout\tCtrl+Shift+L                    Cycle window layout'
+  $'\tCtrl+Shift+Alt+T                Set tab title (prompt)'
+  # ── Windows (splits) ─────────────────────────────────────────────────────────
+  $'new_window\tCtrl+Shift+Enter                New window (split)'
+  $'new_os_window\tCtrl+Shift+N                    New OS window'
+  $'close_window\tCtrl+Shift+W                    Close window'
+  $'next_window\tCtrl+Shift+]                    Next window'
+  $'previous_window\tCtrl+Shift+[                    Previous window'
+  $'move_window_forward\tCtrl+Shift+F                    Move window forward'
+  $'move_window_backward\tCtrl+Shift+B                    Move window backward'
+  $'move_window_to_top\tCtrl+Shift+`                    Move window to top'
+  $'\tCtrl+Shift+R                    Resize window (interactive mode)'
+  # ── Font size ──────────────────────────────────────────────────────────────
+  $'change_font_size all +2.0\tCtrl+Shift+Plus                 Increase font size'
+  $'change_font_size all -2.0\tCtrl+Shift+Minus                Decrease font size'
+  $'change_font_size all 0\tCtrl+Shift+Backspace            Reset font size'
+  # ── Scrollback ───────────────────────────────────────────────────────────────
+  $'scroll_line_up\tCtrl+Shift+Up                   Scroll up one line'
+  $'scroll_line_down\tCtrl+Shift+Down                 Scroll down one line'
+  $'scroll_page_up\tCtrl+Shift+PageUp               Scroll up one page'
+  $'scroll_page_down\tCtrl+Shift+PageDown             Scroll down one page'
+  $'scroll_home\tCtrl+Shift+Home                 Scroll to top'
+  $'scroll_end\tCtrl+Shift+End                  Scroll to bottom'
+  $'show_scrollback\tCtrl+Shift+H                    Open scrollback in pager'
+  $'show_last_command_output\tCtrl+Shift+G                    Show last command output'
+  # ── Window state ─────────────────────────────────────────────────────────────
+  $'toggle_fullscreen\tCtrl+Shift+F11                  Toggle fullscreen'
+  $'toggle_maximized\tCtrl+Shift+F10                  Toggle maximized'
+  $'clear_terminal reset active\tCtrl+Shift+Delete               Clear terminal (reset)'
+  # ── Clipboard & input (display-only: need the live screen/selection) ───────────
+  $'\tCtrl+Shift+C                    Copy to clipboard (needs selection)'
+  $'\tCtrl+Shift+V                    Paste from clipboard'
+  $'\tCtrl+Shift+S                    Paste from selection'
+  $'\tCtrl+Shift+E                    Open URL with hints'
+  $'\tCtrl+Shift+U                    Unicode character input'
+  $'\tCtrl+Shift+Escape               Open kitty shell'
+  $'\tCtrl+Shift+F2                   Edit kitty.conf'
+)
+
+act=(); disp=()
+for r in "${rows[@]}"; do
+  act+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+# Build the self-contained command per row (empty action → display-only).
+real=()
+for a in "${act[@]}"; do
+  if [[ -n "$a" ]]; then real+=( "kitten @ --to $TO action $a" ); else real+=( "" ); fi
+done
+
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do printf '%s\t%s\n' "${real[i]}" "${disp[i]}"; done
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'kitty keys' \
+  -mesg '🐱  kitty keybindings (kitty_mod = Ctrl+Shift) — Enter runs the action, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+cmd="${real[$sel]}"
+[[ -z "$cmd" ]] && exit 0   # display-only row
+
+if ! kitten @ --to "$TO" ls >/dev/null 2>&1; then
+  notify-send "kitty keys" "Can't reach kitty on $TO — is remote control enabled (allow_remote_control / listen_on) and kitty running?"
+  exit 1
+fi
+bash -c "$cmd" >/dev/null 2>&1 &

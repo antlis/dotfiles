@@ -26,6 +26,7 @@ for dir in "${TDATA_DIRS[@]}"; do
 done
 
 if [[ -z "$DEFAULTS" ]]; then
+  [[ "${1:-}" == "--emit" ]] && exit 0
   notify-send "keybindings" "No Telegram/Ayugram shortcuts config found"
   exit 1
 fi
@@ -114,15 +115,18 @@ declare -A cmd_desc=(
 )
 
 rows=()
+keyspecs=()   # parallel to rows: raw injectable keys (empty = display-only)
 
 # ── Configurable shortcuts from JSON (defaults + custom overrides) ──
 while IFS=$'\t' read -r keys cmd; do
   desc="${cmd_desc[$cmd]:-$cmd}"
   if [[ "$keys" == "null" ]]; then
     pretty="(not bound)"
+    keyspecs+=("")
   else
     pretty="${keys^^}"
     pretty="${pretty//CTRL+/Ctrl+}"
+    keyspecs+=("$keys")
   fi
   rows+=("$(printf '%-24s %s' "$pretty" "$desc")")
 done < <(
@@ -199,20 +203,8 @@ rows+=("$(printf '%-24s %s' "Ctrl+Shift+S" "Save As")")
 
 (( ${#rows[@]} == 0 )) && exit 0
 
-sel=$(printf '%s\n' "${rows[@]}" | rofi \
-  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
-  -dmenu -i -p 'AyuGram keys' \
-  -mesg 'AyuGram / Telegram keybindings')
-
-# The key is always the first column (keys never contain spaces); the rest is the
-# description. Skip rows that aren't a single replayable keypress.
-key="${sel%% *}"
-case "$key" in
-  ''|'──'* | '(not') exit 0 ;;   # blank / section header / "(not bound)"
-esac
-[[ "$key" == *"/"* ]] && exit 0  # e.g. Left/Right — not one keypress
-
 # Convert a display combo ("Ctrl+Shift+R") to an xdotool keyspec ("ctrl+shift+r").
+# (Defined here so the --emit-sh path below can reuse it as well as the picker.)
 to_keyspec() {
   local part out=()
   local IFS='+'
@@ -243,6 +235,57 @@ to_keyspec() {
   done
   echo "${out[*]}"
 }
+
+# Aggregate integration (rofi-keybindings all): emit a self-contained
+# `command<TAB>label` row per shortcut. Fireable chords focus AyuGram and replay
+# the keyspec; unmappable keys (Qt-special, "Left/Right", "(not bound)") emit an
+# empty command and stay display-only. Section headers/blanks are dropped.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for line in "${rows[@]}"; do
+    [[ -z "${line// }" || "$line" == ──* ]] && continue
+    key="${line%% *}"
+    disp=$(printf '%s' "$line" | sed -E 's/ {2,}/ /g; s/^ +| +$//g')
+    case "$key" in
+      ''|'──'*|'(not'|*'/'*) printf '\t%s\n' "$disp"; continue ;;
+    esac
+    if keyspec=$(to_keyspec "$key"); then
+      cmd="xdotool search --class AyuGram >/dev/null 2>&1 && { i3-msg '[class=\"AyuGramDesktop\"] focus' >/dev/null; sleep 0.15; xdotool key --clearmodifiers '$keyspec'; }"
+      printf '%s\t%s\n' "$cmd" "$disp"
+    else
+      printf '\t%s\n' "$disp"
+    fi
+  done
+  exit 0
+fi
+
+# cheatpad integration: emit JSON entries. Real chords (contain "+" or a single
+# key) become focus-class keys actions on the AyuGram window; Qt-special names
+# (search/find/…) and the hardcoded text-editing block stay display-only.
+if [[ "${1:-}" == "--emit" ]]; then
+  for i in "${!rows[@]}"; do
+    line="${rows[$i]}"
+    [[ -z "${line// }" || "$line" == ──* ]] && continue          # skip blanks / headers
+    disp=$(printf '%s' "$line" | sed -E 's/ {2,}/ /g; s/^ +| +$//g')
+    printf '%s\t%s\n' "${keyspecs[$i]:-}" "$disp"
+  done | jq -Rn '[inputs | select(length>0) | split("\t")
+    | if ((.[0]|test("\\+")) or (.[0]|test("^[A-Za-z0-9]$")))
+      then {key: .[1], label: "", action: {type: "keys", keys: .[0], class: "AyuGramDesktop"}}
+      else {key: .[1], label: "", action: {type: "none"}} end]'
+  exit 0
+fi
+
+sel=$(printf '%s\n' "${rows[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -p 'AyuGram keys' \
+  -mesg 'AyuGram / Telegram keybindings')
+
+# The key is always the first column (keys never contain spaces); the rest is the
+# description. Skip rows that aren't a single replayable keypress.
+key="${sel%% *}"
+case "$key" in
+  ''|'──'* | '(not') exit 0 ;;   # blank / section header / "(not bound)"
+esac
+[[ "$key" == *"/"* ]] && exit 0  # e.g. Left/Right — not one keypress
 
 keyspec=$(to_keyspec "$key") || { notify-send "AyuGram keys" "Can't replay: $key"; exit 0; }
 

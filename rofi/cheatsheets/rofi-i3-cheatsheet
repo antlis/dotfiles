@@ -64,6 +64,13 @@ for r in "${rows[@]}"; do
   disp+=( "${r#*$'\t'}" )
 done
 
+# Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows —
+# the command is already self-contained (i3-msg / exec), run as-is by the caller.
+if [[ "${1:-}" == "--emit-sh" ]]; then
+  for i in "${!real[@]}"; do printf '%s\t%s\n' "${real[i]}" "${disp[i]}"; done
+  exit 0
+fi
+
 sel=$(printf '%s\n' "${disp[@]}" | rofi \
   -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
   -dmenu -i -format i -p 'i3 keys' \

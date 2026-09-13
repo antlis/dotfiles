@@ -187,4 +187,6 @@ in
 
   # Show keybindings
   "${mod}+slash" = "exec --no-startup-id ~/.local/share/rofi-cheatsheets/rofi-keybindings";
+  # Show every cheatsheet in one searchable, source-tagged list
+  "${mod}+Shift+slash" = "exec --no-startup-id ~/.local/share/rofi-cheatsheets/rofi-keybindings all";
 }
