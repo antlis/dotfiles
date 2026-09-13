@@ -17,7 +17,14 @@
 #
 # Each row: <mappable action | empty>\t<pretty display>.
 
-TO="unix:@mykitty"
+# kitty appends "-<pid>" to the listen_on socket, so the real address is
+# @mykitty-<pid>, not @mykitty. Discover it at run time via `ss` (it's an
+# abstract socket, not a file) instead of hardcoding it — and bake the discovery
+# INTO each fired command, so it re-resolves on every fire and survives kitty
+# restarts (important for the `all` aggregate's --emit-sh rows).
+kitty_fire() {  # $1 = mappable action (may include args) → self-contained command
+  printf 'sock=$(ss -xlp 2>/dev/null | grep -oE "@mykitty-[0-9]+" | head -1); [ -n "$sock" ] && kitten @ --to "unix:$sock" action %s' "$1"
+}
 
 # action \t  KEYCHORD                        description   (empty action = display-only)
 rows=(
@@ -76,7 +83,7 @@ done
 # Build the self-contained command per row (empty action → display-only).
 real=()
 for a in "${act[@]}"; do
-  if [[ -n "$a" ]]; then real+=( "kitten @ --to $TO action $a" ); else real+=( "" ); fi
+  if [[ -n "$a" ]]; then real+=( "$(kitty_fire "$a")" ); else real+=( "" ); fi
 done
 
 # Aggregate integration (rofi-keybindings all): emit `command<TAB>label` rows.
@@ -95,8 +102,9 @@ sel=$(printf '%s\n' "${disp[@]}" | rofi \
 cmd="${real[$sel]}"
 [[ -z "$cmd" ]] && exit 0   # display-only row
 
-if ! kitten @ --to "$TO" ls >/dev/null 2>&1; then
-  notify-send "kitty keys" "Can't reach kitty on $TO — is remote control enabled (allow_remote_control / listen_on) and kitty running?"
+sock=$(ss -xlp 2>/dev/null | grep -oE '@mykitty-[0-9]+' | head -1)
+if [[ -z "$sock" ]] || ! kitten @ --to "unix:$sock" ls >/dev/null 2>&1; then
+  notify-send "kitty keys" "Can't reach kitty — restart kitty after enabling remote control (allow_remote_control / listen_on)"
   exit 1
 fi
 bash -c "$cmd" >/dev/null 2>&1 &
