@@ -102,13 +102,17 @@ closes a tab) and depends on the right window/context being focused.
   window/pane (CLI skips the confirmation, so an accidental pick is unsafe).
 
 ### kitty — `rofi-kitty-keybindings`
-- `kitty_mod` = **Ctrl+Shift**. Fires via `kitten @ --to unix:@mykitty action …`.
+- `kitty_mod` = **Ctrl+Shift**. Fires via `kitten @ --to unix:@mykitty-<pid> action …`.
 - **Requires remote control** (`nix/home/kitty.nix`):
   `allow_remote_control = "socket-only"` + `listen_on = "unix:@mykitty"`.
 - **Gotcha:** those are read **only at kitty startup** — a config *reload* or an
   already-open window won't gain them. Restart kitty after enabling.
-- **Multi-instance:** only the first kitty to start owns `@mykitty`; others run
-  without remote control.
+- **Gotcha:** kitty **appends `-<pid>`** to the socket, so the real address is
+  `@mykitty-<pid>`, not `@mykitty`. The sheet discovers it at run time
+  (`ss -xlp | grep @mykitty-`), baked into each fired command so it re-resolves and
+  survives kitty restarts.
+- **Multi-instance:** each kitty gets its own `-<pid>` socket, so several coexist fine;
+  the sheet targets whichever one `ss` reports first.
 
 ### yazi — `rofi-yazi-keybindings`
 - Source is the **live** `keymap.toml` (manager keys), parsed with **perl** —
