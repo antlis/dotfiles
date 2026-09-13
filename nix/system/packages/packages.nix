@@ -120,6 +120,7 @@ in
     peek                   # Simple animated GIF screen recorder | https://github.com/phw/peek
     simplescreenrecorder   # Feature-rich screen recorder with live preview | https://www.maartenbaert.be/simplescreenrecorder
     gnome-screenshot       # Screenshot tool with region and window capture | https://gitlab.gnome.org/GNOME/gnome-screenshot
+    screenkey              # On-screen keyboard display that shows pressed keys | https://wwwesktop.github.io/screenkey/
 
     # ── Remote play ───────────────────────────────────────────────────────────
     moonlight-qt           # Game streaming client for Sunshine/GameStream hosts (e.g. arch-t480) | https://moonlight-stream.org
