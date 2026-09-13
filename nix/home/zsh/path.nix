@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, openCodeApiKey, ... }:
 let
   c = import ../../constants.nix;
 in
@@ -13,6 +13,7 @@ in
       ignoreDups = true;
     };
     sessionVariables = {
+      OPENCODE_API_KEY = openCodeApiKey;
       NVIM_APPNAME = "nvim-lazyvim";
       GH_EDITOR    = "nvim";
       EDITOR       = "nvim";

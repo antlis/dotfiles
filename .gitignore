@@ -7,6 +7,10 @@ yazi/.config/yazi/flavors/
 nix/system/private.nix
 nix/result*
 
+# Local opencode helper module — kept private (loaded from disk via --impure)
+nix/home/opencode-bridge.nix
+nix/home/opencode-bridge/
+
 # Serena code-agent artifacts (memories/cache) — never publish
 .serena/
 spell/

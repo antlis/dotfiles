@@ -1,11 +1,18 @@
-{ config, pkgs, lib, sshHosts, amneziaServerIp, figmaApiKey, telepadConfig, ... }:
+{ config, pkgs, lib, sshHosts, amneziaServerIp, figmaApiKey, telepadConfig, openCodeApiKey, ... }:
 let
   c = import ../constants.nix;
+  # Gitignored local module, loaded from disk (needs --impure) like privateNix.
+  # Kept out of the public repo. Absent = skipped.
+  bridgeModule = /. + c.homeDir + "/dotfiles/nix/home/opencode-bridge.nix";
 in
 {
-  home-manager.extraSpecialArgs = { inherit sshHosts amneziaServerIp figmaApiKey telepadConfig; };
+  home-manager.extraSpecialArgs = { inherit sshHosts amneziaServerIp figmaApiKey telepadConfig openCodeApiKey; };
 
   home-manager.users.${c.username} = { pkgs, lib, config, ... }: {
+    home.sessionVariables = {
+      OPENCODE_API_KEY = openCodeApiKey;
+    };
+
     home.stateVersion = "25.11";
     home.username = c.username;
     home.homeDirectory = c.homeDir;
@@ -24,7 +31,7 @@ in
       ./ssh.nix
       ./ayugram.nix
       ./telepad.nix
-    ];
+    ] ++ lib.optional (builtins.pathExists bridgeModule) bridgeModule;
     services.dunst.enable = true;
     services.ssh-agent.enable = true;
     home.activation.createScreenshotDir = lib.mkAfter ''

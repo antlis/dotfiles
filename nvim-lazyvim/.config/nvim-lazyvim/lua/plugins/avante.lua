@@ -107,6 +107,14 @@ return {
           model = "minimax/minimax-m2.7",
           -- model = 'zai-org/glm-5',
         },
+        -- Routed through a local bridge on 127.0.0.1:4098 (managed outside this
+        -- repo). Any non-empty api_key works; the endpoint ignores it.
+        ["opencode-zen"] = {
+          __inherited_from = "openai",
+          endpoint = "http://127.0.0.1:4098/v1",
+          api_key_name = "OPENCODE_API_KEY",
+          model = "ling-3.0-flash-fin-free",
+        },
       },
       acp_providers = {
         -- Override avante's default claude-code entry: upstream passes a broken
@@ -130,6 +138,12 @@ return {
       },
       selection = {
         hint_display = "none",
+      },
+      selector = {
+        provider = "fzf_lua",
+      },
+      input = {
+        provider = "snacks",
       },
       behaviour = {
         auto_set_keymaps = false,
