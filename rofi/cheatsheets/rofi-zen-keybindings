@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# rofi-zen-keybindings — cheatsheet for Zen Browser's shortcuts, read from Zen
+# itself. Zen (Firefox-based) stores its keyboard shortcuts — including your
+# customizations — as JSON in the profile (zen-keyboard-shortcuts.json), so the
+# rows come straight from there (no CDP, no scrape, just a file read). On Enter it
+# focuses the Zen window by i3 criteria and replays the shortcut with xdotool. NB:
+# this performs the real action (Ctrl+W closes the tab, etc.).
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+
+# Newest zen-keyboard-shortcuts.json across profiles (handles the default one).
+JSON="$(ls -t "$HOME"/.config/zen/*/zen-keyboard-shortcuts.json 2>/dev/null | head -1)"
+[[ -f "$JSON" ]] || { notify-send "Zen keys" "No zen-keyboard-shortcuts.json found under ~/.config/zen"; exit 1; }
+
+read -r -d '' JQ <<'JQEOF'
+def kmap: {"VK_BACK":"BackSpace","VK_DELETE":"Delete","VK_ESCAPE":"Escape","VK_TAB":"Tab","VK_HOME":"Home","VK_END":"End","VK_LEFT":"Left","VK_RIGHT":"Right","VK_UP":"Up","VK_DOWN":"Down","VK_PAGE_UP":"Page_Up","VK_PAGE_DOWN":"Page_Down"};
+def symmap: {"#":"numbersign","*":"asterisk","+":"plus","-":"minus","=":"equal","[":"bracketleft","]":"bracketright","^":"asciicircum","_":"underscore","}":"braceright","{":"braceleft","/":"slash","\\":"backslash","'":"apostrophe",";":"semicolon",",":"comma",".":"period"};
+def pkmap: {"VK_BACK":"Backspace","VK_DELETE":"Del","VK_ESCAPE":"Esc","VK_TAB":"Tab","VK_HOME":"Home","VK_END":"End","VK_LEFT":"←","VK_RIGHT":"→","VK_UP":"↑","VK_DOWN":"↓","VK_PAGE_UP":"PgUp","VK_PAGE_DOWN":"PgDn"};
+def keysym(e): if e.keycode != null then (kmap[e.keycode] // (if (e.keycode|startswith("VK_F")) then (e.keycode|ltrimstr("VK_")) else null end)) elif (e.key != null and e.key != "") then (if (e.key|test("^[A-Za-z0-9]$")) then (e.key|ascii_downcase) else symmap[e.key] end) else null end;
+def pkey(e): if e.keycode != null then (pkmap[e.keycode] // (if (e.keycode|startswith("VK_F")) then (e.keycode|ltrimstr("VK_")) else e.keycode end)) elif ((e.key//"")|test("^[A-Za-z]$")) then (e.key|ascii_upcase) else (e.key // "?") end;
+def lbl(e):
+  (e.l10nId // e.id // e.action // "unnamed") as $raw
+  | ($raw | tostring | ltrimstr("zen-") | ltrimstr("key_")
+     | sub("-shortcut.*$";"") | sub("Kb$";"")
+     | gsub("(?<a>[a-z0-9])(?<b>[A-Z])";"\(.a) \(.b)")
+     | gsub("(?<a>[a-z])(?<b>[0-9])";"\(.a) \(.b)")
+     | gsub("[-_]";" ") | ascii_downcase | gsub("^ +| +$";"")) as $s
+  | if ($s|length)>0 then (($s[0:1]|ascii_upcase)+$s[1:]) else "Unnamed" end;
+[ .shortcuts[]
+  | select(.disabled==false and .internal==false)
+  | . as $e | keysym($e) as $sym | select($sym != null)
+  | { mods: ([ (if (.modifiers.control or .modifiers.accel) then "ctrl" else empty end), (if .modifiers.alt then "alt" else empty end), (if .modifiers.shift then "shift" else empty end), (if .modifiers.meta then "super" else empty end) ]),
+      pmods: ([ (if (.modifiers.control or .modifiers.accel) then "Ctrl" else empty end), (if .modifiers.alt then "Alt" else empty end), (if .modifiers.shift then "Shift" else empty end), (if .modifiers.meta then "Super" else empty end) ]),
+      sym: $sym, pk: pkey($e), label: lbl($e) }
+  | { keyspec: ((.mods + [.sym])|join("+")), combo: ((.pmods + [.pk])|join("+")), label: .label }
+]
+| group_by(.label)
+| map({label: .[0].label, keyspec: .[0].keyspec, combos: ([.[].combo]|unique|join(" / "))})
+| sort_by(.label) | .[] | [.keyspec, .label, .combos] | @tsv
+JQEOF
+
+# Rows: <xdotool keyspec>\t<label padded>  <combos>
+mapfile -t rows < <(jq -r "$JQ" "$JSON" 2>/dev/null \
+  | awk -F'\t' '{printf "%s\t%-30s  %s\n",$1,$2,$3}')
+
+(( ${#rows[@]} == 0 )) && { notify-send "Zen keys" "Couldn't parse Zen shortcuts"; exit 1; }
+
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'Zen keys' \
+  -mesg '🦊  Zen keybindings (live from your profile) — Enter sends the shortcut, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+xdotool search --class 'zen-beta' >/dev/null 2>&1 \
+  || { notify-send "Zen keys" "No Zen window found"; exit 1; }
+
+# Focus via i3 criteria, then replay the shortcut — same approach as the AyuGram /
+# Discord / Brave sheets.
+i3-msg '[class="zen-beta"] focus' >/dev/null 2>&1
+sleep 0.15
+xdotool key --clearmodifiers "${real[$sel]}"

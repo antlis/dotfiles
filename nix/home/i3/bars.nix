@@ -1,5 +1,6 @@
 { pkgs, amneziaServerIp }:
 let
+  ssr = import ./ssr.nix { inherit pkgs; };
   # Shows which VPN is active in the i3bar (refreshes with i3status, ~5s).
   vpnStatus = pkgs.writeShellScript "i3-vpn-block" ''
     sc=${pkgs.systemd}/bin/systemctl
@@ -42,9 +43,10 @@ let
       case "$line" in
         '{'*) echo "$line" ;;
         '[')  echo "$line" ;;
-        *)    vpn="$(${vpnStatus})"; kbd="$(${kbdStatus})"; dnd="$(${dndStatus})"
+        *)    vpn="$(${vpnStatus})"; kbd="$(${kbdStatus})"; dnd="$(${dndStatus})"; rec="$(${ssr.recBlock})"
+              [ -n "$rec" ] && rec="$rec,"
               [ -n "$dnd" ] && dnd="$dnd,"
-              echo "''${line/\[/[$dnd$kbd,$vpn,}" ;;
+              echo "''${line/\[/[$rec$dnd$kbd,$vpn,}" ;;
       esac
     done
   '';

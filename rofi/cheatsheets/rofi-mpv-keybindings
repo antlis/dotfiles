@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# rofi-mpv-keybindings — cheatsheet for the RUNNING mpv, driven over its JSON IPC
+# socket. It reads mpv's live key map (the `input-bindings` property) as the
+# source of truth, and on Enter fires the binding by sending a `keypress` back
+# through the same socket — so mpv performs the action in-process. No window
+# focus, no xdotool: the key name round-trips exactly (mpv's own naming).
+#
+# Requires mpv started with an IPC socket. Set it once in ~/.config/mpv/mpv.conf:
+#     input-ipc-server=/tmp/mpvsocket
+# (override here with MPV_SOCKET=/path rofi-mpv-keybindings).
+
+SOCK="${MPV_SOCKET:-/tmp/mpvsocket}"
+
+# Talk to mpv's IPC socket. Uses nc (on the i3/rofi launch PATH via
+# /run/current-system/sw/bin; socat is not) — libressl nc: -N shuts the write
+# side after our line, -w1 bounds the reply read.
+ipc() { printf '%s\n' "$1" | nc -U -N -w 1 "$SOCK" 2>/dev/null; }
+
+# Query first, then judge liveness by the actual reply — a leftover socket file
+# passes -S but a dead mpv answers nothing, which must NOT look like "no bindings".
+reply=""
+[[ -S "$SOCK" ]] && reply=$(ipc '{"command":["get_property","input-bindings"]}')
+if [[ -z "$reply" ]]; then
+  notify-send "mpv keys" "No live mpv on $SOCK — start mpv with input-ipc-server (mpv.conf), or the socket is stale."
+  exit 1
+fi
+
+# Rows: <mpv key>\t<key padded>  <comment or command>. select(.data) skips any
+# non-reply object; drop no-ops and pointer/gesture keys; keep first per key.
+mapfile -t rows < <(
+  printf '%s' "$reply" | jq -r '
+    select(.data) | .data[]
+    | select(.cmd != "ignore" and .cmd != "")
+    | select(.key | test("MBTN|WHEEL|MOUSE|AXIS|CLOSE_WIN") | not)
+    | [.key, (.comment // .cmd)] | @tsv
+  ' | awk -F '\t' '!seen[$1]++ { printf "%s\t%-20s  %s\n", $1, $1, $2 }'
+)
+
+(( ${#rows[@]} == 0 )) && { notify-send "mpv keys" "mpv reported no bindings"; exit 1; }
+
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'mpv keys' \
+  -mesg '🎬  mpv keybindings — Enter sends the key to mpv, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+ipc "$(jq -nc --arg k "${real[$sel]}" '{command:["keypress",$k]}')" >/dev/null

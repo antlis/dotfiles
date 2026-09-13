@@ -1,6 +1,7 @@
 { config, pkgs, lib, amneziaServerIp, ... }:
 let
   c = import ../constants.nix;
+  ssr = import ./i3/ssr.nix { inherit pkgs; };
   screenshotScript = flag: pkgs.writeShellScript "screenshot" ''
     gnome-screenshot ${flag}
     LATEST=$(ls -t ${c.screenshotDir}/*.png | head -1)
@@ -304,6 +305,14 @@ in
       icon = "beekeeper-studio"; # named icon from papirus (the old .png path never existed)
       terminal = false;
       categories = [ "Development" "Database" ];
+    };
+    ssr-record = {
+      name = "Toggle Screen Recording";
+      comment = "Start/stop SimpleScreenRecorder headless (timestamped mp4 in ~/Videos)";
+      exec = "${ssr.toggle}";
+      icon = "media-record";
+      terminal = false;
+      categories = [ "AudioVideo" ];
     };
     vpn-menu = {
       name = "VPN";

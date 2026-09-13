@@ -1,0 +1,259 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# AyuGram / Telegram Desktop keybindings cheatsheet
+# Reads from AyuGramDesktop or TelegramDesktop shortcuts JSON.
+# Also includes hardcoded Telegram shortcuts not in the JSON.
+# On Enter: focus the AyuGram window and replay the shortcut with xdotool
+# (these are app-internal keys, not exec/i3 commands). Rows with no single
+# replayable key — section headers, blanks, "(not bound)", "Left/Right" — are
+# skipped. NB: this fires the real action, including Delete / send / schedule.
+
+TDATA_DIRS=(
+  "${HOME}/.local/share/AyuGramDesktop/tdata"
+  "${HOME}/.local/share/TelegramDesktop/tdata"
+)
+
+DEFAULTS=""
+CUSTOM=""
+for dir in "${TDATA_DIRS[@]}"; do
+  if [[ -f "$dir/shortcuts-default.json" ]]; then
+    DEFAULTS="$dir/shortcuts-default.json"
+    CUSTOM="$dir/shortcuts-custom.json"
+    break
+  fi
+done
+
+if [[ -z "$DEFAULTS" ]]; then
+  notify-send "keybindings" "No Telegram/Ayugram shortcuts config found"
+  exit 1
+fi
+
+strip_json_comments() {
+  perl -pe 's{//.*}{}' | perl -0777 -pe 's/,\s*([}\]])/\1/g'
+}
+
+declare -A cmd_desc=(
+  [search]="Search"
+  [self_chat]="Saved Messages"
+  [all_chats]="All Chats"
+  [folder1]="Folder 1"
+  [folder2]="Folder 2"
+  [folder3]="Folder 3"
+  [folder4]="Folder 4"
+  [folder5]="Folder 5"
+  [folder6]="Folder 6"
+  [last_folder]="Last Folder"
+  [show_archive]="Archive"
+  [show_contacts]="Contacts"
+  [lock_telegram]="Lock"
+  [minimize_telegram]="Minimize"
+  [quit_telegram]="Quit"
+  [read_chat]="Read Chat"
+  [record_voice]="Record Voice"
+  [close_telegram]="Close"
+  [show_chat_menu]="Chat Menu"
+  [show_chat_preview]="Chat Preview"
+  [previous_chat]="Previous Chat"
+  [next_chat]="Next Chat"
+  [previous_folder]="Previous Folder"
+  [next_folder]="Next Folder"
+  [first_chat]="First Chat"
+  [last_chat]="Last Chat"
+  [pinned_chat1]="Pinned Chat 1"
+  [pinned_chat2]="Pinned Chat 2"
+  [pinned_chat3]="Pinned Chat 3"
+  [pinned_chat4]="Pinned Chat 4"
+  [pinned_chat5]="Pinned Chat 5"
+  [pinned_chat6]="Pinned Chat 6"
+  [pinned_chat7]="Pinned Chat 7"
+  [pinned_chat8]="Pinned Chat 8"
+  [media_play]="Play"
+  [media_stop]="Stop"
+  [media_previous]="Previous Track"
+  [media_next]="Next Track"
+  [media_pause]="Pause"
+  [media_playpause]="Play/Pause"
+  [account1]="Account 1"
+  [account2]="Account 2"
+  [account3]="Account 3"
+  [account4]="Account 4"
+  [account5]="Account 5"
+  [account6]="Account 6"
+  [message]="Message"
+  [message_silently]="Silent Message"
+  [message_scheduled]="Scheduled Message"
+  [media_viewer_video_fullscreen]="Video Fullscreen"
+  [show_scheduled]="Scheduled Messages"
+  [archive_chat]="Archive Chat"
+  [record_round]="Record Round Video"
+  [reaction_send]="Send Reaction"
+  [scroll_to_unread]="Scroll to Unread"
+  [toggle_mute]="Toggle Mute"
+  [edit_message]="Edit Message"
+  [delete_message]="Delete Message"
+  [forward_message]="Forward Message"
+  [reply_message]="Reply"
+  [select_message]="Select Message"
+  [show_my_profile]="My Profile"
+  [show_phone]="Show Phone"
+  [show_username]="Show Username"
+  [show_bio]="Show Bio"
+  [boost_status]="Boost Status"
+  [open_folder]="Open Folder"
+  [create_new_group]="New Group"
+  [create_new_channel]="New Channel"
+  [create_new_secret_chat]="New Secret Chat"
+  [show_settings]="Settings"
+  [show_calls]="Calls"
+  [next_theme]="Next Theme"
+  [previous_theme]="Previous Theme"
+  [toggle_night_mode]="Night Mode"
+  [show_all_chats]="Show All Chats"
+)
+
+rows=()
+
+# ── Configurable shortcuts from JSON (defaults + custom overrides) ──
+while IFS=$'\t' read -r keys cmd; do
+  desc="${cmd_desc[$cmd]:-$cmd}"
+  if [[ "$keys" == "null" ]]; then
+    pretty="(not bound)"
+  else
+    pretty="${keys^^}"
+    pretty="${pretty//CTRL+/Ctrl+}"
+  fi
+  rows+=("$(printf '%-24s %s' "$pretty" "$desc")")
+done < <(
+  merged=$(mktemp)
+  trap "rm -f $merged" RETURN
+
+  strip_json_comments < "$DEFAULTS" | jq '[.[] | select(.command)]' > "$merged"
+
+  # Apply custom overrides if they exist
+  if [[ -n "$CUSTOM" && -f "$CUSTOM" ]]; then
+    strip_json_comments < "$CUSTOM" | jq -r '
+      .[] | select(.command and .keys != null)
+      | "\(.command)\t\(.keys)"
+    ' | while IFS=$'\t' read -r cmd keys; do
+      jq --arg cmd "$cmd" --arg keys "$keys" '
+        map(if .command == $cmd then .keys = $keys else . end)
+      ' "$merged" > "$merged.tmp" && mv "$merged.tmp" "$merged"
+    done
+  fi
+
+  jq -r '.[] | select(.command) | "\(.keys)\t\(.command)"' "$merged"
+)
+
+# ── Hardcoded shortcuts (not in JSON, always active) ──
+rows+=("")
+rows+=("── Text Formatting ──")
+rows+=("$(printf '%-24s %s' "Ctrl+B" "Bold")")
+rows+=("$(printf '%-24s %s' "Ctrl+I" "Italic")")
+rows+=("$(printf '%-24s %s' "Ctrl+U" "Underline")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+X" "Strikethrough")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+M" "Mono")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+N" "Plain Text")")
+rows+=("$(printf '%-24s %s' "Ctrl+K" "Insert Link")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+E" "Spoiler")")
+
+rows+=("")
+rows+=("── Editing ──")
+rows+=("$(printf '%-24s %s' "Up" "Edit Last Message")")
+rows+=("$(printf '%-24s %s' "Ctrl+Z" "Undo")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+Z" "Redo")")
+rows+=("$(printf '%-24s %s' "Ctrl+X" "Cut")")
+rows+=("$(printf '%-24s %s' "Ctrl+C" "Copy")")
+rows+=("$(printf '%-24s %s' "Ctrl+V" "Paste")")
+rows+=("$(printf '%-24s %s' "Ctrl+A" "Select All")")
+rows+=("$(printf '%-24s %s' "Ctrl+Del" "Delete Word")")
+rows+=("$(printf '%-24s %s' "Ctrl+Backspace" "Delete Word Left")")
+
+rows+=("")
+rows+=("── Navigation ──")
+rows+=("$(printf '%-24s %s' "Alt+Left" "Go Back")")
+rows+=("$(printf '%-24s %s' "Alt+Right" "Go Forward")")
+rows+=("$(printf '%-24s %s' "Ctrl+Tab" "Next Chat (unread)")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+Tab" "Prev Chat (unread)")")
+rows+=("$(printf '%-24s %s' "Alt+Enter" "Jump to Bottom")")
+
+rows+=("")
+rows+=("── Messages ──")
+rows+=("$(printf '%-24s %s' "Ctrl+Up" "Reply")")
+rows+=("$(printf '%-24s %s' "Ctrl+Down" "Cancel Reply")")
+rows+=("$(printf '%-24s %s' "Esc" "Cancel / Close")")
+rows+=("$(printf '%-24s %s' "Ctrl+F" "Search in Chat")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+F" "Global Search")")
+rows+=("$(printf '%-24s %s' "Delete" "Delete Message")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+R" "React to Message")")
+rows+=("$(printf '%-24s %s' "Ctrl+S" "Schedule Message")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+D" "Send without Sound")")
+
+rows+=("")
+rows+=("── Media ──")
+rows+=("$(printf '%-24s %s' "Space" "Play/Pause Media")")
+rows+=("$(printf '%-24s %s' "Left/Right" "Seek (in media)")")
+rows+=("$(printf '%-24s %s' "F" "Fullscreen (media)")")
+rows+=("$(printf '%-24s %s' "Ctrl+Shift+S" "Save As")")
+
+(( ${#rows[@]} == 0 )) && exit 0
+
+sel=$(printf '%s\n' "${rows[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -p 'AyuGram keys' \
+  -mesg 'AyuGram / Telegram keybindings')
+
+# The key is always the first column (keys never contain spaces); the rest is the
+# description. Skip rows that aren't a single replayable keypress.
+key="${sel%% *}"
+case "$key" in
+  ''|'──'* | '(not') exit 0 ;;   # blank / section header / "(not bound)"
+esac
+[[ "$key" == *"/"* ]] && exit 0  # e.g. Left/Right — not one keypress
+
+# Convert a display combo ("Ctrl+Shift+R") to an xdotool keyspec ("ctrl+shift+r").
+to_keyspec() {
+  local part out=()
+  local IFS='+'
+  read -ra parts <<< "$1"
+  for part in "${parts[@]}"; do
+    case "${part,,}" in
+      ctrl|control)       out+=("ctrl") ;;
+      shift)              out+=("shift") ;;
+      alt)               out+=("alt") ;;
+      super|win|meta|cmd) out+=("super") ;;
+      *)
+        case "$part" in
+          Del|Delete)         out+=("Delete") ;;
+          Backspace)          out+=("BackSpace") ;;
+          Enter|Return)       out+=("Return") ;;
+          Esc|Escape)         out+=("Escape") ;;
+          Space)              out+=("space") ;;
+          Tab)                out+=("Tab") ;;
+          PageUp)             out+=("Prior") ;;
+          PageDown)           out+=("Next") ;;
+          Up|Down|Left|Right|Home|End|Insert) out+=("$part") ;;
+          F[0-9]|F1[0-2])     out+=("$part") ;;
+          [0-9])              out+=("$part") ;;
+          [A-Za-z])           out+=("${part,,}") ;;
+          *)                  return 1 ;;   # unknown token → not fireable
+        esac ;;
+    esac
+  done
+  echo "${out[*]}"
+}
+
+keyspec=$(to_keyspec "$key") || { notify-send "AyuGram keys" "Can't replay: $key"; exit 0; }
+
+# Bail if AyuGram isn't running (i3-msg focus reports success even on zero matches,
+# so check for a window first).
+xdotool search --class AyuGram >/dev/null 2>&1 \
+  || { notify-send "AyuGram keys" "No AyuGram window found"; exit 1; }
+
+# Focus via i3 criteria (matches the real managed window) — xdotool windowactivate
+# is unreliable on i3 and picks AyuGram's override-redirect helper windows. Same
+# approach telepad uses (~/Projects/github/telepad, src/link.rs).
+i3-msg '[class="AyuGramDesktop"] focus' >/dev/null 2>&1
+sleep 0.15
+xdotool key --clearmodifiers "$keyspec"

@@ -1,6 +1,8 @@
 { mod, pkgs }:
 
 let
+  ssr = import ./ssr.nix { inherit pkgs; };
+
   # Do-Not-Disturb toggle (indicator lives in the i3bar, see bars.nix).
   # On enable: flash a "paused" toast *before* pausing so it's actually seen,
   # then pause dunst and dock the (normally hidden) bar so 🔕 DND stays visible.
@@ -158,6 +160,9 @@ in
   "${mod}+Shift+F11"   = "exec gnome-screenshot -a && notify-send \"Screenshot saved\"";
   "Ctrl+Shift+Print"   = "exec peek";
 
+  # Screen recording — SimpleScreenRecorder headless toggle (● REC shows in the bar)
+  "${mod}+Shift+F12"   = "exec --no-startup-id ${ssr.toggle}";
+
   # Bar toggle
   "${mod}+x" = "exec i3-msg bar mode toggle";
 
@@ -181,5 +186,5 @@ in
   "${mod}+F12" = "exec --no-startup-id loginctl lock-session && systemctl hibernate";
 
   # Show keybindings
-  "${mod}+slash" = "exec --no-startup-id ~/bin/rofi/rofi-keybindings";
+  "${mod}+slash" = "exec --no-startup-id ~/.local/share/rofi-cheatsheets/rofi-keybindings";
 }

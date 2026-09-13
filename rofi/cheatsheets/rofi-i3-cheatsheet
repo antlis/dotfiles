@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+#
+# rofi-i3-cheatsheet — fullscreen i3 keybinding cheatsheet that ALSO acts:
+# selecting an entry performs its binding (exec commands run in a detached
+# shell; i3 commands are dispatched via i3-msg).
+#
+# Source of truth is the LIVE i3 config (i3-msg -t get_config), so it's always
+# in sync. Mode bindings (resize / sysmenu) are intentionally omitted — they
+# only make sense inside their mode. Approach after budlabs' keybindings-rofi.
+
+# Each row: <runnable command>\t<pretty display>. Tab-splitting keeps the real
+# command intact (quotes, $, etc.) without eval-ing generated code.
+mapfile -t rows < <(i3-msg -t get_config | awk '
+  $1 == "set" {
+    name = $2; sub(/^\$/, "", name)
+    $1 = $2 = ""; sub(/^[[:space:]]+/, "", $0)
+    vars[name] = $0; next
+  }
+  $1 == "mode" { inmode = 1 }
+  $1 == "}"    { inmode = 0 }
+
+  $1 == "bindsym" && !inmode {
+    line = $0
+    for (k in vars) gsub("[$]" k, vars[k], line)         # resolve $variables
+    sub(/^bindsym[[:space:]]+/, "", line)
+
+    key  = line; sub(/[[:space:]].*/, "", key)           # first token = key
+    rest = line; sub(/^[^[:space:]]+[[:space:]]+/, "", rest)
+
+    if (rest ~ /^exec([[:space:]]|$)/) {                 # exec -> run directly
+      run = rest
+      sub(/^exec[[:space:]]+/, "", run)
+      sub(/^--no-startup-id[[:space:]]+/, "", run)
+      realcmd = run
+    } else {                                             # else -> i3-msg
+      realcmd = "i3-msg " rest
+    }
+
+    pkey = key                                           # pretty key
+    gsub(/Mod4/, "Super", pkey); gsub(/Mod1/, "Alt", pkey)
+    gsub(/Control/, "Ctrl", pkey); gsub(/\+/, " + ", pkey)
+
+    pcmd = rest                                          # pretty command
+    sub(/^exec[[:space:]]+(--no-startup-id[[:space:]]+)?/, "", pcmd)
+    gsub(/\/nix\/store\/[^ ]*\/bin\//, "", pcmd)
+
+    # friendly labels for commands that read cryptically in the sheet
+    if      (pcmd ~ /i3-dnd-toggle/)        pcmd = "🔕 Toggle notifications (Do Not Disturb)"
+    else if (pcmd ~ /dunstctl history-pop/) pcmd = "🔔 Show last notification"
+    else if (pcmd ~ /dunstctl close-all/)   pcmd = "🔕 Dismiss all notifications"
+    else if (pcmd ~ /ssr-record-toggle/)    pcmd = "⏺ Toggle screen recording (start/stop)"
+
+    printf "%s\t%-34s  %s\n", realcmd, pkey, pcmd
+  }
+')
+
+(( ${#rows[@]} == 0 )) && exit 0
+
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'i3 keys' \
+  -mesg '⌨  i3 keybindings — Enter runs the selected action, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+setsid bash -c "${real[$sel]}" >/dev/null 2>&1 &

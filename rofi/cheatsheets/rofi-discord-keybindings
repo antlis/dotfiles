@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# rofi-discord-keybindings — cheatsheet for Discord's built-in shortcuts.
+#
+# Discord (Electron) exposes no machine-readable keymap — its shortcuts are baked
+# in and the few custom ones live in an opaque leveldb — so unlike the i3 / mpv /
+# AyuGram sheets this list is curated by hand. On Enter it focuses the Discord
+# window by i3 criteria (the capital-"Discord" helper windows are override-redirect
+# and not i3-managed, so [class="discord"] cleanly hits the real one) and replays
+# the shortcut with xdotool. Some shortcuts are context-dependent (e.g. "Edit last
+# message" only fires in an empty message box). NB: this performs the real action.
+#
+# Each row: <xdotool keyspec>\t<pretty>.
+
+# Curated from Discord's own shortcut guide (the Ctrl+/ overlay).
+rows=(
+  $'ctrl+slash\tCtrl+/              Show all keyboard shortcuts'
+  $'ctrl+k\tCtrl+K              Quick switcher (jump to server / DM / channel)'
+  $'ctrl+f\tCtrl+F              Search messages'
+  $'alt+Up\tAlt+Up              Previous channel'
+  $'alt+Down\tAlt+Down            Next channel'
+  $'alt+shift+Up\tAlt+Shift+Up        Previous unread channel'
+  $'alt+shift+Down\tAlt+Shift+Down      Next unread channel'
+  $'ctrl+alt+Up\tCtrl+Alt+Up         Previous server'
+  $'ctrl+alt+Down\tCtrl+Alt+Down       Next server'
+  $'ctrl+b\tCtrl+B              Back to previous text channel'
+  $'ctrl+alt+a\tCtrl+Alt+A          Go to active audio channel'
+  $'ctrl+u\tCtrl+U              Toggle channel member list'
+  $'Escape\tEsc                 Mark channel read'
+  $'shift+Escape\tShift+Esc           Mark server read'
+  $'Up\tUp                  Edit last message (empty message box)'
+  $'BackSpace\tBackspace            Delete focused message'
+  $'Page_Up\tPageUp              Scroll chat up'
+  $'Page_Down\tPageDown            Scroll chat down'
+  $'shift+Page_Up\tShift+PageUp        Oldest unread message'
+  $'ctrl+shift+u\tCtrl+Shift+U        Upload a file'
+  $'ctrl+shift+m\tCtrl+Shift+M        Toggle mute'
+  $'ctrl+shift+d\tCtrl+Shift+D        Toggle deafen'
+  $'ctrl+apostrophe\tCtrl+\x27              Create a new call'
+  $'ctrl+Return\tCtrl+Enter          Answer incoming call'
+  $'ctrl+shift+alt+v\tCtrl+Shift+Alt+V    Return to active call'
+  $'ctrl+shift+n\tCtrl+Shift+N        New server / join a server'
+  $'ctrl+r\tCtrl+R              Refresh Discord'
+)
+
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'Discord keys' \
+  -mesg '💬  Discord keybindings — Enter sends the shortcut to Discord, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+xdotool search --class '[Dd]iscord' >/dev/null 2>&1 \
+  || { notify-send "Discord keys" "No Discord window found"; exit 1; }
+
+# Focus via i3 criteria (matches the real managed window, not the override-redirect
+# helper windows) — same approach as the AyuGram sheet.
+i3-msg '[class="discord"] focus' >/dev/null 2>&1
+sleep 0.15
+xdotool key --clearmodifiers "${real[$sel]}"

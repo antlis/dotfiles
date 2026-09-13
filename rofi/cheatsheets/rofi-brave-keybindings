@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# rofi-brave-keybindings — cheatsheet for Brave's built-in shortcuts, read from
+# Brave itself. Unlike a hand-curated list, the rows come straight from
+# brave://settings/system/shortcuts (so they reflect YOUR customizations and
+# every bound accelerator), scraped over the DevTools protocol by the sibling
+# rofi-brave-cdp.mjs. On Enter it focuses the Brave window by i3
+# criteria and replays the shortcut with xdotool. NB: this performs the real
+# action (Ctrl+W closes the tab, etc.).
+#
+# Requires Brave launched with --remote-debugging-port (default 9222; override
+# with BRAVE_CDP_PORT). The scrape is ~5s and opens a *background* tab (no view
+# steal), so its result is cached; run with --refresh to rescrape after you
+# rebind something.
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+HELPER="${SCRIPT_DIR}/rofi-brave-cdp.mjs"
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/rofi-brave-keys.tsv"
+PORT="${BRAVE_CDP_PORT:-9222}"
+
+refresh() {
+  local tmp; tmp="$(mktemp)"
+  if PORT="$PORT" node "$HELPER" >"$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then
+    mv "$tmp" "$CACHE"; return 0
+  fi
+  rm -f "$tmp"; return 1
+}
+
+if [[ "$1" == "--refresh" || ! -s "$CACHE" ]]; then
+  if ! refresh && [[ ! -s "$CACHE" ]]; then
+    notify-send "Brave keys" "Couldn't read shortcuts — is Brave running with --remote-debugging-port=$PORT?"
+    exit 1
+  fi
+  [[ "$1" == "--refresh" ]] && notify-send "Brave keys" "Shortcuts refreshed ($(wc -l <"$CACHE") commands)."
+fi
+
+mapfile -t rows <"$CACHE"
+real=(); disp=()
+for r in "${rows[@]}"; do
+  real+=( "${r%%$'\t'*}" )
+  disp+=( "${r#*$'\t'}" )
+done
+
+sel=$(printf '%s\n' "${disp[@]}" | rofi \
+  -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; } listview { columns: 2; }' \
+  -dmenu -i -format i -p 'Brave keys' \
+  -mesg '🦁  Brave keybindings (live from brave://settings) — Enter sends the shortcut, Esc to close')
+
+[[ $sel =~ ^[0-9]+$ ]] || exit 0
+
+xdotool search --class 'Brave-browser' >/dev/null 2>&1 \
+  || { notify-send "Brave keys" "No Brave window found"; exit 1; }
+
+# Focus via i3 criteria (i3 manages the browser window) — same approach as the
+# AyuGram / Discord sheets.
+i3-msg '[class="Brave-browser"] focus' >/dev/null 2>&1
+sleep 0.15
+
+# F11 reaches Brave when replayed, but Brave doesn't act on it under i3, so drive
+# Brave's own window fullscreen over CDP instead (F11-equivalent, hides toolbar).
+if [[ "${real[$sel]}" == "F11" ]]; then
+  PORT="$PORT" node "$HELPER" fullscreen-toggle >/dev/null 2>&1
+else
+  xdotool key --clearmodifiers "${real[$sel]}"
+fi

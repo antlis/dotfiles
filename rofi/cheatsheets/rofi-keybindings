@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Universal keybindings cheatsheet launcher
+# Select which keybindings to view, then browse & optionally execute them.
+#
+# Article: https://antlis.is-a.dev/blog/rofi-cheatsheets
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+labels=(
+  "i3"
+  "AyuGram"
+  "mpv"
+  "Discord"
+  "Brave"
+  "Zen"
+)
+
+selected=$(printf '%s\n' "${labels[@]}" | rofi \
+  -dmenu -i -p 'Keybindings' \
+  -mesg 'Select a cheatsheet to view')
+
+[[ -z "$selected" ]] && exit 0
+
+case "$selected" in
+  i3)      exec "${SCRIPT_DIR}/rofi-i3-cheatsheet" ;;
+  AyuGram) exec "${SCRIPT_DIR}/rofi-ayugram-keybindings" ;;
+  mpv)     exec "${SCRIPT_DIR}/rofi-mpv-keybindings" ;;
+  Discord) exec "${SCRIPT_DIR}/rofi-discord-keybindings" ;;
+  Brave)   exec "${SCRIPT_DIR}/rofi-brave-keybindings" ;;
+  Zen)     exec "${SCRIPT_DIR}/rofi-zen-keybindings" ;;
+  *)       notify-send "keybindings" "Unknown: $selected"; exit 1 ;;
+esac
