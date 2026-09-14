@@ -11,6 +11,31 @@ use = "catppuccin-mocha"
 
 # : }}}
 
+# : Mode/Status overrides (yazi >= 25.5 key names) {{{
+# The catppuccin-mocha flavor still uses the pre-25.5 keys (mode_normal,
+# permissions_*), which yazi 25.5 ignores, so the mode/size/percent/position
+# segments fell back to low-contrast defaults. Redefine them here.
+
+[mode]
+normal_main = { fg = "#1e1e2e", bg = "#89b4fa", bold = true }
+normal_alt  = { fg = "#cdd6f4", bg = "#45475a" }
+select_main = { fg = "#1e1e2e", bg = "#a6e3a1", bold = true }
+select_alt  = { fg = "#cdd6f4", bg = "#45475a" }
+unset_main  = { fg = "#1e1e2e", bg = "#f2cdcd", bold = true }
+unset_alt   = { fg = "#cdd6f4", bg = "#45475a" }
+
+[status]
+perm_sep   = { fg = "#7f849c" }
+perm_type  = { fg = "#89b4fa" }
+perm_read  = { fg = "#f9e2af" }
+perm_write = { fg = "#f38ba8" }
+perm_exec  = { fg = "#a6e3a1" }
+progress_label  = { fg = "#cdd6f4", bold = true }
+progress_normal = { fg = "#89b4fa", bg = "#313244" }
+progress_error  = { fg = "#f38ba8", bg = "#313244" }
+
+# : }}}
+
 # : Manager {{{
 
 # [manager]
