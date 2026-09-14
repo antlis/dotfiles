@@ -34,8 +34,8 @@ open my $fh, "<", $file or exit 0;
 my $mode = "";                 # "block" = [[mgr.*]] ; "inline" = [mgr]
 my ($on, $run, $desc);
 sub unq { my $s = shift; return "" unless defined $s;
-  if    ($s =~ /^"(.*)"$/s) { $s = $1; }
-  elsif ($s =~ /^'(.*)'$/s) { $s = $1; }
+  if    ($s =~ /^"(.*)"$/s) { $s = $1; $s =~ s/\\(["\\])/$1/g; }  # basic string: unescape \" and \\
+  elsif ($s =~ /^'(.*)'$/s) { $s = $1; }                          # literal string: no escapes
   return $s; }
 sub on_val { my $v = shift;
   if ($v =~ /^\s*\[(.*)\]\s*$/s) { return join("", ($1 =~ /"([^"]*)"/g)); }
@@ -63,19 +63,19 @@ while (my $l = <$fh>) {
   next unless $mode;
   next if $l =~ /^\s*#/;
   if ($mode eq "inline") {
-    if ($l =~ /\bon\s*=\s*(\[[^\]]*\]|"[^"]*"|'[^']*')/) {
+    if ($l =~ /\bon\s*=\s*(\[[^\]]*\]|"(?:\\.|[^"\\])*"|'[^']*')/) {
       my $o = on_val($1);
       next unless length $o;
-      my ($r) = $l =~ /\brun\s*=\s*("[^"]*"|'[^']*')/;
-      my ($d) = $l =~ /\bdesc\s*=\s*("[^"]*"|'[^']*')/;
+      my ($r) = $l =~ /\brun\s*=\s*("(?:\\.|[^"\\])*"|'[^']*')/;
+      my ($d) = $l =~ /\bdesc\s*=\s*("(?:\\.|[^"\\])*"|'[^']*')/;
       $r = defined $r ? unq($r) : "";
       $d = (defined $d && length unq($d)) ? unq($d) : $r;
       print "$o\t$r\t$d\n";
     }
   } else {
-    if    ($l =~ /^\s*on\s*=\s*(\[[^\]]*\]|"[^"]*"|'[^']*')/) { $on   = on_val($1); }
-    elsif ($l =~ /^\s*run\s*=\s*("[^"]*"|'[^']*')/)          { $run  = unq($1); }
-    elsif ($l =~ /^\s*desc\s*=\s*("[^"]*"|'[^']*')/)         { $desc = unq($1); }
+    if    ($l =~ /^\s*on\s*=\s*(\[[^\]]*\]|"(?:\\.|[^"\\])*"|'[^']*')/) { $on   = on_val($1); }
+    elsif ($l =~ /^\s*run\s*=\s*("(?:\\.|[^"\\])*"|'[^']*')/)          { $run  = unq($1); }
+    elsif ($l =~ /^\s*desc\s*=\s*("(?:\\.|[^"\\])*"|'[^']*')/)         { $desc = unq($1); }
   }
 }
 flush() if $mode eq "block";
