@@ -19,14 +19,9 @@ run = "plugin fzf"
 desc = "Jump to a directory or reveal a file using fzf"
 
 [[mgr.prepend_keymap]]
-on = "m"
-run = "plugin bookmarks --args=save"
-desc = "Save current position as a bookmark"
-
-[[mgr.prepend_keymap]]
 on = "'"
-run = "plugin bookmarks --args=jump"
-desc = "Jump to a bookmark"
+run = "plugin zshmarks"
+desc = "Jump to a zshmarks bookmark (~/.bookmarks)"
 
 [mgr]
 keymap = [
